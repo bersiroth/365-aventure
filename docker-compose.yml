@@ -23,14 +23,25 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - donjon-network
+      - proxy
     labels:
-      - "com.365aventures.app=donjon"
-      - "com.365aventures.version=2026"
+      - traefik.enable=true
+      # DNS redirection
+      - traefik.http.routers.aventure.rule=Host(`aventure.bersiroth.fr`)
+      - traefik.http.services.aventure.loadbalancer.server.port=3636
+      # HTTP
+      - traefik.http.routers.aventure-http.entrypoints=http
+      - traefik.http.routers.aventure-http.rule=Host(`aventure.bersiroth.fr`)
+      # HTTPS
+      - traefik.http.routers.aventure.tls=true
+      - traefik.http.routers.aventure.tls.certresolver=letsencrypt-resolver
+      - traefik.http.routers.aventure.entrypoints=https
+      # Redirect
+      - traefik.http.routers.aventure-http.middlewares=https-redirect@docker
 
 volumes:
   donjon-data:
 
 networks:
-  donjon-network:
-    driver: bridge
+  proxy:
+    external: true

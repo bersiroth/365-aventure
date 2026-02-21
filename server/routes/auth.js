@@ -5,11 +5,17 @@ import { signToken, requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 const SALT_ROUNDS = 10;
-const PSEUDO_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;
+const PSEUDO_REGEX    = /^[a-zA-Z0-9_-]{3,20}$/;
+const PASSWORD_REGEX  = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-  const { pseudo, password } = req.body;
+  const { pseudo, password, _hp } = req.body;
+
+  // Honeypot — les bots remplissent ce champ, les humains non
+  if (_hp) {
+    return res.status(201).json({ token: 'ok', player: { id: 0, pseudo, save_data: '' } });
+  }
 
   if (!pseudo || !password) {
     return res.status(400).json({ error: 'Pseudo et mot de passe requis' });
@@ -17,8 +23,8 @@ router.post('/register', async (req, res) => {
   if (!PSEUDO_REGEX.test(pseudo)) {
     return res.status(400).json({ error: 'Pseudo: 3-20 caractères (lettres, chiffres, - et _)' });
   }
-  if (password.length < 4) {
-    return res.status(400).json({ error: 'Mot de passe: 4 caractères minimum' });
+  if (!PASSWORD_REGEX.test(password)) {
+    return res.status(400).json({ error: 'Mot de passe: 8 caractères minimum, avec au moins 1 chiffre et 1 caractère spécial' });
   }
 
   const existing = db.prepare('SELECT id FROM players WHERE pseudo = ?').get(pseudo);

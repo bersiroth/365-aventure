@@ -28,8 +28,8 @@ export function AuthProvider({ children }) {
     return data.player;
   }, []);
 
-  const handleRegister = useCallback(async (pseudo, password) => {
-    const data = await api.register(pseudo, password);
+  const handleRegister = useCallback(async (pseudo, password, honeypot) => {
+    const data = await api.register(pseudo, password, honeypot);
     api.setToken(data.token);
     setPlayer(data.player);
     return data.player;

@@ -7,6 +7,7 @@ export function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);
   const [pseudo, setPseudo] = useState('');
   const [password, setPassword] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -16,7 +17,7 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       if (isRegister) {
-        await register(pseudo, password);
+        await register(pseudo, password, honeypot);
       } else {
         await login(pseudo, password);
       }
@@ -72,6 +73,23 @@ export function LoginPage() {
               placeholder="Votre mot de passe"
               autoComplete={isRegister ? 'new-password' : 'current-password'}
               required
+            />
+            {isRegister && (
+              <p className="text-xs text-gray-500 mt-1">
+                8 caractères minimum · 1 chiffre · 1 caractère spécial (!@#$%...)
+              </p>
+            )}
+          </div>
+
+          {/* Honeypot — caché aux humains, visible par les bots */}
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <input
+              type="text"
+              name="website"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
             />
           </div>
 

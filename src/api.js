@@ -33,8 +33,8 @@ async function apiFetch(path, options = {}) {
 }
 
 // Auth
-export const register = (pseudo, password) =>
-  apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({ pseudo, password }) });
+export const register = (pseudo, password, _hp = '') =>
+  apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({ pseudo, password, _hp }) });
 
 export const login = (pseudo, password) =>
   apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ pseudo, password }) });
