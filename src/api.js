@@ -47,5 +47,5 @@ export const getPlayers = () => apiFetch('/players');
 export const getPlayer = (id) => apiFetch(`/players/${id}`);
 
 // Save
-export const putSave = (save_data) =>
-  apiFetch('/save', { method: 'PUT', body: JSON.stringify({ save_data }) });
+export const putSave = (save_data, trophies) =>
+  apiFetch('/save', { method: 'PUT', body: JSON.stringify({ save_data, trophies }) });

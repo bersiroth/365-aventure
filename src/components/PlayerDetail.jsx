@@ -1,18 +1,20 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { Swords, ArrowLeft, BarChart2 } from 'lucide-react';
+import { Swords, ArrowLeft, BarChart2, Award } from 'lucide-react';
 import { getPlayer } from '../api';
 import { deserializeSave, calculateScore } from '../data/gameData';
+import { calculateTrophyXP, getLevelInfo } from '../data/trophyData';
 import { DungeonGrid } from './DungeonGrid';
 import { ScorePanel } from './ScorePanel';
 import { MonthSelector } from './MonthSelector';
 
 const StatsPage = lazy(() => import('./StatsPage').then(m => ({ default: m.StatsPage })));
+const TrophyPage = lazy(() => import('./TrophyPage').then(m => ({ default: m.TrophyPage })));
 
 export function PlayerDetail({ playerId, onBack }) {
   const [player, setPlayer] = useState(null);
   const [yearData, setYearData] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(0);
-  const [tab, setTab] = useState('calendar'); // 'calendar' | 'stats'
+  const [tab, setTab] = useState('calendar'); // 'calendar' | 'stats' | 'trophies'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -54,6 +56,12 @@ export function PlayerDetail({ playerId, onBack }) {
   const score = yearData
     ? calculateScore(yearData)
     : { totalScore: 0, monstersDefeated: 0, trapsDefeated: 0, bossesDefeated: 0, completeWings: 0 };
+
+  const playerTrophies = (() => {
+    try { return typeof player.trophies === 'string' ? JSON.parse(player.trophies) : (player.trophies || {}); }
+    catch { return {}; }
+  })();
+  const playerLevelInfo = getLevelInfo(calculateTrophyXP(playerTrophies));
 
   const now = new Date();
   const maxMonth = now.getFullYear() < 2026 ? 0
@@ -98,6 +106,17 @@ export function PlayerDetail({ playerId, onBack }) {
               <BarChart2 size={14} />
               Statistiques
             </button>
+            <button
+              onClick={() => setTab('trophies')}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-medieval font-semibold text-sm transition-colors ${
+                tab === 'trophies'
+                  ? 'bg-dungeon-gold text-dungeon-dark'
+                  : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
+              }`}
+            >
+              <Award size={14} />
+              Trophées
+            </button>
           </div>
         )}
       </div>
@@ -134,6 +153,17 @@ export function PlayerDetail({ playerId, onBack }) {
           </div>
         }>
           <StatsPage yearData={yearData} />
+        </Suspense>
+      )}
+
+      {tab === 'trophies' && (
+        <Suspense fallback={
+          <div className="text-center py-12">
+            <Award className="text-dungeon-gold mx-auto mb-4 animate-pulse" size={48} />
+            <p className="text-dungeon-gold font-medieval">Chargement des trophées...</p>
+          </div>
+        }>
+          <TrophyPage trophies={playerTrophies} levelInfo={playerLevelInfo} />
         </Suspense>
       )}
     </div>

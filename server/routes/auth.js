@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
     const token = signToken(result.lastInsertRowid);
     res.status(201).json({
       token,
-      player: { id: result.lastInsertRowid, pseudo, save_data: '' },
+      player: { id: result.lastInsertRowid, pseudo, save_data: '', trophies: '{}' },
     });
   } catch (err) {
     console.error('Register error:', err);
@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Pseudo et mot de passe requis' });
   }
 
-  const player = db.prepare('SELECT id, pseudo, password_hash, save_data FROM players WHERE pseudo = ?').get(pseudo);
+  const player = db.prepare('SELECT id, pseudo, password_hash, save_data, trophies FROM players WHERE pseudo = ?').get(pseudo);
   if (!player) {
     return res.status(401).json({ error: 'Pseudo ou mot de passe incorrect' });
   }
@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
     const token = signToken(player.id);
     res.json({
       token,
-      player: { id: player.id, pseudo: player.pseudo, save_data: player.save_data },
+      player: { id: player.id, pseudo: player.pseudo, save_data: player.save_data, trophies: player.trophies },
     });
   } catch (err) {
     console.error('Login error:', err);
@@ -78,7 +78,7 @@ router.post('/login', async (req, res) => {
 
 // GET /api/auth/me
 router.get('/me', requireAuth, (req, res) => {
-  const player = db.prepare('SELECT id, pseudo, save_data, total_score, monsters_defeated, traps_defeated, bosses_defeated, complete_wings, created_at FROM players WHERE id = ?').get(req.playerId);
+  const player = db.prepare('SELECT id, pseudo, save_data, trophies, trophy_xp, level, total_score, monsters_defeated, traps_defeated, bosses_defeated, complete_wings, created_at FROM players WHERE id = ?').get(req.playerId);
   if (!player) {
     return res.status(404).json({ error: 'Joueur introuvable' });
   }

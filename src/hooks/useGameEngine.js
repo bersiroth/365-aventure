@@ -1,22 +1,35 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generateYear2026, calculateScore, serializeSave, deserializeSave } from '../data/gameData';
+import { calculateTrophyXP, getLevelInfo } from '../data/trophyData';
+import { evaluateTrophies } from './useTrophies';
 import { putSave } from '../api';
 
 const STORAGE_KEY = 'donjon_2026_save';
 const SYNC_DEBOUNCE_MS = 500;
 
+function parseTrophies(raw) {
+  if (!raw) return {};
+  if (typeof raw === 'object') return raw;
+  try { return JSON.parse(raw); } catch { return {}; }
+}
+
 /**
  * Hook principal pour gérer l'état du jeu
  * - Persistance localStorage (joueurs non connectés uniquement)
  * - Sync serveur (debounce 500ms) quand connecté
+ * - Gestion des trophées et notifications
  */
 export function useGameEngine(player) {
   const [yearData, setYearData] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(0);
   const [importLoading, setImportLoading] = useState(false);
   const [importError, setImportError] = useState(null);
+  const [trophies, setTrophies] = useState({});
+  const [newTrophies, setNewTrophies] = useState([]);
   const syncTimerRef = useRef(null);
   const prevPlayerIdRef = useRef(undefined);
+  const trophiesRef = useRef({});
+  const isInitialLoadRef = useRef(true);
 
   // Initialisation — vide le localStorage à chaque changement d'utilisateur
   useEffect(() => {
@@ -27,18 +40,21 @@ export function useGameEngine(player) {
     }
     prevPlayerIdRef.current = player?.id ?? null;
 
+    // Charger les trophées du joueur
+    const parsed = parseTrophies(player?.trophies);
+    setTrophies(parsed);
+    trophiesRef.current = parsed;
+    isInitialLoadRef.current = true;
+
     initializeGame();
   }, [player?.id]);
 
   const initializeGame = () => {
     if (player?.save_data) {
-      // Connecté avec une save serveur : on la charge
       loadFromServerSave(player.save_data);
     } else if (player) {
-      // Connecté mais pas encore de save : partie vierge
       createNewGame();
     } else {
-      // Non connecté : localStorage
       loadFromLocalStorage();
     }
   };
@@ -71,7 +87,6 @@ export function useGameEngine(player) {
   const createNewGame = () => {
     const newYear = generateYear2026();
     setYearData(newYear);
-    // Persistance localStorage uniquement si non connecté
     if (!player) saveToLocalStorage(newYear);
   };
 
@@ -85,12 +100,44 @@ export function useGameEngine(player) {
 
   const syncToServer = (encoded) => {
     if (!player) return;
-    // Debounce
     if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
     syncTimerRef.current = setTimeout(() => {
-      putSave(encoded).catch(err => console.error('Sync error:', err));
+      putSave(encoded, trophiesRef.current).catch(err => console.error('Sync error:', err));
     }, SYNC_DEBOUNCE_MS);
   };
+
+  // === Évaluation des trophées ===
+  const score = yearData ? calculateScore(yearData) : null;
+
+  useEffect(() => {
+    if (!yearData || !score) return;
+
+    const { updatedTrophies, newlyUnlocked } = evaluateTrophies(yearData, score, trophiesRef.current);
+
+    if (newlyUnlocked.length > 0) {
+      setTrophies(updatedTrophies);
+      trophiesRef.current = updatedTrophies;
+
+      // Pas de notifications au chargement initial (trophées rétroactifs)
+      if (!isInitialLoadRef.current) {
+        setNewTrophies(prev => [...prev, ...newlyUnlocked]);
+      }
+
+      // Sync les trophées au serveur
+      if (player) {
+        const encoded = serializeSave(yearData);
+        syncToServer(encoded);
+      }
+    }
+
+    isInitialLoadRef.current = false;
+  }, [yearData, score]);
+
+  const dismissTrophy = useCallback(() => {
+    setNewTrophies(prev => prev.slice(1));
+  }, []);
+
+  const levelInfo = getLevelInfo(calculateTrophyXP(trophies));
 
   /**
    * Marque un jour comme complété (ou annule)
@@ -115,7 +162,6 @@ export function useGameEngine(player) {
 
     setYearData(newYearData);
 
-    // Persistance : localStorage si non connecté, serveur si connecté
     const encoded = serializeSave(newYearData);
     if (player) {
       syncToServer(encoded);
@@ -171,7 +217,7 @@ export function useGameEngine(player) {
     const save_data = serializeSave(yearData);
     const date = new Date().toISOString().slice(0, 10);
     const blob = new Blob(
-      [JSON.stringify({ version: 1, pseudo: player.pseudo, date, save_data }, null, 2)],
+      [JSON.stringify({ version: 2, pseudo: player.pseudo, date, save_data, trophies: trophiesRef.current }, null, 2)],
       { type: 'application/json' }
     );
     const url = URL.createObjectURL(blob);
@@ -190,7 +236,7 @@ export function useGameEngine(player) {
       const text = await file.text();
       let parsed;
       try { parsed = JSON.parse(text); } catch { throw new Error('Fichier invalide : JSON malformé'); }
-      if (!parsed || parsed.version !== 1 || typeof parsed.save_data !== 'string') {
+      if (!parsed || (parsed.version !== 1 && parsed.version !== 2) || typeof parsed.save_data !== 'string') {
         throw new Error('Fichier invalide : structure incorrecte');
       }
       if (parsed.pseudo?.toLowerCase() !== player.pseudo?.toLowerCase()) {
@@ -198,8 +244,15 @@ export function useGameEngine(player) {
       }
       const restored = deserializeSave(parsed.save_data);
       if (!restored) throw new Error('Fichier invalide : données de progression corrompues');
-      await putSave(parsed.save_data);
+
+      // Restaurer les trophées (v2) ou repartir de zéro (v1)
+      const importedTrophies = parsed.version >= 2 && parsed.trophies ? parsed.trophies : {};
+
+      await putSave(parsed.save_data, importedTrophies);
       setYearData(restored);
+      setTrophies(importedTrophies);
+      trophiesRef.current = importedTrophies;
+      isInitialLoadRef.current = true;
     } catch (err) {
       setImportError(err.message || "Erreur lors de l'import");
     } finally {
@@ -214,9 +267,6 @@ export function useGameEngine(player) {
     };
   }, []);
 
-  // Calculer le score en temps réel
-  const score = yearData ? calculateScore(yearData) : null;
-
   return {
     yearData,
     selectedMonth,
@@ -225,6 +275,10 @@ export function useGameEngine(player) {
     toggleManaUsed,
     toggleStaffUsed,
     score,
+    trophies,
+    newTrophies,
+    dismissTrophy,
+    levelInfo,
     exportBackup,
     importBackup,
     importLoading,

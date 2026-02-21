@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Trophy, Skull, Crown, Swords, AlertTriangle, Users } from 'lucide-react';
 import { getPlayers } from '../api';
+import { LEVEL_TITLES } from '../data/trophyData';
 
 function ManaPotionIcon({ size = 14 }) {
   return (
@@ -101,7 +102,10 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
                         {/* Desktop */}
                         <div className={`hidden md:grid ${gridCols} gap-2 px-6 py-4 items-center`}>
                           <div className={`font-bold text-lg ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</div>
-                          <div className={`font-medieval font-bold truncate ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</div>
+                          <div className="truncate">
+                            <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
+                            {player.level > 1 && <span className="ml-2 text-xs font-normal text-gray-500">Niv.{player.level} — {LEVEL_TITLES[(player.level || 1) - 1]}</span>}
+                          </div>
                           <div className="text-center font-bold text-dungeon-gold">{player.total_score}</div>
                           <div className="text-center text-gray-300">{player.monsters_defeated}</div>
                           {showUndead && <div className="text-center text-yellow-300">{player.undead_defeated ?? 0}</div>}
@@ -116,7 +120,10 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <span className={`font-bold text-lg w-8 ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</span>
-                              <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
+                              <span>
+                                <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
+                                {player.level > 1 && <span className="ml-1.5 text-[10px] text-gray-500">Niv.{player.level}</span>}
+                              </span>
                             </div>
                             <div className="flex items-center gap-1 text-dungeon-gold font-bold">
                               <Trophy size={16} />

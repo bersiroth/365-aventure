@@ -36,6 +36,9 @@ db.exec(`
 for (const [col, type] of [
   ['undead_defeated',     'INTEGER NOT NULL DEFAULT 0'],
   ['mana_potions_earned', 'INTEGER NOT NULL DEFAULT 0'],
+  ['trophies',            "TEXT NOT NULL DEFAULT '{}'"],
+  ['trophy_xp',           'INTEGER NOT NULL DEFAULT 0'],
+  ['level',               'INTEGER NOT NULL DEFAULT 1'],
 ]) {
   try { db.exec(`ALTER TABLE players ADD COLUMN ${col} ${type}`); } catch {}
 }

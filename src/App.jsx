@@ -8,8 +8,10 @@ import { LoginPage } from './components/LoginPage';
 import { PlayerList } from './components/PlayerList';
 import { PlayerDetail } from './components/PlayerDetail';
 import { downloadProgressImage } from './utils/shareCard';
+import { TrophyNotification } from './components/TrophyNotification';
 const StatsPage = lazy(() => import('./components/StatsPage').then(m => ({ default: m.StatsPage })));
-import { Swords, LogOut, Users, BarChart2, Download, Upload } from 'lucide-react';
+const TrophyPage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.TrophyPage })));
+import { Swords, LogOut, Users, BarChart2, Download, Upload, Award } from 'lucide-react';
 
 /**
  * Application principale
@@ -31,6 +33,10 @@ function App() {
     toggleManaUsed,
     toggleStaffUsed,
     score,
+    trophies,
+    newTrophies,
+    dismissTrophy,
+    levelInfo,
     exportBackup,
     importBackup,
     importLoading,
@@ -109,6 +115,18 @@ function App() {
             </div>
           }>
             <StatsPage yearData={yearData} maxMonth={maxMonth} />
+          </Suspense>
+        );
+
+      case 'trophies':
+        return (
+          <Suspense fallback={
+            <div className="text-center py-12">
+              <Award className="text-dungeon-gold mx-auto mb-4 animate-pulse" size={48} />
+              <p className="text-dungeon-gold font-medieval">Chargement des trophées...</p>
+            </div>
+          }>
+            <TrophyPage trophies={trophies} levelInfo={levelInfo} />
           </Suspense>
         );
 
@@ -250,6 +268,7 @@ function App() {
           <nav className="flex items-center justify-center gap-2 mt-3">
             <NavButton active={currentView === 'game'} onClick={() => navigateTo('game')} icon={<Swords size={14} />} label="Donjon" />
             <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={14} />} label="Stats" />
+            <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={14} />} label="Trophées" />
             <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={14} />} label="Classement" />
             <button
               onClick={logout}
@@ -262,6 +281,11 @@ function App() {
           </nav>
         </div>
       </header>
+
+      {/* Notification trophée (PSN-style) */}
+      {newTrophies.length > 0 && (
+        <TrophyNotification trophy={newTrophies[0]} onDismiss={dismissTrophy} />
+      )}
 
       {/* Content */}
       {renderView()}
