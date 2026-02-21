@@ -58,6 +58,15 @@ export const MONTH_RULES = {
       },
     ],
   },
+  4: {
+    title: 'Monstres Élites',
+    sections: [
+      {
+        heading: null,
+        body: "Des monstres Élites font leur apparition dans le donjon. Ces adversaires redoutables doivent être vaincus avec un maximum de deux jets de dés au lieu de trois.",
+      },
+    ],
+  },
   3: {
     title: 'Bâton du Sage',
     sections: [
@@ -226,37 +235,37 @@ export const MONTH_CONFIGS = {
   //  MAI (index 4)  — Dimanches : 3, 10, 17, 24, 31
   // ──────────────────────────────────────────────────────────────
   4: {
-     1: { type: 'MONSTER', value: 1  },
-     2: { type: 'MONSTER', value: 1  },
-     3: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     4: { type: 'MONSTER', value: 1  },
-     5: { type: 'MONSTER', value: 1  },
-     6: { type: 'MONSTER', value: 1  },
-     7: { type: 'MONSTER', value: 1  },
-     8: { type: 'MONSTER', value: 1  },
-     9: { type: 'MONSTER', value: 1  },
-    10: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    11: { type: 'MONSTER', value: 1  },
-    12: { type: 'MONSTER', value: 1  },
-    13: { type: 'MONSTER', value: 1  },
-    14: { type: 'MONSTER', value: 1  },
-    15: { type: 'MONSTER', value: 1  },
-    16: { type: 'MONSTER', value: 1  },
-    17: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     1: { type: 'TRAP', value: -1  },
+     2: { type: 'MONSTER', value: 4  },
+     3: { type: 'BOSS',    value: 19, isElite: true }, // Dimanche — TODO
+     4: { type: 'TRAP', value: -2  },
+     5: { type: 'UNDEAD', value: 3  },
+     6: { type: 'MONSTER', value: 4, isElite: true, hasMana: true  },
+     7: { type: 'UNDEAD', value: 4  },
+     8: { type: 'MONSTER', value: 5  },
+     9: { type: 'MONSTER', value: 6, hasMana: true  },
+    10: { type: 'BOSS',    value: 24 }, // Dimanche — TODO
+    11: { type: 'MONSTER', value: 2  },
+    12: { type: 'TRAP', value: -3  },
+    13: { type: 'MONSTER', value: 3  },
+    14: { type: 'MONSTER', value: 5  },
+    15: { type: 'MONSTER', value: 5, isElite: true  },
+    16: { type: 'TRAP', value: -6  },
+    17: { type: 'BOSS',    value: 22 }, // Dimanche — TODO
     18: { type: 'MONSTER', value: 1  },
     19: { type: 'MONSTER', value: 1  },
-    20: { type: 'MONSTER', value: 1  },
-    21: { type: 'MONSTER', value: 1  },
-    22: { type: 'MONSTER', value: 1  },
-    23: { type: 'MONSTER', value: 1  },
-    24: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+    20: { type: 'UNDEAD', value: 2  },
+    21: { type: 'MONSTER', value: 2, hasMana: true  },
+    22: { type: 'MONSTER', value: 3  },
+    23: { type: 'MONSTER', value: 3  },
+    24: { type: 'BOSS',    value: 19 }, // Dimanche — TODO
     25: { type: 'MONSTER', value: 1  },
-    26: { type: 'MONSTER', value: 1  },
-    27: { type: 'MONSTER', value: 1  },
-    28: { type: 'MONSTER', value: 1  },
-    29: { type: 'MONSTER', value: 1  },
-    30: { type: 'MONSTER', value: 1  },
-    31: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+    26: { type: 'MONSTER', value: 3, isElite: true  },
+    27: { type: 'TRAP', value: -3  },
+    28: { type: 'MONSTER', value: 5  },
+    29: { type: 'UNDEAD', value: 5  },
+    30: { type: 'MONSTER', value: 6  },
+    31: { type: 'BOSS',    value: 23 }, // Dimanche — TODO
   },
 
   // ──────────────────────────────────────────────────────────────

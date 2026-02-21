@@ -51,6 +51,7 @@ export function computeScoreFromSave(encoded) {
   let totalScore = 0;
   let monstersDefeated = 0;
   let undeadDefeated = 0;
+  let eliteDefeated = 0;
   let trapsDefeated = 0;
   let bossesDefeated = 0;
   let completeWings = 0;
@@ -66,6 +67,7 @@ export function computeScoreFromSave(encoded) {
       const dayConfig = MONTH_CONFIGS[monthIndex]?.[day];
       const type = dayConfig?.type ?? (isBoss ? 'BOSS' : 'MONSTER');
       const hasMana = dayConfig?.hasMana ?? false;
+      const isElite = dayConfig?.isElite ?? false;
       const completed = bits[globalIndex] === 1;
 
       if (completed) {
@@ -73,6 +75,7 @@ export function computeScoreFromSave(encoded) {
         else if (type === 'TRAP')   { totalScore += 1; trapsDefeated++; }
         else if (type === 'UNDEAD') { totalScore += 1; undeadDefeated++; }
         else                        { totalScore += 1; monstersDefeated++; }
+        if (isElite) eliteDefeated++;
         if (hasMana) manaPotionsEarned++;
       }
 
@@ -99,5 +102,5 @@ export function computeScoreFromSave(encoded) {
     }
   });
 
-  return { totalScore, monstersDefeated, undeadDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned };
+  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned };
 }

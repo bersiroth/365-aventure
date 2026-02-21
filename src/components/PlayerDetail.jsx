@@ -121,7 +121,7 @@ export function PlayerDetail({ playerId, onBack }) {
         )}
       </div>
 
-      <ScorePanel score={score} isReadOnly={true} showUndead={true} showMana={true} />
+      <ScorePanel score={score} isReadOnly={true} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showMana={maxMonth >= 1} />
 
       {!yearData && (
         <div className="text-center py-12 text-gray-400">

@@ -1,4 +1,4 @@
-import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap } from 'lucide-react';
 
 function ManaPotionIcon({ size = 32 }) {
   return (
@@ -18,8 +18,11 @@ function ManaPotionIcon({ size = 32 }) {
 /**
  * Panneau d'affichage du score
  */
-export function ScorePanel({ score, isReadOnly, showUndead, showMana }) {
+export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite }) {
   if (!score) return null;
+
+  const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0);
+  const gridCols = optCount === 0 ? 'grid-cols-5' : optCount === 1 ? 'grid-cols-3' : 'grid-cols-4';
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
@@ -52,29 +55,25 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana }) {
 
         {/* Stats — mobile: grille / desktop: cartes */}
         <div className="p-3 md:p-6">
-          {/* Mobile compact — 5 vals: 1 ligne / 6 vals: 3+3 / 7 vals: 4+3 */}
-          <div className={`md:hidden grid gap-[1px] bg-gray-700/40 rounded-lg overflow-hidden ${
-            showUndead && showMana ? 'grid-cols-4' :
-            showUndead || showMana ? 'grid-cols-3' : 'grid-cols-5'
-          }`}>
+          {/* Mobile compact */}
+          <div className={`md:hidden grid gap-[1px] bg-gray-700/40 rounded-lg overflow-hidden ${gridCols}`}>
             <MiniStat icon={<Trophy className="text-dungeon-gold" size={18} />} value={score.totalScore} color="text-dungeon-gold" label="Score" />
             <MiniStat icon={<Skull className="text-gray-400" size={18} />} value={score.monstersDefeated} color="text-gray-300" label="Monstres" />
             {showUndead && <MiniStat icon={<Skull className="text-yellow-400" size={18} />} value={score.undeadDefeated} color="text-yellow-300" label="Morts" />}
-            <MiniStat icon={<AlertTriangle className="text-red-400" size={18} />} value={score.trapsDefeated} color="text-red-400" label="Pièges" />
+            {showElite && <MiniStat icon={<Zap className="text-red-400" size={18} />} value={score.eliteDefeated} color="text-red-400" label="Élites" />}
+            <MiniStat icon={<AlertTriangle className="text-violet-400" size={18} />} value={score.trapsDefeated} color="text-violet-400" label="Pièges" />
             <MiniStat icon={<Crown className="text-orange-400" size={18} />} value={score.bossesDefeated} color="text-orange-400" label="Boss" />
             <MiniStat icon={<Swords className="text-green-400" size={18} />} value={score.completeWings} color="text-green-400" label="Ailes" />
             {showMana && <MiniStat icon={<ManaPotionIcon size={18} />} value={score.manaPotionsEarned} color="text-blue-400" label="Potions" />}
           </div>
 
-          {/* Desktop full cards — 5 cards: 1 ligne / 6 cards: 2x3 / 7 cards: 4+3 */}
-          <div className={`hidden md:grid gap-4 ${
-            showUndead && showMana ? 'grid-cols-4' :
-            showUndead || showMana ? 'grid-cols-3' : 'grid-cols-5'
-          }`}>
+          {/* Desktop full cards */}
+          <div className={`hidden md:grid gap-4 ${gridCols}`}>
             <StatCard icon={<Trophy className="text-dungeon-gold" size={32} />} value={score.totalScore} color="text-dungeon-gold" subtext="Score Total" />
             <StatCard icon={<Skull className="text-gray-400" size={32} />} label="Monstres" value={score.monstersDefeated} color="text-gray-300" subtext="+1 pt/monstre" />
             {showUndead && <StatCard icon={<Skull className="text-yellow-400" size={32} />} label="Morts" value={score.undeadDefeated} color="text-yellow-300" subtext="+1 pt/mort" labelClassName="text-xs" />}
-            <StatCard icon={<AlertTriangle className="text-red-400" size={32} />} label="Pièges" value={score.trapsDefeated} color="text-red-400" subtext="+1 pt/piège" />
+            {showElite && <StatCard icon={<Zap className="text-red-400" size={32} />} label="Élites" value={score.eliteDefeated} color="text-red-400" subtext="+1 pt/élite" labelClassName="text-xs" />}
+            <StatCard icon={<AlertTriangle className="text-violet-400" size={32} />} label="Pièges" value={score.trapsDefeated} color="text-violet-400" subtext="+1 pt/piège" />
             <StatCard icon={<Crown className="text-orange-400" size={32} />} label="Boss" value={score.bossesDefeated} color="text-orange-400" subtext="+2 pts/boss" />
             <StatCard icon={<Swords className="text-green-400" size={32} />} label="Ailes" value={score.completeWings} color="text-green-400" subtext="+3 pts/aile" />
             {showMana && <StatCard icon={<ManaPotionIcon size={32} />} label="Potions" value={score.manaPotionsEarned} color="text-blue-400" subtext="+0 pts" labelClassName="text-xs" />}

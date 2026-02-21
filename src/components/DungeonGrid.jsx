@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
 /* Fiole de mana — corps rond, col étroit, bouchon rouge, liquide bleu lumineux */
@@ -281,6 +281,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
   const isBoss = day.type === 'BOSS';
   const isTrap = day.type === 'TRAP';
   const isUndead = day.type === 'UNDEAD';
+  const isElite = day.isElite ?? false;
   const isCompleted = day.completed;
 
   const handleClick = () => {
@@ -293,7 +294,9 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
   // Boss    : rouge profond → orangé → ambre doré  (rouge or)
   // Monstre : bleu ciel lumineux → bleu clair  (bleu blanc)
   // Piège   : violet doux → lavande clair  (blanc violet)
-  const bgClass = isBoss
+  const bgClass = isElite
+    ? 'bg-gradient-to-b from-red-600 via-red-500 to-rose-300'  // tout type élite → fond rouge
+    : isBoss
     ? 'bg-gradient-to-b from-red-800 via-orange-700 to-amber-600'
     : isTrap
     ? 'bg-gradient-to-b from-violet-100 from-violet-400 to-violet-600'
@@ -303,7 +306,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
     <button
       onClick={handleClick}
       disabled={isReadOnly}
-      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
+      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
         rounded-sm
@@ -317,10 +320,13 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
         <div className="absolute inset-0 ring-1 ring-inset ring-dungeon-gold/30 pointer-events-none" />
       )}
       {isTrap && !isCompleted && (
-        <div className="absolute inset-0 ring-1 ring-inset ring-red-700/30 pointer-events-none" />
+        <div className="absolute inset-0 ring-1 ring-inset ring-violet-700/30 pointer-events-none" />
       )}
       {isUndead && (
         <div className="absolute inset-0 ring-4 md:ring-8 ring-inset ring-dungeon-gold pointer-events-none" />
+      )}
+      {isElite && (
+        <div className="absolute inset-0 ring-1 ring-inset ring-yellow-300/60 pointer-events-none" />
       )}
 
       {/* Numéro du jour — haut-gauche (toujours jaune) */}
@@ -338,13 +344,13 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
       {/* ── Icône centrale — toujours visible ── */}
       <div className="absolute inset-0 flex items-center justify-center">
         {isBoss ? (
-          /* BOSS — bouclier jaune avec valeur au centre */
+          /* BOSS — bouclier avec valeur (rouge si élite) */
           <div className="relative flex items-center justify-center w-[82%] h-[82%]">
             <Shield
               className="absolute inset-0 w-full h-full text-black fill-gray-300"
               strokeWidth={1.8}
             />
-            <span className="relative z-10 text-black font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none">
+            <span className={`relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none ${isElite ? 'text-red-600' : 'text-black'}`}>
               {day.value}
             </span>
           </div>
@@ -359,18 +365,25 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
           </div>
 
         ) : (
-          /* MONSTER — bouclier : trait noir, fond blanc, valeur noire */
+          /* MONSTER/UNDEAD/ELITE — bouclier avec valeur (rouge si élite) */
           <div className="relative flex items-center justify-center w-[82%] h-[82%]">
             <Shield
               className="absolute inset-0 w-full h-full text-black fill-gray-300"
               strokeWidth={1.8}
             />
-            <span className="relative z-10 text-black font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none">
+            <span className={`relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none ${isElite ? 'text-red-600' : 'text-black'}`}>
               {day.value}
             </span>
           </div>
         )}
       </div>
+
+      {/* Indicateur élite */}
+      {isElite && (
+        <div className="absolute bottom-0.5 left-0.5 z-30">
+          <Zap size={10} className="text-yellow-300 fill-yellow-300 drop-shadow-[0_0_4px_rgba(253,224,71,0.9)]" />
+        </div>
+      )}
 
       {/* Indicateur potion de mana */}
       {day.hasMana && (

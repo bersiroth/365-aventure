@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Skull, Crown, Swords, AlertTriangle, Users } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap } from 'lucide-react';
 import { getPlayers } from '../api';
 import { LEVEL_TITLES } from '../data/trophyData';
 
@@ -18,7 +18,7 @@ function ManaPotionIcon({ size = 14 }) {
   );
 }
 
-export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMana }) {
+export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showMana }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -50,7 +50,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-6">
+    <div className="w-full max-w-7xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-dungeon-gold/50 shadow-2xl overflow-hidden">
         <div className="bg-dungeon-gold/10 border-b-2 border-dungeon-gold/30 px-6 py-4">
@@ -71,9 +71,12 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
           <div className="divide-y divide-gray-700/50">
             {/* Table header */}
             {(() => {
-              const gridCols = showUndead && showMana
+              const optCount = (showUndead ? 1 : 0) + (showElite ? 1 : 0) + (showMana ? 1 : 0);
+              const gridCols = optCount === 3
+                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
+                : optCount === 2
                 ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
-                : showUndead || showMana
+                : optCount === 1
                 ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem]'
                 : 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem]';
               return (
@@ -84,7 +87,8 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
                     <div className="text-center"><Trophy size={14} className="inline text-dungeon-gold" /></div>
                     <div className="text-center"><Skull size={14} className="inline text-gray-400" /></div>
                     {showUndead && <div className="text-center"><Skull size={14} className="inline text-yellow-400" /></div>}
-                    <div className="text-center"><AlertTriangle size={14} className="inline text-red-400" /></div>
+                    {showElite && <div className="text-center"><Zap size={14} className="inline text-red-400" /></div>}
+                    <div className="text-center"><AlertTriangle size={14} className="inline text-violet-400" /></div>
                     <div className="text-center"><Crown size={14} className="inline text-orange-400" /></div>
                     <div className="text-center"><Swords size={14} className="inline text-green-400" /></div>
                     {showMana && <div className="text-center"><ManaPotionIcon size={14} /></div>}
@@ -104,12 +108,13 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
                           <div className={`font-bold text-lg ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</div>
                           <div className="truncate">
                             <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
-                            {player.level > 1 && <span className="ml-2 text-xs font-normal text-gray-500">Niv.{player.level} — {LEVEL_TITLES[(player.level || 1) - 1]}</span>}
+                            {player.level != null && <span className="ml-2 text-xs font-normal text-gray-500">Niv.{player.level} — {LEVEL_TITLES[(player.level || 1) - 1]}</span>}
                           </div>
                           <div className="text-center font-bold text-dungeon-gold">{player.total_score}</div>
                           <div className="text-center text-gray-300">{player.monsters_defeated}</div>
                           {showUndead && <div className="text-center text-yellow-300">{player.undead_defeated ?? 0}</div>}
-                          <div className="text-center text-red-400">{player.traps_defeated}</div>
+                          {showElite && <div className="text-center text-red-400">{player.elite_defeated ?? 0}</div>}
+                          <div className="text-center text-violet-400">{player.traps_defeated}</div>
                           <div className="text-center text-orange-400">{player.bosses_defeated}</div>
                           <div className="text-center text-green-400">{player.complete_wings}</div>
                           {showMana && <div className="text-center text-blue-400">{player.mana_potions_earned ?? 0}</div>}
@@ -122,7 +127,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
                               <span className={`font-bold text-lg w-8 ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</span>
                               <span>
                                 <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
-                                {player.level > 1 && <span className="ml-1.5 text-[10px] text-gray-500">Niv.{player.level}</span>}
+                                {player.level != null && <span className="ml-1.5 text-[10px] text-gray-500">Niv.{player.level}— {LEVEL_TITLES[(player.level || 1) - 1]}</span>}
                               </span>
                             </div>
                             <div className="flex items-center gap-1 text-dungeon-gold font-bold">
@@ -133,7 +138,8 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showMa
                           <div className="flex flex-wrap gap-3 mt-1 ml-11 text-xs text-gray-400">
                             <span><Skull size={12} className="inline" /> {player.monsters_defeated}</span>
                             {showUndead && <span className="text-yellow-300"><Skull size={12} className="inline text-yellow-400" /> {player.undead_defeated ?? 0}</span>}
-                            <span><AlertTriangle size={12} className="inline text-red-400" /> {player.traps_defeated}</span>
+                            {showElite && <span className="text-red-400"><Zap size={12} className="inline" /> {player.elite_defeated ?? 0}</span>}
+                            <span className="text-violet-400"><AlertTriangle size={12} className="inline" /> {player.traps_defeated}</span>
                             <span><Crown size={12} className="inline text-orange-400" /> {player.bosses_defeated}</span>
                             <span><Swords size={12} className="inline text-green-400" /> {player.complete_wings}</span>
                             {showMana && <span className="text-blue-400"><ManaPotionIcon size={12} /> {player.mana_potions_earned ?? 0}</span>}

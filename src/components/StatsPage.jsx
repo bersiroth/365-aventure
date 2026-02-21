@@ -6,7 +6,7 @@ import {
   CartesianGrid, Tooltip, Legend,
   Area, AreaChart,
 } from 'recharts';
-import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown } from 'lucide-react';
+import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap } from 'lucide-react';
 import { calculateScore } from '../data/gameData';
 
 const GOLD = '#d4af37';
@@ -14,13 +14,15 @@ const COLORS = {
   score:    '#d4af37',
   monsters: '#9ca3af',
   undead:   '#facc15',
-  traps:    '#f87171',
+  elite:    '#ef4444',
+  traps:    '#a78bfa',
   bosses:   '#fb923c',
   wings:    '#4ade80',
 };
 
 const UNDEAD_RULE_START = 2; // Mars (index 2)
 const MANA_RULE_START   = 1; // Février (index 1)
+const ELITE_RULE_START  = 4; // Mai (index 4)
 
 function ManaPotionIcon({ size = 22 }) {
   return (
@@ -50,6 +52,7 @@ function buildMonthlyData(yearData) {
       cumScore,
       monsters: s.monstersDefeated,
       undead: s.undeadDefeated,
+      elite: s.eliteDefeated,
       traps: s.trapsDefeated,
       bosses: s.bossesDefeated,
       wings: s.completeWings,
@@ -92,9 +95,11 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const data = buildMonthlyData(yearData);
 
   // Détecter si les règles spéciales sont actives (basé sur le mois courant)
-  const currentMonthIndex = new Date().getMonth();
+  // const currentMonthIndex = new Date().getMonth();
+  const currentMonthIndex = 5; // dev: 6 premiers mois débloqués
   const hasUndead = currentMonthIndex >= UNDEAD_RULE_START;
-  const hasMana = currentMonthIndex >= MANA_RULE_START;
+  const hasMana   = currentMonthIndex >= MANA_RULE_START;
+  const hasElite  = currentMonthIndex >= ELITE_RULE_START;
 
   // Moyenne sur les mois joués (au moins 1 point)
   const playedMonths = data.filter(m => m.score > 0);
@@ -110,6 +115,11 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const manaData = data.slice(MANA_RULE_START);
   const manaDivisor = manaData.filter(m => m.score > 0).length || 1;
   const avgMana = Math.floor(manaData.reduce((s, m) => s + m.mana, 0) / manaDivisor);
+
+  // Moyenne élites : depuis mai (index 4)
+  const eliteData = data.slice(ELITE_RULE_START);
+  const eliteDivisor = eliteData.filter(m => m.score > 0).length || 1;
+  const avgElite = Math.floor(eliteData.reduce((s, m) => s + m.elite, 0) / eliteDivisor);
 
   const longestStreak = calcLongestStreak(yearData);
 
@@ -137,7 +147,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   })();
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-6 space-y-8">
+    <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-8">
 
       {/* Header */}
       <div className="flex items-center gap-3">
@@ -196,16 +206,19 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
 
       {/* Moyennes par mois */}
       <Section title="Moyenne mensuelle">
-        <div className={`grid gap-3 grid-cols-2 ${
-          hasUndead && hasMana ? 'sm:grid-cols-4 lg:grid-cols-7' :
-          hasUndead || hasMana ? 'sm:grid-cols-3 lg:grid-cols-6' :
-          'sm:grid-cols-5'
-        }`}>
+        {(() => {
+          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasMana ? 1 : 0);
+          const gridClass = optCount === 0 ? 'sm:grid-cols-5'
+            : optCount === 1 ? 'sm:grid-cols-3'
+            : 'sm:grid-cols-4';
+          return (
+        <div className={`grid gap-3 grid-cols-2 ${gridClass}`}>
           {[
             { icon: <Trophy size={22} className="text-dungeon-gold" />,       label: 'Score/mois',       value: avg('score'),    color: 'text-dungeon-gold' },
             { icon: <Skull size={22} className="text-gray-400" />,            label: 'Monstres/mois',    value: avg('monsters'), color: 'text-gray-300' },
             ...(hasUndead ? [{ icon: <Skull size={22} className="text-yellow-400" />, label: 'Morts/mois', value: avgUndead, color: 'text-yellow-300' }] : []),
-            { icon: <AlertTriangle size={22} className="text-red-400" />,     label: 'Pièges/mois',      value: avg('traps'),    color: 'text-red-400' },
+            ...(hasElite  ? [{ icon: <Zap size={22} className="text-red-400" />,      label: 'Élites/mois',  value: avgElite, color: 'text-red-400'    }] : []),
+            { icon: <AlertTriangle size={22} className="text-violet-400" />,   label: 'Pièges/mois',      value: avg('traps'),    color: 'text-violet-400' },
             { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss/mois',        value: avg('bosses'),   color: 'text-orange-400' },
             { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes/mois',       value: avg('wings'),    color: 'text-green-400' },
             ...(hasMana ? [{ icon: <ManaPotionIcon size={22} />, label: 'Potions/mois', value: avgMana, color: 'text-blue-400' }] : []),
@@ -219,6 +232,8 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             </div>
           ))}
         </div>
+          );
+        })()}
       </Section>
 
       {/* Score cumulé */}
@@ -264,6 +279,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
             <Bar dataKey="monsters" name="Monstres"      fill={COLORS.monsters} radius={[2, 2, 0, 0]} stackId="a" />
             {hasUndead && <Bar dataKey="undead" name="Morts-Vivants" fill={COLORS.undead} radius={[0, 0, 0, 0]} stackId="a" />}
+            {hasElite  && <Bar dataKey="elite"  name="Élites"        fill={COLORS.elite}  radius={[0, 0, 0, 0]} stackId="a" />}
             <Bar dataKey="traps"    name="Pièges"        fill={COLORS.traps}    radius={[0, 0, 0, 0]} stackId="a" />
             <Bar dataKey="bosses"   name="Boss"          fill={COLORS.bosses}   radius={[2, 2, 0, 0]} stackId="a" />
           </BarChart>
@@ -293,7 +309,8 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 <th className="text-right py-2 font-medium text-dungeon-gold">Score</th>
                 <th className="text-right py-2 font-medium text-gray-400">Monstres</th>
                 {hasUndead && <th className="text-right py-2 font-medium text-yellow-400">Morts</th>}
-                <th className="text-right py-2 font-medium text-red-400">Pièges</th>
+                {hasElite  && <th className="text-right py-2 font-medium text-red-400"><Zap size={13} className="inline mb-0.5" /> Élites</th>}
+                <th className="text-right py-2 font-medium text-violet-400">Pièges</th>
                 <th className="text-right py-2 font-medium text-orange-400">Boss</th>
                 <th className="text-right py-2 font-medium text-green-400">Ailes</th>
                 {hasMana && <th className="text-right py-2 font-medium text-blue-400">Potions</th>}
@@ -306,7 +323,8 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                   <td className="py-2 text-right font-bold text-dungeon-gold">{row.score}</td>
                   <td className="py-2 text-right text-gray-400">{row.monsters}</td>
                   {hasUndead && <td className="py-2 text-right text-yellow-300">{row.undead}</td>}
-                  <td className="py-2 text-right text-red-400">{row.traps}</td>
+                  {hasElite  && <td className="py-2 text-right text-red-400">{row.elite}</td>}
+                  <td className="py-2 text-right text-violet-400">{row.traps}</td>
                   <td className="py-2 text-right text-orange-400">{row.bosses}</td>
                   <td className="py-2 text-right text-green-400">{row.wings}</td>
                   {hasMana && <td className="py-2 text-right text-blue-400">{row.mana}</td>}
@@ -319,7 +337,8 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 <td className="py-2 text-right text-dungeon-gold">{data.reduce((s, m) => s + m.score, 0)}</td>
                 <td className="py-2 text-right text-gray-300">{data.reduce((s, m) => s + m.monsters, 0)}</td>
                 {hasUndead && <td className="py-2 text-right text-yellow-300">{data.reduce((s, m) => s + m.undead, 0)}</td>}
-                <td className="py-2 text-right text-red-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
+                {hasElite  && <td className="py-2 text-right text-red-400">{data.reduce((s, m) => s + m.elite, 0)}</td>}
+                <td className="py-2 text-right text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
                 <td className="py-2 text-right text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
                 <td className="py-2 text-right text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>
                 {hasMana && <td className="py-2 text-right text-blue-400">{data.reduce((s, m) => s + m.mana, 0)}</td>}
