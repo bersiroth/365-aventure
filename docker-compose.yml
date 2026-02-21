@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  donjon-app:
+    container_name: 365-aventures-donjon
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: 365-aventures-donjon:latest
+    ports:
+      - "8080:3636"
+    restart: unless-stopped
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-change-me-to-a-random-string}
+      - PORT=3636
+      - DB_PATH=/app/data/donjon.db
+    volumes:
+      - donjon-data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3636/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - donjon-network
+    labels:
+      - "com.365aventures.app=donjon"
+      - "com.365aventures.version=2026"
+
+volumes:
+  donjon-data:
+
+networks:
+  donjon-network:
+    driver: bridge
