@@ -13,6 +13,8 @@ const SYNC_DEBOUNCE_MS = 500;
 export function useGameEngine(player) {
   const [yearData, setYearData] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(0);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importError, setImportError] = useState(null);
   const syncTimerRef = useRef(null);
   const prevPlayerIdRef = useRef(undefined);
 
@@ -164,6 +166,47 @@ export function useGameEngine(player) {
     }
   }, [yearData, player]);
 
+  const exportBackup = useCallback(() => {
+    if (!yearData || !player) return;
+    const save_data = serializeSave(yearData);
+    const date = new Date().toISOString().slice(0, 10);
+    const blob = new Blob(
+      [JSON.stringify({ version: 1, pseudo: player.pseudo, date, save_data }, null, 2)],
+      { type: 'application/json' }
+    );
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `365aventure-backup-${date}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [yearData, player]);
+
+  const importBackup = useCallback(async (file) => {
+    if (!file || !player) return;
+    setImportError(null);
+    setImportLoading(true);
+    try {
+      const text = await file.text();
+      let parsed;
+      try { parsed = JSON.parse(text); } catch { throw new Error('Fichier invalide : JSON malformé'); }
+      if (!parsed || parsed.version !== 1 || typeof parsed.save_data !== 'string') {
+        throw new Error('Fichier invalide : structure incorrecte');
+      }
+      if (parsed.pseudo?.toLowerCase() !== player.pseudo?.toLowerCase()) {
+        throw new Error(`Cette sauvegarde appartient à "${parsed.pseudo}", pas à "${player.pseudo}"`);
+      }
+      const restored = deserializeSave(parsed.save_data);
+      if (!restored) throw new Error('Fichier invalide : données de progression corrompues');
+      await putSave(parsed.save_data);
+      setYearData(restored);
+    } catch (err) {
+      setImportError(err.message || "Erreur lors de l'import");
+    } finally {
+      setImportLoading(false);
+    }
+  }, [player]);
+
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -182,5 +225,9 @@ export function useGameEngine(player) {
     toggleManaUsed,
     toggleStaffUsed,
     score,
+    exportBackup,
+    importBackup,
+    importLoading,
+    importError,
   };
 }

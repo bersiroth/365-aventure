@@ -29,7 +29,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
+    <div className="min-h-[60vh] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-dungeon-gold/50 shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="bg-dungeon-gold/10 border-b-2 border-dungeon-gold/30 px-6 py-5 text-center">

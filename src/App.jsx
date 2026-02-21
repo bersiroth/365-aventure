@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useRef } from 'react';
 import { useGameEngine } from './hooks/useGameEngine';
 import { useAuth } from './contexts/AuthContext';
 import { DungeonGrid } from './components/DungeonGrid';
@@ -9,7 +9,7 @@ import { PlayerList } from './components/PlayerList';
 import { PlayerDetail } from './components/PlayerDetail';
 import { downloadProgressImage } from './utils/shareCard';
 const StatsPage = lazy(() => import('./components/StatsPage').then(m => ({ default: m.StatsPage })));
-import { Swords, LogOut, Users, BarChart2, Download } from 'lucide-react';
+import { Swords, LogOut, Users, BarChart2, Download, Upload } from 'lucide-react';
 
 /**
  * Application principale
@@ -20,6 +20,8 @@ function App() {
   const { player, loading: authLoading, logout } = useAuth();
   const [currentView, setCurrentView] = useState('game');
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+  const [pendingImportFile, setPendingImportFile] = useState(null);
+  const importInputRef = useRef(null);
 
   const {
     yearData,
@@ -29,6 +31,10 @@ function App() {
     toggleManaUsed,
     toggleStaffUsed,
     score,
+    exportBackup,
+    importBackup,
+    importLoading,
+    importError,
   } = useGameEngine(player);
 
   // Chargement de l'auth
@@ -130,15 +136,6 @@ function App() {
         return (
           <>
             <ScorePanel score={score} showUndead={maxMonth >= 2} showMana={maxMonth >= 1} />
-            <div className="flex justify-center -mt-2 mb-2">
-              <button
-                onClick={() => downloadProgressImage({ score, pseudo: player.pseudo, showUndead: maxMonth >= 2, showMana: maxMonth >= 1 })}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone"
-              >
-                <Download size={13} />
-                Télécharger ma progression
-              </button>
-            </div>
             <MonthSelector
               months={yearData}
               selectedMonth={Math.min(selectedMonth, maxMonth)}
@@ -151,6 +148,81 @@ function App() {
               onManaToggle={toggleManaUsed}
               onStaffToggle={toggleStaffUsed}
             />
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setPendingImportFile(file);
+                e.target.value = '';
+              }}
+            />
+
+            {/* Modale de confirmation d'import */}
+            {pendingImportFile && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+                <div className="w-full max-w-sm bg-dungeon-stone border-2 border-red-600/60 rounded-xl shadow-2xl p-6">
+                  <h3 className="text-dungeon-gold font-medieval font-bold text-lg mb-3 text-center">
+                    Importer une sauvegarde
+                  </h3>
+                  <p className="text-gray-300 text-sm text-center mb-2">
+                    Cette action va <span className="text-red-400 font-semibold">remplacer définitivement</span> ton calendrier actuel par le contenu du fichier&nbsp;:
+                  </p>
+                  <p className="text-dungeon-gold text-xs text-center font-medieval mb-4 truncate px-2">
+                    {pendingImportFile.name}
+                  </p>
+                  <p className="text-gray-500 text-xs text-center mb-6">
+                    Cette opération est irréversible.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setPendingImportFile(null)}
+                      className="flex-1 px-4 py-2 rounded-lg font-medieval font-semibold text-sm border border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-colors bg-dungeon-dark"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={() => { importBackup(pendingImportFile); setPendingImportFile(null); }}
+                      disabled={importLoading}
+                      className="flex-1 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-red-700 hover:bg-red-600 text-white transition-colors disabled:opacity-50"
+                    >
+                      Confirmer l'import
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="flex flex-wrap justify-center gap-2 -mt-2 mb-2">
+              <button
+                onClick={() => downloadProgressImage({ score, pseudo: player.pseudo, showUndead: maxMonth >= 2, showMana: maxMonth >= 1 })}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone"
+              >
+                <Download size={13} />
+                Générer une image de ma progression
+              </button>
+              <button
+                onClick={exportBackup}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone"
+              >
+                <Download size={13} />
+                Exporter ma sauvegarde
+              </button>
+              <button
+                onClick={() => importInputRef.current?.click()}
+                disabled={importLoading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Upload size={13} />
+                {importLoading ? 'Import...' : 'Importer une sauvegarde'}
+              </button>
+            </div>
+            {importError && (
+              <p className="text-center text-red-400 text-xs font-medieval -mt-1 mb-2 px-4">
+                {importError}
+              </p>
+            )}
           </>
         );
     }
