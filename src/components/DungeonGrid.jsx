@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
 /* Fiole de mana — corps rond, col étroit, bouchon rouge, liquide bleu lumineux */
@@ -46,7 +46,7 @@ const DAY_HEADERS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'
  * - TRAP    : triangle rouge avec valeur négative au centre
  * - BOSS    : couronne dorée avec valeur
  */
-export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, onStaffToggle, onCapeToggle }) {
+export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, onStaffToggle, onCapeToggle, onRingToggle }) {
   const [rulesOpen, setRulesOpen] = useState(false);
   if (!monthData) return null;
 
@@ -122,6 +122,9 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
           hasCape={monthData.hasCape}
           capeUsed={monthData.capeUsed}
           onCapeToggle={onCapeToggle}
+          hasRing={monthData.hasRing}
+          ringUsed={monthData.ringUsed}
+          onRingToggle={onRingToggle}
         />
 
         {/* En-têtes jours de la semaine */}
@@ -182,7 +185,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
 /**
  * Header potions de mana — affiché uniquement si le mois en possède
  */
-function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, hasStaff, staffUsed, onStaffToggle, hasCape, capeUsed, onCapeToggle }) {
+function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, hasStaff, staffUsed, onStaffToggle, hasCape, capeUsed, onCapeToggle, hasRing, ringUsed, onRingToggle }) {
   const manaDays = allDays.filter(d => d.hasMana);
 
   return (
@@ -251,6 +254,34 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
             <Wand2 size={14} className={staffUsed ? 'opacity-30' : ''} />
           </button>
           {staffUsed && (
+            <span className="text-gray-600 text-[10px] font-medieval italic">utilisé</span>
+          )}
+        </>
+      )}
+
+      {/* Anneau Ancien */}
+      {hasRing && (
+        <>
+          <div className="w-px self-stretch bg-dungeon-gold/20 mx-1" />
+          <span className="text-amber-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
+            Anneau Ancien
+          </span>
+          <button
+            disabled={isReadOnly}
+            onClick={() => !isReadOnly && onRingToggle?.(monthIndex)}
+            title={ringUsed ? 'Pouvoir utilisé ce mois — cliquer pour annuler' : 'Utiliser l\'Anneau Ancien ce mois'}
+            className={`
+              flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
+              ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
+              ${ringUsed
+                ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
+                : 'border-amber-400/70 bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 shadow-[0_0_6px_rgba(251,191,36,0.3)]'
+              }
+            `}
+          >
+            <Gem size={14} className={ringUsed ? 'opacity-30' : ''} />
+          </button>
+          {ringUsed && (
             <span className="text-gray-600 text-[10px] font-medieval italic">utilisé</span>
           )}
         </>

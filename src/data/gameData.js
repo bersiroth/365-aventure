@@ -90,6 +90,8 @@ export function generateYear2026() {
     monthData.staffUsed = false;
     monthData.hasCape   = monthIndex >= 5; // Cape des Illusions — juin et suivants
     monthData.capeUsed  = false;
+    monthData.hasRing   = monthIndex >= 7; // Anneau Ancien — août et suivants
+    monthData.ringUsed  = false;
     year.push(monthData);
   });
 
@@ -186,7 +188,8 @@ export function serializeSave(yearData) {
   );
   const staffBits = yearData.map(month => month.staffUsed ? 1 : 0);
   const capeBits  = yearData.map(month => month.capeUsed  ? 1 : 0);
-  const bits = [...dayBits, ...manaBits, ...staffBits, ...capeBits];
+  const ringBits  = yearData.map(month => month.ringUsed  ? 1 : 0);
+  const bits = [...dayBits, ...manaBits, ...staffBits, ...capeBits, ...ringBits];
   // Empaquetage en octets (LSB en premier)
   const bytes = [];
   for (let i = 0; i < bits.length; i += 8) {
@@ -236,6 +239,10 @@ export function deserializeSave(encoded) {
     // Lire les bits cape des illusions (optionnels)
     yearData.forEach(month => {
       month.capeUsed = idx < bits.length ? bits[idx++] === 1 : false;
+    });
+    // Lire les bits anneau ancien (optionnels)
+    yearData.forEach(month => {
+      month.ringUsed = idx < bits.length ? bits[idx++] === 1 : false;
     });
     return yearData;
   } catch {

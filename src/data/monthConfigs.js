@@ -67,6 +67,19 @@ export const MONTH_RULES = {
       },
     ],
   },
+  7: {
+    title: 'Anneau Ancien',
+    sections: [
+      {
+        heading: null,
+        body: "Si vous vainquez un monstre en utilisant au moins quatre dés identiques, vous pouvez immédiatement engager un combat supplémentaire. Le combat supplémentaire suit les mêmes règles qu'un combat normal.",
+      },
+      {
+        heading: 'Utilisation',
+        body: "Cette capacité peut être utilisée une fois par mois.",
+      },
+    ],
+  },
   5: {
     title: 'Cape des Illusions',
     sections: [

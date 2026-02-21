@@ -96,7 +96,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
 
   // Détecter si les règles spéciales sont actives (basé sur le mois courant)
   // const currentMonthIndex = new Date().getMonth();
-  const currentMonthIndex = 5; // dev: 6 premiers mois débloqués
+  const currentMonthIndex = 7; // dev: 8 premiers mois débloqués
   const hasUndead = currentMonthIndex >= UNDEAD_RULE_START;
   const hasMana   = currentMonthIndex >= MANA_RULE_START;
   const hasElite  = currentMonthIndex >= ELITE_RULE_START;

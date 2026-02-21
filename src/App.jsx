@@ -33,6 +33,7 @@ function App() {
     toggleManaUsed,
     toggleStaffUsed,
     toggleCapeUsed,
+    toggleRingUsed,
     score,
     trophies,
     newTrophies,
@@ -92,7 +93,7 @@ function App() {
   const now = new Date();
   const maxMonth = now.getFullYear() < 2026 ? 0
     : now.getFullYear() > 2026 ? 11
-    : 5; // dev: 6 premiers mois débloqués
+    : 7; // dev: 8 premiers mois débloqués
 
   // Connecté
   const navigateTo = (view) => {
@@ -167,6 +168,7 @@ function App() {
               onManaToggle={toggleManaUsed}
               onStaffToggle={toggleStaffUsed}
               onCapeToggle={toggleCapeUsed}
+              onRingToggle={toggleRingUsed}
             />
             <input
               ref={importInputRef}

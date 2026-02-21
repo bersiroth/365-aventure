@@ -213,6 +213,27 @@ export function useGameEngine(player) {
   }, [yearData, player]);
 
   /**
+   * Marque l'anneau ancien comme utilisé ce mois (ou annule)
+   */
+  const toggleRingUsed = useCallback((monthIndex) => {
+    if (!yearData) return;
+
+    const newYearData = [...yearData];
+    const month = { ...newYearData[monthIndex] };
+    month.ringUsed = !month.ringUsed;
+    newYearData[monthIndex] = month;
+
+    setYearData(newYearData);
+
+    const encoded = serializeSave(newYearData);
+    if (player) {
+      syncToServer(encoded);
+    } else {
+      saveToLocalStorage(newYearData);
+    }
+  }, [yearData, player]);
+
+  /**
    * Marque la cape des illusions comme utilisée ce mois (ou annule)
    */
   const toggleCapeUsed = useCallback((monthIndex) => {
@@ -296,6 +317,7 @@ export function useGameEngine(player) {
     toggleManaUsed,
     toggleStaffUsed,
     toggleCapeUsed,
+    toggleRingUsed,
     score,
     trophies,
     newTrophies,
