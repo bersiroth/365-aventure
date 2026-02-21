@@ -88,6 +88,8 @@ export function generateYear2026() {
     monthData.manaUsed  = new Array(manaCount).fill(false);
     monthData.hasStaff  = monthIndex >= 3; // Bâton du Sage — avril et suivants
     monthData.staffUsed = false;
+    monthData.hasCape   = monthIndex >= 5; // Cape des Illusions — juin et suivants
+    monthData.capeUsed  = false;
     year.push(monthData);
   });
 
@@ -183,7 +185,8 @@ export function serializeSave(yearData) {
     (month.manaUsed ?? []).map(used => used ? 1 : 0)
   );
   const staffBits = yearData.map(month => month.staffUsed ? 1 : 0);
-  const bits = [...dayBits, ...manaBits, ...staffBits];
+  const capeBits  = yearData.map(month => month.capeUsed  ? 1 : 0);
+  const bits = [...dayBits, ...manaBits, ...staffBits, ...capeBits];
   // Empaquetage en octets (LSB en premier)
   const bytes = [];
   for (let i = 0; i < bits.length; i += 8) {
@@ -229,6 +232,10 @@ export function deserializeSave(encoded) {
     // Lire les bits bâton du sage (optionnels)
     yearData.forEach(month => {
       month.staffUsed = idx < bits.length ? bits[idx++] === 1 : false;
+    });
+    // Lire les bits cape des illusions (optionnels)
+    yearData.forEach(month => {
+      month.capeUsed = idx < bits.length ? bits[idx++] === 1 : false;
     });
     return yearData;
   } catch {

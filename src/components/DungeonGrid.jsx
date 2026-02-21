@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
 /* Fiole de mana — corps rond, col étroit, bouchon rouge, liquide bleu lumineux */
@@ -46,7 +46,7 @@ const DAY_HEADERS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'
  * - TRAP    : triangle rouge avec valeur négative au centre
  * - BOSS    : couronne dorée avec valeur
  */
-export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, onStaffToggle }) {
+export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, onStaffToggle, onCapeToggle }) {
   const [rulesOpen, setRulesOpen] = useState(false);
   if (!monthData) return null;
 
@@ -119,6 +119,9 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
           hasStaff={monthData.hasStaff}
           staffUsed={monthData.staffUsed}
           onStaffToggle={onStaffToggle}
+          hasCape={monthData.hasCape}
+          capeUsed={monthData.capeUsed}
+          onCapeToggle={onCapeToggle}
         />
 
         {/* En-têtes jours de la semaine */}
@@ -179,7 +182,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
 /**
  * Header potions de mana — affiché uniquement si le mois en possède
  */
-function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, hasStaff, staffUsed, onStaffToggle }) {
+function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, hasStaff, staffUsed, onStaffToggle, hasCape, capeUsed, onCapeToggle }) {
   const manaDays = allDays.filter(d => d.hasMana);
 
   return (
@@ -249,6 +252,34 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
           </button>
           {staffUsed && (
             <span className="text-gray-600 text-[10px] font-medieval italic">utilisé</span>
+          )}
+        </>
+      )}
+
+      {/* Cape des Illusions */}
+      {hasCape && (
+        <>
+          <div className="w-px self-stretch bg-dungeon-gold/20 mx-1" />
+          <span className="text-teal-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
+            Cape des Illusions
+          </span>
+          <button
+            disabled={isReadOnly}
+            onClick={() => !isReadOnly && onCapeToggle?.(monthIndex)}
+            title={capeUsed ? 'Pouvoir utilisé ce mois — cliquer pour annuler' : 'Utiliser la Cape des Illusions ce mois'}
+            className={`
+              flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
+              ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
+              ${capeUsed
+                ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
+                : 'border-teal-400/70 bg-teal-400/10 text-teal-400 hover:bg-teal-400/20 shadow-[0_0_6px_rgba(45,212,191,0.3)]'
+              }
+            `}
+          >
+            <Sparkles size={14} className={capeUsed ? 'opacity-30' : ''} />
+          </button>
+          {capeUsed && (
+            <span className="text-gray-600 text-[10px] font-medieval italic">utilisée</span>
           )}
         </>
       )}

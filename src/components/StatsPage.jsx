@@ -309,7 +309,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 <th className="text-right py-2 font-medium text-dungeon-gold">Score</th>
                 <th className="text-right py-2 font-medium text-gray-400">Monstres</th>
                 {hasUndead && <th className="text-right py-2 font-medium text-yellow-400">Morts</th>}
-                {hasElite  && <th className="text-right py-2 font-medium text-red-400"><Zap size={13} className="inline mb-0.5" /> Élites</th>}
+                {hasElite  && <th className="text-right py-2 font-medium text-red-400">Élites</th>}
                 <th className="text-right py-2 font-medium text-violet-400">Pièges</th>
                 <th className="text-right py-2 font-medium text-orange-400">Boss</th>
                 <th className="text-right py-2 font-medium text-green-400">Ailes</th>

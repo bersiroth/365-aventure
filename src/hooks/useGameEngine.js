@@ -212,6 +212,27 @@ export function useGameEngine(player) {
     }
   }, [yearData, player]);
 
+  /**
+   * Marque la cape des illusions comme utilisée ce mois (ou annule)
+   */
+  const toggleCapeUsed = useCallback((monthIndex) => {
+    if (!yearData) return;
+
+    const newYearData = [...yearData];
+    const month = { ...newYearData[monthIndex] };
+    month.capeUsed = !month.capeUsed;
+    newYearData[monthIndex] = month;
+
+    setYearData(newYearData);
+
+    const encoded = serializeSave(newYearData);
+    if (player) {
+      syncToServer(encoded);
+    } else {
+      saveToLocalStorage(newYearData);
+    }
+  }, [yearData, player]);
+
   const exportBackup = useCallback(() => {
     if (!yearData || !player) return;
     const save_data = serializeSave(yearData);
@@ -274,6 +295,7 @@ export function useGameEngine(player) {
     toggleDayCompletion,
     toggleManaUsed,
     toggleStaffUsed,
+    toggleCapeUsed,
     score,
     trophies,
     newTrophies,

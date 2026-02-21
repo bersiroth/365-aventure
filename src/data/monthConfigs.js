@@ -63,7 +63,20 @@ export const MONTH_RULES = {
     sections: [
       {
         heading: null,
-        body: "Des monstres Élites font leur apparition dans le donjon. Ces adversaires redoutables doivent être vaincus avec un maximum de deux jets de dés au lieu de trois.",
+        body: "Les monstres Élites apparaissent. Il doivent être vaincus avec un maximum de deux jets de dés au lieu de trois.",
+      },
+    ],
+  },
+  5: {
+    title: 'Cape des Illusions',
+    sections: [
+      {
+        heading: null,
+        body: "La Cape des Illusions vous permet de modifier la valeur d'un dé bleu pour qu'elle corresponde à celle de l'autre dé bleu.",
+      },
+      {
+        heading: 'Utilisation',
+        body: "Cette capacité peut être utilisée une fois par mois.",
       },
     ],
   },
@@ -272,36 +285,36 @@ export const MONTH_CONFIGS = {
   //  JUIN (index 5)  — Dimanches : 7, 14, 21, 28
   // ──────────────────────────────────────────────────────────────
   5: {
-     1: { type: 'MONSTER', value: 1  },
-     2: { type: 'MONSTER', value: 1  },
-     3: { type: 'MONSTER', value: 1  },
-     4: { type: 'MONSTER', value: 1  },
-     5: { type: 'MONSTER', value: 1  },
-     6: { type: 'MONSTER', value: 1  },
-     7: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     8: { type: 'MONSTER', value: 1  },
-     9: { type: 'MONSTER', value: 1  },
-    10: { type: 'MONSTER', value: 1  },
-    11: { type: 'MONSTER', value: 1  },
-    12: { type: 'MONSTER', value: 1  },
-    13: { type: 'MONSTER', value: 1  },
-    14: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    15: { type: 'MONSTER', value: 1  },
-    16: { type: 'MONSTER', value: 1  },
-    17: { type: 'MONSTER', value: 1  },
-    18: { type: 'MONSTER', value: 1  },
-    19: { type: 'MONSTER', value: 1  },
-    20: { type: 'MONSTER', value: 1  },
-    21: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     1: { type: 'TRAP', value: -1  },
+     2: { type: 'UNDEAD', value: 2  },
+     3: { type: 'MONSTER', value: 3  },
+     4: { type: 'MONSTER', value: 5  },
+     5: { type: 'MONSTER', value: 6  },
+     6: { type: 'TRAP', value: -6  },
+     7: { type: 'BOSS',    value: 21, hasMana: true  }, // Dimanche — TODO
+     8: { type: 'MONSTER', value: 2  },
+     9: { type: 'MONSTER', value: 3  },
+    10: { type: 'UNDEAD', value: 4  },
+    11: { type: 'MONSTER', value: 4  },
+    12: { type: 'MONSTER', value: 5, hasMana: true   },
+    13: { type: 'MONSTER', value: 5  },
+    14: { type: 'BOSS',    value: 22, isElite: true }, // Dimanche — TODO
+    15: { type: 'MONSTER', value: 2  },
+    16: { type: 'MONSTER', value: 3, isElite: true  },
+    17: { type: 'MONSTER', value: 3, hasMana: true   },
+    18: { type: 'UNDEAD', value: 5  },
+    19: { type: 'TRAP', value: -5  },
+    20: { type: 'TRAP', value: -5  },
+    21: { type: 'BOSS',    value: 23 }, // Dimanche — TODO
     22: { type: 'MONSTER', value: 1  },
     23: { type: 'MONSTER', value: 1  },
-    24: { type: 'MONSTER', value: 1  },
-    25: { type: 'MONSTER', value: 1  },
-    26: { type: 'MONSTER', value: 1  },
-    27: { type: 'MONSTER', value: 1  },
-    28: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    29: { type: 'MONSTER', value: 1  },
-    30: { type: 'MONSTER', value: 1  },
+    24: { type: 'MONSTER', value: 2  },
+    25: { type: 'MONSTER', value: 2  },
+    26: { type: 'UNDEAD', value: 3  },
+    27: { type: 'MONSTER', value: 3  },
+    28: { type: 'BOSS',    value: 21, isElite: true }, // Dimanche — TODO
+    29: { type: 'MONSTER', value: 2  },
+    30: { type: 'MONSTER', value: 3  },
   },
 
   // ──────────────────────────────────────────────────────────────

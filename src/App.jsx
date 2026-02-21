@@ -32,6 +32,7 @@ function App() {
     toggleDayCompletion,
     toggleManaUsed,
     toggleStaffUsed,
+    toggleCapeUsed,
     score,
     trophies,
     newTrophies,
@@ -165,6 +166,7 @@ function App() {
               onDayClick={toggleDayCompletion}
               onManaToggle={toggleManaUsed}
               onStaffToggle={toggleStaffUsed}
+              onCapeToggle={toggleCapeUsed}
             />
             <input
               ref={importInputRef}
