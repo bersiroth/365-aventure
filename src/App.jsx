@@ -85,7 +85,7 @@ function App() {
   const now = new Date();
   const maxMonth = now.getFullYear() < 2026 ? 0
     : now.getFullYear() > 2026 ? 11
-    : now.getMonth(); // dev: mars et avril débloqués
+    : 5; // dev: 6 premiers mois débloqués
 
   // Connecté
   const navigateTo = (view) => {
@@ -108,7 +108,7 @@ function App() {
               <p className="text-dungeon-gold font-medieval">Chargement des statistiques...</p>
             </div>
           }>
-            <StatsPage yearData={yearData} />
+            <StatsPage yearData={yearData} maxMonth={maxMonth} />
           </Suspense>
         );
 

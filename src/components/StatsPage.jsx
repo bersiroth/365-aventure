@@ -6,7 +6,7 @@ import {
   CartesianGrid, Tooltip, Legend,
   Area, AreaChart,
 } from 'recharts';
-import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2 } from 'lucide-react';
+import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown } from 'lucide-react';
 import { calculateScore } from '../data/gameData';
 
 const GOLD = '#d4af37';
@@ -58,6 +58,26 @@ function buildMonthlyData(yearData) {
   });
 }
 
+function calcLongestStreak(yearData) {
+  let maxStreak = 0;
+  let currentStreak = 0;
+
+  const allDays = yearData
+    .flatMap(month => month.weeks.flatMap(week => week.days))
+    .sort((a, b) => a.globalIndex - b.globalIndex);
+
+  for (const day of allDays) {
+    if (day.completed) {
+      currentStreak++;
+      if (currentStreak > maxStreak) maxStreak = currentStreak;
+    } else {
+      currentStreak = 0;
+    }
+  }
+
+  return maxStreak;
+}
+
 const tooltipStyle = {
   backgroundColor: '#2d2318',
   border: '1px solid #d4af3750',
@@ -66,18 +86,15 @@ const tooltipStyle = {
   fontSize: 12,
 };
 
-export function StatsPage({ yearData }) {
+export function StatsPage({ yearData, maxMonth = 11 }) {
   if (!yearData) return null;
 
   const data = buildMonthlyData(yearData);
 
-  // Détecter si les règles spéciales sont actives dans ce yearData
-  const hasUndead = yearData.some(m =>
-    m.weeks.some(w => w.days.some(d => d.type === 'UNDEAD'))
-  );
-  const hasMana = yearData.some(m =>
-    m.weeks.some(w => w.days.some(d => d.hasMana))
-  );
+  // Détecter si les règles spéciales sont actives (basé sur le mois courant)
+  const currentMonthIndex = new Date().getMonth();
+  const hasUndead = currentMonthIndex >= UNDEAD_RULE_START;
+  const hasMana = currentMonthIndex >= MANA_RULE_START;
 
   // Moyenne sur les mois joués (au moins 1 point)
   const playedMonths = data.filter(m => m.score > 0);
@@ -94,6 +111,31 @@ export function StatsPage({ yearData }) {
   const manaDivisor = manaData.filter(m => m.score > 0).length || 1;
   const avgMana = Math.floor(manaData.reduce((s, m) => s + m.mana, 0) / manaDivisor);
 
+  const longestStreak = calcLongestStreak(yearData);
+
+  const bestMonthIdx = data.reduce((bestIdx, m, i) => m.score > data[bestIdx].score ? i : bestIdx, 0);
+  const bestMonth = data[bestMonthIdx]?.score > 0
+    ? { score: data[bestMonthIdx].score, name: yearData[bestMonthIdx].name }
+    : null;
+
+  const allCompletedDays = yearData.flatMap(m => m.weeks.flatMap(w => w.days)).filter(d => d.completed);
+  const monsterValueCounts = allCompletedDays
+    .filter(d => d.type === 'MONSTER')
+    .reduce((counts, d) => { counts[d.value] = (counts[d.value] || 0) + 1; return counts; }, {});
+  const mostCommonMonster = Object.entries(monsterValueCounts).length > 0
+    ? Object.entries(monsterValueCounts).reduce((best, [val, count]) =>
+        count > best.count ? { value: Number(val), count } : best, { value: 0, count: 0 })
+    : null;
+  const bestBossValue = allCompletedDays.filter(d => d.type === 'BOSS').reduce((max, d) => Math.max(max, d.value), 0);
+
+  const worstMonth = (() => {
+    const pastMonths = yearData
+      .map((month, i) => i < maxMonth ? { name: month.name, score: data[i].score, index: i } : null)
+      .filter(Boolean)
+      .filter(m => m.index !== bestMonthIdx);
+    return pastMonths.length > 0 ? pastMonths.reduce((w, m) => m.score < w.score ? m : w) : null;
+  })();
+
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-6 space-y-8">
 
@@ -103,30 +145,81 @@ export function StatsPage({ yearData }) {
         <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Statistiques</h2>
       </div>
 
-      {/* Moyennes par mois */}
-      <div className={`grid gap-3 grid-cols-2 ${
-        hasUndead && hasMana ? 'sm:grid-cols-4 lg:grid-cols-7' :
-        hasUndead || hasMana ? 'sm:grid-cols-3 lg:grid-cols-6' :
-        'sm:grid-cols-5'
-      }`}>
-        {[
-          { icon: <Trophy size={22} className="text-dungeon-gold" />,       label: 'Score/mois',       value: avg('score'),    color: 'text-dungeon-gold' },
-          { icon: <Skull size={22} className="text-gray-400" />,            label: 'Monstres/mois',    value: avg('monsters'), color: 'text-gray-300' },
-          ...(hasUndead ? [{ icon: <Skull size={22} className="text-yellow-400" />, label: 'Morts/mois', value: avgUndead, color: 'text-yellow-300' }] : []),
-          { icon: <AlertTriangle size={22} className="text-red-400" />,     label: 'Pièges/mois',      value: avg('traps'),    color: 'text-red-400' },
-          { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss/mois',        value: avg('bosses'),   color: 'text-orange-400' },
-          { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes/mois',       value: avg('wings'),    color: 'text-green-400' },
-          ...(hasMana ? [{ icon: <ManaPotionIcon size={22} />, label: 'Potions/mois', value: avgMana, color: 'text-blue-400' }] : []),
-        ].map(({ icon, label, value, color }) => (
-          <div key={label} className="bg-dungeon-stone border border-dungeon-gold/30 rounded-lg p-3 flex items-center gap-3">
-            {icon}
+      {/* Exploits */}
+      <Section title="Exploits">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="flex items-center gap-3">
+            <Flame size={28} className="text-orange-500 shrink-0" />
             <div>
-              <div className={`text-2xl font-bold leading-none ${color}`}>{value}</div>
-              <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+              <div className="text-3xl font-bold text-orange-500 leading-none">{longestStreak}</div>
+              <div className="text-xs text-gray-400 mt-1">cases consécutives validées</div>
             </div>
           </div>
-        ))}
-      </div>
+          {bestMonth && (
+            <div className="flex items-center gap-3">
+              <Trophy size={28} className="text-dungeon-gold shrink-0" />
+              <div>
+                <div className="text-3xl font-bold text-dungeon-gold leading-none">{bestMonth.name}</div>
+                <div className="text-xs text-gray-400 mt-1">meilleur mois — {bestMonth.score} pts</div>
+              </div>
+            </div>
+          )}
+          {mostCommonMonster && (
+            <div className="flex items-center gap-3">
+              <Skull size={28} className="text-gray-400 shrink-0" />
+              <div>
+                <div className="text-3xl font-bold text-gray-300 leading-none">{mostCommonMonster.value}</div>
+                <div className="text-xs text-gray-400 mt-1">valeur de monstre la plus vaincue ({mostCommonMonster.count}x)</div>
+              </div>
+            </div>
+          )}
+          {bestBossValue > 0 && (
+            <div className="flex items-center gap-3">
+              <Crown size={28} className="text-orange-400 shrink-0" />
+              <div>
+                <div className="text-3xl font-bold text-orange-400 leading-none">{bestBossValue}</div>
+                <div className="text-xs text-gray-400 mt-1">meilleur valeur de boss vaincu</div>
+              </div>
+            </div>
+          )}
+          {worstMonth && (
+            <div className="flex items-center gap-3">
+              <TrendingDown size={28} className="text-red-400 shrink-0" />
+              <div>
+                <div className="text-3xl font-bold text-red-400 leading-none">{worstMonth.name}</div>
+                <div className="text-xs text-gray-400 mt-1">pire mois passé — {worstMonth.score} pts</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Section>
+
+      {/* Moyennes par mois */}
+      <Section title="Moyenne mensuelle">
+        <div className={`grid gap-3 grid-cols-2 ${
+          hasUndead && hasMana ? 'sm:grid-cols-4 lg:grid-cols-7' :
+          hasUndead || hasMana ? 'sm:grid-cols-3 lg:grid-cols-6' :
+          'sm:grid-cols-5'
+        }`}>
+          {[
+            { icon: <Trophy size={22} className="text-dungeon-gold" />,       label: 'Score/mois',       value: avg('score'),    color: 'text-dungeon-gold' },
+            { icon: <Skull size={22} className="text-gray-400" />,            label: 'Monstres/mois',    value: avg('monsters'), color: 'text-gray-300' },
+            ...(hasUndead ? [{ icon: <Skull size={22} className="text-yellow-400" />, label: 'Morts/mois', value: avgUndead, color: 'text-yellow-300' }] : []),
+            { icon: <AlertTriangle size={22} className="text-red-400" />,     label: 'Pièges/mois',      value: avg('traps'),    color: 'text-red-400' },
+            { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss/mois',        value: avg('bosses'),   color: 'text-orange-400' },
+            { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes/mois',       value: avg('wings'),    color: 'text-green-400' },
+            ...(hasMana ? [{ icon: <ManaPotionIcon size={22} />, label: 'Potions/mois', value: avgMana, color: 'text-blue-400' }] : []),
+          ].map(({ icon, label, value, color }) => (
+            <div key={label} className="bg-dungeon-stone border border-dungeon-gold/30 rounded-lg p-3 flex items-center gap-3">
+              {icon}
+              <div>
+                <div className={`text-2xl font-bold leading-none ${color}`}>{value}</div>
+                <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
 
       {/* Score cumulé */}
       <Section title="Évolution du score cumulé">
