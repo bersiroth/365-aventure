@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import playersRoutes from './routes/players.js';
 import saveRoutes from './routes/save.js';
+import devRoutes from './routes/dev.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -24,9 +25,16 @@ const authLimiter = rateLimit({
 });
 
 // API routes
-app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth', authRoutes);
 app.use('/api/players', playersRoutes);
 app.use('/api/save', saveRoutes);
+
+// Dev routes — non disponibles en production
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/dev', devRoutes);
+}
 
 // Serve static frontend (production)
 const distPath = path.join(__dirname, '..', 'dist');

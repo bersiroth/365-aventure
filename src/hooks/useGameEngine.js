@@ -254,6 +254,55 @@ export function useGameEngine(player) {
     }
   }, [yearData, player]);
 
+  /**
+   * Remplissage aléatoire d'un mois (outils dev)
+   */
+  const fillMonthRandom = useCallback((monthIndex) => {
+    if (!yearData) return;
+    const newYearData = yearData.map((month, i) => {
+      if (i !== monthIndex) return month;
+      return {
+        ...month,
+        weeks: month.weeks.map(week => {
+          const days = week.days.map(day => ({ ...day, completed: Math.random() < 0.5 }));
+          return { ...week, days, completed: days.length === 7 && days.every(d => d.completed) };
+        }),
+      };
+    });
+    setYearData(newYearData);
+    const encoded = serializeSave(newYearData);
+    if (player) {
+      syncToServer(encoded);
+    } else {
+      saveToLocalStorage(newYearData);
+    }
+  }, [yearData, player]);
+
+  /**
+   * Remplit ou vide tous les jours d'un mois (outils dev)
+   */
+  const setMonthCompleted = useCallback((monthIndex, completed) => {
+    if (!yearData) return;
+    const newYearData = yearData.map((month, i) => {
+      if (i !== monthIndex) return month;
+      return {
+        ...month,
+        weeks: month.weeks.map(week => ({
+          ...week,
+          days: week.days.map(day => ({ ...day, completed })),
+          completed: completed ? week.days.length === 7 : false,
+        })),
+      };
+    });
+    setYearData(newYearData);
+    const encoded = serializeSave(newYearData);
+    if (player) {
+      syncToServer(encoded);
+    } else {
+      saveToLocalStorage(newYearData);
+    }
+  }, [yearData, player]);
+
   const exportBackup = useCallback(() => {
     if (!yearData || !player) return;
     const save_data = serializeSave(yearData);
@@ -323,6 +372,8 @@ export function useGameEngine(player) {
     newTrophies,
     dismissTrophy,
     levelInfo,
+    setMonthCompleted,
+    fillMonthRandom,
     exportBackup,
     importBackup,
     importLoading,

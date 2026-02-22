@@ -42,8 +42,8 @@ export function LoginPage() {
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {/* Form — div intentionnel pour éviter la détection de soumission par les gestionnaires de mots de passe (popup répétées en SPA) */}
+        <div className="p-6 space-y-4">
           {error && (
             <div className="bg-red-900/40 border border-red-600 rounded-lg px-4 py-3 text-red-300 text-sm">
               {error}
@@ -56,9 +56,11 @@ export function LoginPage() {
               type="text"
               value={pseudo}
               onChange={(e) => setPseudo(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
               className="w-full px-4 py-3 bg-dungeon-dark border-2 border-gray-700 rounded-lg text-white focus:border-dungeon-gold focus:outline-none transition-colors"
               placeholder="Votre pseudo"
               autoComplete="username"
+              data-1p-ignore
               required
             />
           </div>
@@ -69,9 +71,11 @@ export function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
               className="w-full px-4 py-3 bg-dungeon-dark border-2 border-gray-700 rounded-lg text-white focus:border-dungeon-gold focus:outline-none transition-colors"
               placeholder="Votre mot de passe"
               autoComplete={isRegister ? 'new-password' : 'current-password'}
+              data-1p-ignore
               required
             />
             {isRegister && (
@@ -94,7 +98,8 @@ export function LoginPage() {
           </div>
 
           <button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             disabled={submitting}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-dungeon-gold hover:bg-yellow-500 text-dungeon-dark rounded-lg transition-colors font-medieval font-bold text-lg disabled:opacity-50"
           >
@@ -111,7 +116,7 @@ export function LoginPage() {
               {isRegister ? 'Déjà un compte ? Se connecter' : 'Pas de compte ? Créer un compte'}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

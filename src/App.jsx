@@ -11,7 +11,8 @@ import { downloadProgressImage } from './utils/shareCard';
 import { TrophyNotification } from './components/TrophyNotification';
 const StatsPage = lazy(() => import('./components/StatsPage').then(m => ({ default: m.StatsPage })));
 const TrophyPage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.TrophyPage })));
-import { Swords, LogOut, Users, BarChart2, Download, Upload, Award } from 'lucide-react';
+import { Swords, LogOut, Users, BarChart2, Download, Upload, Award, Wrench } from 'lucide-react';
+import { DevPage } from './components/DevPage';
 
 /**
  * Application principale
@@ -25,6 +26,17 @@ function App() {
   const [pendingImportFile, setPendingImportFile] = useState(null);
   const importInputRef = useRef(null);
 
+  // Dev : mois actif overridable via slider (doit être avant tout return anticipé)
+  const [devMaxMonth, setDevMaxMonthState] = useState(() => {
+    if (!import.meta.env.DEV) return 11;
+    const stored = localStorage.getItem('donjon_dev_maxMonth');
+    return stored !== null ? parseInt(stored, 10) : 11;
+  });
+  const setDevMaxMonth = (v) => {
+    setDevMaxMonthState(v);
+    localStorage.setItem('donjon_dev_maxMonth', v);
+  };
+
   const {
     yearData,
     selectedMonth,
@@ -34,6 +46,8 @@ function App() {
     toggleStaffUsed,
     toggleCapeUsed,
     toggleRingUsed,
+    setMonthCompleted,
+    fillMonthRandom,
     score,
     trophies,
     newTrophies,
@@ -91,9 +105,10 @@ function App() {
 
   // Mois accessible : mois courant et passés (pour l'année 2026)
   const now = new Date();
-  const maxMonth = now.getFullYear() < 2026 ? 0
+  const dateMaxMonth = now.getFullYear() < 2026 ? 0
     : now.getFullYear() > 2026 ? 11
-    : 11; // dev: tous les mois débloqués
+    : now.getMonth();
+  const maxMonth = import.meta.env.DEV ? devMaxMonth : dateMaxMonth;
 
   // Connecté
   const navigateTo = (view) => {
@@ -130,6 +145,17 @@ function App() {
           }>
             <TrophyPage trophies={trophies} levelInfo={levelInfo} />
           </Suspense>
+        );
+
+      case 'dev':
+        return (
+          <DevPage
+            yearData={yearData}
+            devMaxMonth={devMaxMonth}
+            setDevMaxMonth={setDevMaxMonth}
+            setMonthCompleted={setMonthCompleted}
+            fillMonthRandom={fillMonthRandom}
+          />
         );
 
       case 'players':
@@ -274,6 +300,20 @@ function App() {
             <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={14} />} label="Stats" />
             <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={14} />} label="Trophées" />
             <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={14} />} label="Classement" />
+            {import.meta.env.DEV && (
+              <button
+                onClick={() => navigateTo('dev')}
+                title="Dev"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm transition-colors ${
+                  currentView === 'dev'
+                    ? 'bg-amber-500 text-dungeon-dark'
+                    : 'bg-dungeon-stone border border-amber-700/50 text-amber-400 hover:border-amber-500 hover:text-amber-300'
+                }`}
+              >
+                <Wrench size={14} />
+                <span className="hidden sm:inline">Dev</span>
+              </button>
+            )}
             <button
               onClick={logout}
               title={player.pseudo}

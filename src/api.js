@@ -49,3 +49,6 @@ export const getPlayer = (id) => apiFetch(`/players/${id}`);
 // Save
 export const putSave = (save_data, trophies) =>
   apiFetch('/save', { method: 'PUT', body: JSON.stringify({ save_data, trophies }) });
+
+// Dev (local uniquement)
+export const devReset = () => apiFetch('/dev/reset', { method: 'POST' });
