@@ -6,42 +6,41 @@ import {
   CartesianGrid, Tooltip, Legend,
   Area, AreaChart,
 } from 'recharts';
-import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap, Layers2, EyeOff } from 'lucide-react';
+import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap, Layers2, EyeOff, Axe, FlaskConical } from 'lucide-react';
+
+function CrossedBonesIcon({ size = 24, className }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="4.5" cy="4.5" r="2.5" /><circle cx="19.5" cy="19.5" r="2.5" />
+      <rect x="3" y="11" width="18" height="2" rx="1" transform="rotate(45 12 12)" />
+      <circle cx="19.5" cy="4.5" r="2.5" /><circle cx="4.5" cy="19.5" r="2.5" />
+      <rect x="3" y="11" width="18" height="2" rx="1" transform="rotate(-45 12 12)" />
+    </svg>
+  );
+}
 import { calculateScore } from '../data/gameData';
 
 const GOLD = '#d4af37';
 const COLORS = {
-  score:      '#d4af37',
-  monsters:   '#0284c7',
-  undead:     '#facc15',
-  elite:      '#ef4444',
-  doubles:    '#818cf8',
-  traps:      '#a78bfa',
-  bosses:     '#fb923c',
-  wings:      '#4ade80',
-  invisibles: '#9ca3af',
+  score:       '#d4af37',
+  monsters:    '#0284c7',
+  undead:      '#facc15',
+  elite:       '#ef4444',
+  doubles:     '#818cf8',
+  traps:       '#a78bfa',
+  bosses:      '#fb923c',
+  wings:       '#4ade80',
+  invisibles:  '#9ca3af',
+  necromancer: '#16a34a',
 };
 
-const UNDEAD_RULE_START    = 2; // Mars (index 2)
-const MANA_RULE_START      = 1; // Février (index 1)
-const ELITE_RULE_START     = 4; // Mai (index 4)
-const DOUBLE_RULE_START    = 6; // Juillet (index 6)
-const INVISIBLE_RULE_START = 8; // Septembre (index 8)
+const UNDEAD_RULE_START      = 2; // Mars (index 2)
+const MANA_RULE_START        = 1; // Février (index 1)
+const ELITE_RULE_START       = 4; // Mai (index 4)
+const DOUBLE_RULE_START      = 6; // Juillet (index 6)
+const INVISIBLE_RULE_START   = 8; // Septembre (index 8)
+const NECROMANCER_RULE_START = 8; // Septembre (index 8)
 
-function ManaPotionIcon({ size = 22 }) {
-  return (
-    <svg viewBox="0 0 20 26" style={{ width: size, height: size }} xmlns="http://www.w3.org/2000/svg">
-      <rect x="7" y="0.5" width="6" height="3.5" rx="1.2" fill="#7f1d1d"/>
-      <rect x="6.5" y="3.5" width="7" height="1.5" rx="0.5" fill="#991b1b"/>
-      <rect x="7.5" y="5" width="5" height="5" rx="0.8" fill="#bfdbfe"/>
-      <circle cx="10" cy="18" r="7.5" fill="#1e40af" opacity="0.5"/>
-      <circle cx="10" cy="18" r="7" fill="#1d4ed8"/>
-      <circle cx="10" cy="18" r="5.5" fill="#3b82f6"/>
-      <ellipse cx="8.5" cy="15.5" rx="2.8" ry="2" fill="#bfdbfe" opacity="0.6"/>
-      <circle cx="12" cy="19" r="1.2" fill="#93c5fd" opacity="0.4"/>
-    </svg>
-  );
-}
 
 function buildMonthlyData(yearData) {
   if (!yearData) return [];
@@ -63,6 +62,7 @@ function buildMonthlyData(yearData) {
       wings: s.completeWings,
       mana: s.manaPotionsEarned,
       invisibles: s.invisiblesDefeated,
+      necromancer: s.necromancersDefeated ?? 0,
     };
   });
 }
@@ -101,11 +101,12 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const data = buildMonthlyData(yearData);
 
   // Détecter si les règles spéciales sont actives (basé sur le mois courant)
-  const hasUndead    = maxMonth >= UNDEAD_RULE_START;
-  const hasMana      = maxMonth >= MANA_RULE_START;
-  const hasElite     = maxMonth >= ELITE_RULE_START;
-  const hasDouble    = maxMonth >= DOUBLE_RULE_START;
-  const hasInvisible = maxMonth >= INVISIBLE_RULE_START;
+  const hasUndead      = maxMonth >= UNDEAD_RULE_START;
+  const hasMana        = maxMonth >= MANA_RULE_START;
+  const hasElite       = maxMonth >= ELITE_RULE_START;
+  const hasDouble      = maxMonth >= DOUBLE_RULE_START;
+  const hasInvisible   = maxMonth >= INVISIBLE_RULE_START;
+  const hasNecromancer = maxMonth >= NECROMANCER_RULE_START;
 
   // Moyenne sur les mois joués (au moins 1 point)
   const playedMonths = data.filter(m => m.score > 0);
@@ -136,6 +137,10 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const invisibleData = data.slice(INVISIBLE_RULE_START);
   const invisibleDivisor = invisibleData.filter(m => m.score > 0).length || 1;
   const avgInvisible = Math.floor(invisibleData.reduce((s, m) => s + m.invisibles, 0) / invisibleDivisor);
+
+  // Nécromancien vaincu (depuis septembre, max 1)
+  const necromancerData = data.slice(NECROMANCER_RULE_START);
+  const necromancerDefeatedTotal = necromancerData.reduce((s, m) => s + m.necromancer, 0);
 
   const longestStreak = calcLongestStreak(yearData);
 
@@ -223,24 +228,26 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Moyennes par mois */}
       <Section title="Moyenne mensuelle">
         {(() => {
-          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasDouble ? 1 : 0) + (hasMana ? 1 : 0) + (hasInvisible ? 1 : 0);
+          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasDouble ? 1 : 0) + (hasMana ? 1 : 0) + (hasInvisible ? 1 : 0) + (hasNecromancer ? 1 : 0);
           const gridClass = optCount === 0 ? 'sm:grid-cols-5'
             : optCount === 1 ? 'sm:grid-cols-3'
+            : optCount >= 6 ? 'sm:grid-cols-6'
             : optCount >= 4 ? 'sm:grid-cols-5'
             : 'sm:grid-cols-4';
           return (
         <div className={`grid gap-3 grid-cols-2 ${gridClass}`}>
           {[
             { icon: <Trophy size={22} className="text-dungeon-gold" />,       label: 'Score/mois',       value: avg('score'),    color: 'text-dungeon-gold' },
-            { icon: <Skull size={22} className="text-sky-600" />,            label: 'Monstres/mois',    value: avg('monsters'), color: 'text-sky-400' },
-            ...(hasUndead ? [{ icon: <Skull size={22} className="text-yellow-400" />, label: 'Morts/mois', value: avgUndead, color: 'text-yellow-300' }] : []),
+            { icon: <Axe size={22} className="text-sky-600" />,            label: 'Monstres/mois',    value: avg('monsters'), color: 'text-sky-400' },
+            ...(hasUndead ? [{ icon: <CrossedBonesIcon size={22} className="text-yellow-400" />, label: 'Morts/mois', value: avgUndead, color: 'text-yellow-300' }] : []),
             ...(hasElite  ? [{ icon: <Zap size={22} className="text-red-400" />,      label: 'Élites/mois',  value: avgElite,  color: 'text-red-400'    }] : []),
             ...(hasDouble ? [{ icon: <Layers2 size={22} className="text-indigo-400" />, label: 'Doubles/mois', value: avgDouble, color: 'text-indigo-400'  }] : []),
             ...(hasInvisible ? [{ icon: <EyeOff size={22} className="text-gray-400" />, label: 'Invisibles/mois', value: avgInvisible, color: 'text-gray-300' }] : []),
+            ...(hasNecromancer ? [{ icon: <Skull size={22} className="text-green-600" />, label: 'Nécromancien', value: necromancerDefeatedTotal, color: 'text-green-500' }] : []),
             { icon: <AlertTriangle size={22} className="text-violet-400" />,   label: 'Pièges/mois',      value: avg('traps'),    color: 'text-violet-400' },
             { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss/mois',        value: avg('bosses'),   color: 'text-orange-400' },
             { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes/mois',       value: avg('wings'),    color: 'text-green-400' },
-            ...(hasMana ? [{ icon: <ManaPotionIcon size={22} />, label: 'Potions/mois', value: avgMana, color: 'text-blue-400' }] : []),
+            ...(hasMana ? [{ icon: <FlaskConical size={22} className="text-blue-400" />, label: 'Potions/mois', value: avgMana, color: 'text-blue-400' }] : []),
           ].map(({ icon, label, value, color }) => (
             <div key={label} className="bg-dungeon-stone border border-dungeon-gold/30 rounded-lg p-3 flex items-center gap-3">
               {icon}
@@ -333,6 +340,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasElite  && <th className="text-right py-2 font-medium text-red-400">Élites</th>}
                 {hasDouble && <th className="text-right py-2 font-medium text-indigo-400">Doubles</th>}
                 {hasInvisible && <th className="text-right py-2 font-medium text-gray-400">Invisibles</th>}
+                {hasNecromancer && <th className="text-right py-2 font-medium text-green-600">Nécro.</th>}
                 <th className="text-right py-2 font-medium text-violet-400">Pièges</th>
                 <th className="text-right py-2 font-medium text-orange-400">Boss</th>
                 <th className="text-right py-2 font-medium text-green-400">Ailes</th>
@@ -349,6 +357,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                   {hasElite  && <td className="py-2 text-right text-red-400">{row.elite}</td>}
                   {hasDouble && <td className="py-2 text-right text-indigo-400">{row.doubles}</td>}
                   {hasInvisible && <td className="py-2 text-right text-gray-300">{row.invisibles}</td>}
+                  {hasNecromancer && <td className="py-2 text-right text-green-500">{row.necromancer}</td>}
                   <td className="py-2 text-right text-violet-400">{row.traps}</td>
                   <td className="py-2 text-right text-orange-400">{row.bosses}</td>
                   <td className="py-2 text-right text-green-400">{row.wings}</td>
@@ -365,6 +374,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasElite  && <td className="py-2 text-right text-red-400">{data.reduce((s, m) => s + m.elite, 0)}</td>}
                 {hasDouble && <td className="py-2 text-right text-indigo-400">{data.reduce((s, m) => s + m.doubles, 0)}</td>}
                 {hasInvisible && <td className="py-2 text-right text-gray-300">{data.reduce((s, m) => s + m.invisibles, 0)}</td>}
+                {hasNecromancer && <td className="py-2 text-right text-green-500">{necromancerDefeatedTotal}</td>}
                 <td className="py-2 text-right text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
                 <td className="py-2 text-right text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
                 <td className="py-2 text-right text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>

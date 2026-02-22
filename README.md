@@ -17,9 +17,11 @@ Application web auto-hébergée pour suivre votre progression dans le jeu "365 A
 |---|---|
 | Monstre vaincu | +1 pt |
 | Piège désamorcé | +1 pt |
-| Mort-Vivant vaincu | +1 pt |
+| Mort-Vivant vaincu | +1 pt (si Nécromancien du mois vaincu ou absent) |
+| Monstre Invisible vaincu | +1 pt |
 | Monstre Élite vaincu | +1 pt (en plus du type de base) |
 | Monstres Doubles vaincus | +2 pts |
+| Nécromancien vaincu | +1 pt |
 | Boss terrassé (Dimanche) | +2 pts |
 | Aile complète (7 jours) | +3 pts bonus |
 
@@ -64,7 +66,7 @@ Chaque mois débloque une nouvelle règle affichée dans le calendrier via le bo
 | Juin | **Cape des Illusions** | Pouvoir 1×/mois — modifier un dé bleu pour qu'il corresponde à l'autre |
 | Juillet | **Monstres Doubles** | Type `DOUBLE` avec deux valeurs — nécessite 2 dés de chaque valeur, +2 pts |
 | Août | **Anneau Ancien** | Pouvoir 1×/mois — enchaîner un combat supplémentaire après 4 dés identiques |
-| Septembre | **Monstres Invisibles** | Flag `isInvisible` — visuel distinct (contour pointillé, bouclier rond) |
+| Septembre | **Monstres Invisibles & Nécromancien** | Flag `isInvisible` + type `NECROMANCER` — si le Nécromancien d'un mois n'est pas vaincu, les points des Morts-Vivants de ce mois ne comptent pas |
 
 ---
 
@@ -75,31 +77,16 @@ Chaque mois débloque une nouvelle règle affichée dans le calendrier via le bo
 | `MONSTER` | Bouclier bleu | +1 pt | `{ type: 'MONSTER', value: N }` |
 | `BOSS` | Bouclier gris (Dimanche) | +2 pts | `{ type: 'BOSS', value: N }` |
 | `TRAP` | Triangle violet | +1 pt | `{ type: 'TRAP', value: -N }` |
-| `UNDEAD` | Bouclier bleu + anneau doré | +1 pt | `{ type: 'UNDEAD', value: N }` |
+| `UNDEAD` | Bouclier jaune + anneau doré épais | +1 pt (si Nécromancien du mois vaincu ou absent) | `{ type: 'UNDEAD', value: N }` |
 | `DOUBLE` | Deux boucliers bleus | +2 pts | `{ type: 'DOUBLE', value: N, value2: M }` |
+| `NECROMANCER` | Bouclier vert sombre + anneau vert épais + 💀 | +1 pt, débloque les pts UNDEAD du mois | `{ type: 'NECROMANCER', value: N }` |
 
 ### Flags combinables
-| Flag | Effect |
-|---|---|
-| `isElite: true` | Fond rouge, indicateur ⚡, compteur séparé `eliteDefeated` |
-| `isInvisible: true` | Bordure pointillée, bouclier rond translucide |
-| `hasMana: true` | Icône potion en bas à droite, octroie une potion de mana |
-
----
-
-## ⚠️ TODO
-
-### Nécromancien (Septembre)
-La règle du Nécromancien n'est pas encore implémentée côté application :
-- Un Nécromancien apparaît à la fin du mois de septembre
-- Si non vaincu : tous les points des Morts-Vivants du mois sont perdus + les bonus d'ailes également
-- **À faire** : ajouter un type `NECROMANCER` (ou flag) avec logique de pénalité dans `calculateScore` et `server/gameLogic.js`
-
-### Monstres Invisibles — ✅ Implémenté
-- `invisiblesDefeated` comptabilisé dans `calculateScore` et `server/gameLogic.js`
-- Compteur affiché dans `ScorePanel` à partir de septembre (`showInvisible={maxMonth >= 8}`)
-- Catégorie présente dans `StatsPage` : moyenne mensuelle, graphique combats (barres empilées), tableau récapitulatif
-- Colonne ajoutée dans le classement des joueurs (`PlayerList`) + colonne `invisibles_defeated` en BDD
+| Flag | Visuel | Effet |
+|---|---|---|
+| `isElite: true` | Fond rouge, badge ⚡ bas-gauche | Compteur séparé `eliteDefeated` |
+| `isInvisible: true` | Bordure pointillée épaisse, bouclier rond translucide | Compteur séparé `invisiblesDefeated` |
+| `hasMana: true` | Icône fiole bas-droite | Octroie une potion de mana |
 
 ---
 

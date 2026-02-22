@@ -10,15 +10,19 @@
  *   • Lundi-Sam.  → MONSTER, value: 1   (à remplacer par la vraie valeur)
  *
  * Types disponibles :
- *   'MONSTER' — Case monstre  : faire un triple de la valeur indiquée
- *               Affichage : bouclier bleu avec la valeur au centre
+ *   'MONSTER'    — Case monstre  : faire un triple de la valeur indiquée
+ *                  Affichage : bouclier bleu avec la valeur au centre
  *
- *   'TRAP'    — Case piège    : faire un dé sans sortir la valeur indiquée
- *               Affichage : triangle rouge avec la valeur négative
- *               ⚠️  La valeur doit être négative  (ex: -2)
+ *   'TRAP'       — Case piège    : faire un dé sans sortir la valeur indiquée
+ *                  Affichage : triangle rouge avec la valeur négative
+ *                  ⚠️  La valeur doit être négative  (ex: -2)
  *
- *   'BOSS'    — Case boss     : toujours un dimanche
- *               Affichage : couronne dorée avec la valeur
+ *   'BOSS'       — Case boss     : toujours un dimanche
+ *                  Affichage : couronne dorée avec la valeur
+ *
+ *   'NECROMANCER'— Case nécromancien : combat spécial — si non vaincu, les points
+ *                  des morts-vivants ne comptent pas
+ *                  Affichage : crâne violet avec la valeur
  *
  * Format :
  *   numéro_du_jour: { type: 'MONSTER' | 'TRAP' | 'BOSS', value: number }
@@ -85,15 +89,19 @@ export const MONTH_RULES = {
     ],
   },
   8: {
-    title: 'Monstres Invisibles',
+    title: 'Monstres Invisibles & Nécromancien',
     sections: [
       {
-        heading: null,
+        heading: 'Monstres Invisibles',
         body: "Les monstres invisibles apparaissent dans tout le donjon. Ils se distinguent par leur contour pointillé et leur bouclier rond.",
       },
       {
-        heading: 'Règle',
+        heading: 'Règle des invisibles',
         body: "Ils ne peuvent être affrontés que lorsque Mira se trouve précisément sur leur case.",
+      },
+      {
+        heading: 'Nécromancien',
+        body: "Un nécromancien rôde dans les profondeurs du donjon. Tant qu'il n'est pas vaincu, les points des morts-vivants ne sont pas comptabilisés.",
       },
     ],
   },
@@ -439,7 +447,7 @@ export const MONTH_CONFIGS = {
   // ──────────────────────────────────────────────────────────────
   8: {
      1: { type: 'MONSTER', value: 1  },
-     2: { type: 'MONSTER', value: 1  },
+     2: { type: 'UNDEAD', value: 1  },
      3: { type: 'MONSTER', value: 1  },
      4: { type: 'MONSTER', value: 1  },
      5: { type: 'MONSTER', value: 1  },
@@ -467,7 +475,7 @@ export const MONTH_CONFIGS = {
     27: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
     28: { type: 'MONSTER', value: 1  },
     29: { type: 'MONSTER', value: 1  },
-    30: { type: 'MONSTER', value: 1  },
+    30: { type: 'NECROMANCER', value: 1  }, // Mercredi — TODO: vérifier la valeur
   },
 
   // ──────────────────────────────────────────────────────────────

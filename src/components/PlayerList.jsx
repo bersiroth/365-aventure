@@ -1,24 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff } from 'lucide-react';
-import { getPlayers } from '../api';
-import { LEVEL_TITLES } from '../data/trophyData';
+import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff, Axe, FlaskConical } from 'lucide-react';
 
-function ManaPotionIcon({ size = 14 }) {
+function CrossedBonesIcon({ size = 24, className }) {
   return (
-    <svg viewBox="0 0 20 26" style={{ width: size, height: size, display: 'inline' }} xmlns="http://www.w3.org/2000/svg">
-      <rect x="7" y="0.5" width="6" height="3.5" rx="1.2" fill="#7f1d1d"/>
-      <rect x="6.5" y="3.5" width="7" height="1.5" rx="0.5" fill="#991b1b"/>
-      <rect x="7.5" y="5" width="5" height="5" rx="0.8" fill="#bfdbfe"/>
-      <circle cx="10" cy="18" r="7.5" fill="#1e40af" opacity="0.5"/>
-      <circle cx="10" cy="18" r="7" fill="#1d4ed8"/>
-      <circle cx="10" cy="18" r="5.5" fill="#3b82f6"/>
-      <ellipse cx="8.5" cy="15.5" rx="2.8" ry="2" fill="#bfdbfe" opacity="0.6"/>
-      <circle cx="12" cy="19" r="1.2" fill="#93c5fd" opacity="0.4"/>
+    <svg viewBox="0 0 24 24" width={size} height={size} className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="4.5" cy="4.5" r="2.5" /><circle cx="19.5" cy="19.5" r="2.5" />
+      <rect x="3" y="11" width="18" height="2" rx="1" transform="rotate(45 12 12)" />
+      <circle cx="19.5" cy="4.5" r="2.5" /><circle cx="4.5" cy="19.5" r="2.5" />
+      <rect x="3" y="11" width="18" height="2" rx="1" transform="rotate(-45 12 12)" />
     </svg>
   );
 }
+import { getPlayers } from '../api';
+import { LEVEL_TITLES } from '../data/trophyData';
 
-export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible }) {
+
+export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible, showNecromancer }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -71,9 +68,9 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
           <div className="divide-y divide-gray-700/50">
             {/* Table header */}
             {(() => {
-              const optCount = (showUndead ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showMana ? 1 : 0) + (showInvisible ? 1 : 0);
+              const optCount = (showUndead ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showMana ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0);
               const gridCols = optCount >= 5
-                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
+                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
                 : optCount === 4
                 ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
                 : optCount === 3
@@ -88,16 +85,17 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                   <div className={`hidden md:grid ${gridCols} gap-2 px-6 py-3 text-xs text-gray-500 uppercase tracking-wide font-medieval`}>
                     <div>#</div>
                     <div>Joueur</div>
-                    <div className="text-center"><Trophy size={14} className="inline text-dungeon-gold" /></div>
-                    <div className="text-center"><Skull size={14} className="inline text-sky-600" /></div>
-                    {showUndead && <div className="text-center"><Skull size={14} className="inline text-yellow-400" /></div>}
-                    {showElite && <div className="text-center"><Zap size={14} className="inline text-red-400" /></div>}
-                    {showDouble && <div className="text-center"><Layers2 size={14} className="inline text-indigo-400" /></div>}
-                    {showInvisible && <div className="text-center"><EyeOff size={14} className="inline text-gray-400" /></div>}
-                    <div className="text-center"><AlertTriangle size={14} className="inline text-violet-400" /></div>
-                    <div className="text-center"><Crown size={14} className="inline text-orange-400" /></div>
-                    <div className="text-center"><Swords size={14} className="inline text-green-400" /></div>
-                    {showMana && <div className="text-center"><ManaPotionIcon size={14} /></div>}
+                    <div className="text-center text-dungeon-gold">Score</div>
+                    <div className="text-center text-sky-600">Mons.</div>
+                    {showUndead && <div className="text-center text-yellow-400">Morts</div>}
+                    {showElite && <div className="text-center text-red-400">Élites</div>}
+                    {showDouble && <div className="text-center text-indigo-400">Doubles</div>}
+                    {showInvisible && <div className="text-center text-gray-400">Invis.</div>}
+                    {showNecromancer && <div className="text-center text-green-600">Nécro.</div>}
+                    <div className="text-center text-violet-400">Pièges</div>
+                    <div className="text-center text-orange-400">Boss</div>
+                    <div className="text-center text-green-400">Ailes</div>
+                    {showMana && <div className="text-center text-blue-400">Potions</div>}
                   </div>
 
                   {players.map((player, index) => {
@@ -122,6 +120,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                           {showElite && <div className="text-center text-red-400">{player.elite_defeated ?? 0}</div>}
                           {showDouble && <div className="text-center text-indigo-400">{player.doubles_defeated ?? 0}</div>}
                           {showInvisible && <div className="text-center text-gray-300">{player.invisibles_defeated ?? 0}</div>}
+                          {showNecromancer && <div className="text-center text-green-500">{player.necromancer_defeated ?? 0}</div>}
                           <div className="text-center text-violet-400">{player.traps_defeated}</div>
                           <div className="text-center text-orange-400">{player.bosses_defeated}</div>
                           <div className="text-center text-green-400">{player.complete_wings}</div>
@@ -144,15 +143,16 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-3 mt-1 ml-11 text-xs text-gray-400">
-                            <span className="text-sky-400"><Skull size={12} className="inline text-sky-600" /> {player.monsters_defeated}</span>
-                            {showUndead && <span className="text-yellow-300"><Skull size={12} className="inline text-yellow-400" /> {player.undead_defeated ?? 0}</span>}
+                            <span className="text-sky-400"><Axe size={12} className="inline text-sky-600" /> {player.monsters_defeated}</span>
+                            {showUndead && <span className="text-yellow-300"><CrossedBonesIcon size={12} className="inline text-yellow-400" /> {player.undead_defeated ?? 0}</span>}
                             {showElite && <span className="text-red-400"><Zap size={12} className="inline" /> {player.elite_defeated ?? 0}</span>}
                             {showDouble && <span className="text-indigo-400"><Layers2 size={12} className="inline" /> {player.doubles_defeated ?? 0}</span>}
                             {showInvisible && <span className="text-gray-300"><EyeOff size={12} className="inline text-gray-400" /> {player.invisibles_defeated ?? 0}</span>}
+                            {showNecromancer && <span className="text-green-500"><Skull size={12} className="inline text-green-600" /> {player.necromancer_defeated ?? 0}</span>}
                             <span className="text-violet-400"><AlertTriangle size={12} className="inline" /> {player.traps_defeated}</span>
                             <span><Crown size={12} className="inline text-orange-400" /> {player.bosses_defeated}</span>
                             <span><Swords size={12} className="inline text-green-400" /> {player.complete_wings}</span>
-                            {showMana && <span className="text-blue-400"><ManaPotionIcon size={12} /> {player.mana_potions_earned ?? 0}</span>}
+                            {showMana && <span className="text-blue-400"><FlaskConical size={12} className="inline text-blue-400" /> {player.mana_potions_earned ?? 0}</span>}
                           </div>
                         </div>
                       </button>

@@ -1,31 +1,7 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
-/* Fiole de mana — corps rond, col étroit, bouchon rouge, liquide bleu lumineux */
-function ManaPotion({ className }) {
-  return (
-    <svg viewBox="0 0 20 26" className={className} xmlns="http://www.w3.org/2000/svg">
-      {/* Bouchon */}
-      <rect x="7" y="0.5" width="6" height="3.5" rx="1.2" fill="#7f1d1d"/>
-      <rect x="6.5" y="3.5" width="7" height="1.5" rx="0.5" fill="#991b1b"/>
-      {/* Col */}
-      <rect x="7.5" y="5" width="5" height="5" rx="0.8" fill="#bfdbfe"/>
-      {/* Corps — glow externe */}
-      <circle cx="10" cy="18" r="7.5" fill="#1e40af" opacity="0.5"/>
-      {/* Corps — fond bleu */}
-      <circle cx="10" cy="18" r="7" fill="#1d4ed8"/>
-      {/* Liquide lumineux */}
-      <circle cx="10" cy="18" r="5.5" fill="#3b82f6"/>
-      {/* Reflet central brillant */}
-      <ellipse cx="8.5" cy="15.5" rx="2.8" ry="2" fill="#bfdbfe" opacity="0.6"/>
-      {/* Petit reflet secondaire */}
-      <circle cx="12" cy="19" r="1.2" fill="#93c5fd" opacity="0.4"/>
-      {/* Contour col */}
-      <rect x="7.5" y="5" width="5" height="5" rx="0.8" fill="none" stroke="#93c5fd" strokeWidth="0.5" opacity="0.5"/>
-    </svg>
-  );
-}
 
 /* Triangle sans point d'exclamation — fond blanc, trait rouge vif */
 function TrapTriangle({ className }) {
@@ -345,6 +321,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
   const isTrap = day.type === 'TRAP';
   const isUndead = day.type === 'UNDEAD';
   const isDouble = day.type === 'DOUBLE';
+  const isNecromancer = day.type === 'NECROMANCER';
   const isElite = day.isElite ?? false;
   const isInvisible = day.isInvisible ?? false;
   const isCompleted = day.completed;
@@ -365,13 +342,15 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
     ? 'bg-gradient-to-b from-red-800 via-orange-700 to-amber-600'
     : isTrap
     ? 'bg-gradient-to-b from-violet-100 from-violet-400 to-violet-600'
+    : isNecromancer
+    ? 'bg-gradient-to-b from-green-950 via-green-950 to-green-900'
     : 'bg-gradient-to-b from-sky-600 via-sky-400 to-blue-300';
 
   return (
     <button
       onClick={handleClick}
       disabled={isReadOnly}
-      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +2 pts` : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
+      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +2 pts` : isNecromancer ? 'Nécromancien' : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
         rounded-sm
@@ -390,11 +369,11 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
       {isUndead && (
         <div className="absolute inset-0 ring-4 md:ring-8 ring-inset ring-dungeon-gold pointer-events-none" />
       )}
-      {isElite && (
-        <div className="absolute inset-0 ring-1 ring-inset ring-yellow-300/60 pointer-events-none" />
-      )}
       {isInvisible && (
-        <div className="absolute inset-0 border-2 border-dashed border-blue-200/90 pointer-events-none z-10 rounded-sm" />
+        <div className="absolute inset-0 border-4 md:border-[8px] border-dashed border-blue-200/90 pointer-events-none z-10 rounded-sm" />
+      )}
+      {isNecromancer && (
+        <div className="absolute inset-0 ring-4 md:ring-8 ring-inset ring-green-400 pointer-events-none z-10" />
       )}
 
       {/* Numéro du jour — haut-gauche (toujours jaune) */}
@@ -428,6 +407,18 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
           <div className="relative flex items-center justify-center w-[85%] h-[85%]">
             <TrapTriangle className="absolute inset-0 w-full h-full text-red-600" />
             <span className="relative z-10 text-red-700 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none mt-[30%]">
+              {day.value}
+            </span>
+          </div>
+
+        ) : isNecromancer ? (
+          /* NECROMANCER — bouclier vert avec valeur (comme un monstre) */
+          <div className="relative flex items-center justify-center w-[82%] h-[82%]">
+            <Shield
+              className="absolute inset-0 w-full h-full text-green-900 fill-green-200"
+              strokeWidth={1.8}
+            />
+            <span className="relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none text-green-900">
               {day.value}
             </span>
           </div>
@@ -484,15 +475,22 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
 
       {/* Indicateur élite */}
       {isElite && (
-        <div className="absolute bottom-0.5 left-0.5 z-30">
-          <Zap size={10} className="text-yellow-300 fill-yellow-300 drop-shadow-[0_0_4px_rgba(253,224,71,0.9)]" />
+        <div className="absolute bottom-1 left-1 z-30">
+          <Zap size={14} className="text-yellow-300 fill-yellow-300 drop-shadow-[0_0_4px_rgba(253,224,71,0.9)]" />
+        </div>
+      )}
+
+      {/* Indicateur nécromancien */}
+      {isNecromancer && (
+        <div className="absolute bottom-3.5 left-3 z-30">
+          <Skull size={22} className="text-green-600" />
         </div>
       )}
 
       {/* Indicateur potion de mana */}
       {day.hasMana && (
-        <div className={`absolute bottom-0.5 right-0.5 z-30 w-4 h-4 sm:w-5 sm:h-5 drop-shadow-[0_0_4px_rgba(96,165,250,0.9)] ${isCompleted ? 'opacity-75' : ''}`}>
-          <ManaPotion className="w-full h-full" />
+        <div className={`absolute bottom-0.5 right-0.5 z-30 drop-shadow-[0_0_4px_rgba(96,165,250,0.9)] ${isCompleted ? 'opacity-75' : ''}`}>
+          <FlaskConical size={14} className="text-blue-300" />
         </div>
       )}
 

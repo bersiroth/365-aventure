@@ -58,11 +58,12 @@ export function computeScoreFromSave(encoded) {
   let completeWings = 0;
   let manaPotionsEarned = 0;
   let invisiblesDefeated = 0;
+  let necromancersDefeated = 0;
   let globalIndex = 0;
 
   MONTHS_2026.forEach((month, monthIndex) => {
+    // Collecter les données du mois
     const monthDays = [];
-
     for (let day = 1; day <= month.days; day++) {
       const dayOfWeekIndex = (month.startDay + day - 1) % 7;
       const isBoss = dayOfWeekIndex === 0;
@@ -72,21 +73,30 @@ export function computeScoreFromSave(encoded) {
       const isElite = dayConfig?.isElite ?? false;
       const isInvisible = dayConfig?.isInvisible ?? false;
       const completed = bits[globalIndex] === 1;
-
-      if (completed) {
-        if (type === 'BOSS')        { totalScore += 2; bossesDefeated++; }
-        else if (type === 'TRAP')   { totalScore += 1; trapsDefeated++; }
-        else if (type === 'UNDEAD') { totalScore += 1; undeadDefeated++; }
-        else if (type === 'DOUBLE') { totalScore += 2; doublesDefeated++; }
-        else                        { totalScore += 1; monstersDefeated++; }
-        if (isElite) eliteDefeated++;
-        if (hasMana) manaPotionsEarned++;
-        if (isInvisible) invisiblesDefeated++;
-      }
-
-      monthDays.push({ dayOfWeekIndex, completed });
+      monthDays.push({ dayOfWeekIndex, type, hasMana, isElite, isInvisible, completed });
       globalIndex++;
     }
+
+    // Vérification nécromancien par mois
+    const monthHasNecromancer = monthDays.some(d => d.type === 'NECROMANCER');
+    const monthNecromancerDefeated = monthDays.some(d => d.type === 'NECROMANCER' && d.completed);
+
+    // Scoring du mois
+    monthDays.forEach(d => {
+      if (!d.completed) return;
+      if (d.type === 'NECROMANCER') { totalScore += 1; necromancersDefeated++; }
+      else if (d.type === 'BOSS')   { totalScore += 2; bossesDefeated++; }
+      else if (d.type === 'TRAP')   { totalScore += 1; trapsDefeated++; }
+      else if (d.type === 'UNDEAD') {
+        undeadDefeated++;
+        if (!monthHasNecromancer || monthNecromancerDefeated) totalScore += 1;
+      }
+      else if (d.type === 'DOUBLE') { totalScore += 2; doublesDefeated++; }
+      else                          { totalScore += 1; monstersDefeated++; }
+      if (d.isElite) eliteDefeated++;
+      if (d.hasMana) manaPotionsEarned++;
+      if (d.isInvisible) invisiblesDefeated++;
+    });
 
     // Wing bonus: same Mon→Sun grid logic as frontend
     if (monthDays.length === 0) return;
@@ -107,5 +117,5 @@ export function computeScoreFromSave(encoded) {
     }
   });
 
-  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned, invisiblesDefeated };
+  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned, invisiblesDefeated, necromancersDefeated };
 }

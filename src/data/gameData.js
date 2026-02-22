@@ -126,15 +126,25 @@ export function calculateScore(yearData) {
   let completeWings = 0;
   let manaPotionsEarned = 0;
   let invisiblesDefeated = 0;
+  let necromancersDefeated = 0;
 
   yearData.forEach(month => {
+    // ── Nécromancien : vérification par mois ──
+    const monthDays = month.weeks.flatMap(w => w.days);
+    const monthHasNecromancer = monthDays.some(d => d.type === 'NECROMANCER');
+    const monthNecromancerDefeated = monthDays.some(d => d.type === 'NECROMANCER' && d.completed);
+
     // ── Points par jour ──
     month.weeks.forEach(week => {
       week.days.forEach(day => {
         if (!day.completed) return;
-        if (day.type === 'BOSS')        { totalScore += 2; bossesDefeated++; }
+        if (day.type === 'NECROMANCER') { totalScore += 1; necromancersDefeated++; }
+        else if (day.type === 'BOSS')   { totalScore += 2; bossesDefeated++; }
         else if (day.type === 'TRAP')   { totalScore += 1; trapsDefeated++;  }
-        else if (day.type === 'UNDEAD') { totalScore += 1; undeadDefeated++; }
+        else if (day.type === 'UNDEAD') {
+          undeadDefeated++;
+          if (!monthHasNecromancer || monthNecromancerDefeated) totalScore += 1;
+        }
         else if (day.type === 'DOUBLE') { totalScore += 2; doublesDefeated++; }
         else                            { totalScore += 1; monstersDefeated++; }
         if (day.isElite) eliteDefeated++;
@@ -175,6 +185,7 @@ export function calculateScore(yearData) {
     completeWings,
     manaPotionsEarned,
     invisiblesDefeated,
+    necromancersDefeated,
   };
 }
 
