@@ -101,13 +101,11 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const data = buildMonthlyData(yearData);
 
   // Détecter si les règles spéciales sont actives (basé sur le mois courant)
-  // const currentMonthIndex = new Date().getMonth();
-  const currentMonthIndex = 11; // dev: tous les mois débloqués
-  const hasUndead    = currentMonthIndex >= UNDEAD_RULE_START;
-  const hasMana      = currentMonthIndex >= MANA_RULE_START;
-  const hasElite     = currentMonthIndex >= ELITE_RULE_START;
-  const hasDouble    = currentMonthIndex >= DOUBLE_RULE_START;
-  const hasInvisible = currentMonthIndex >= INVISIBLE_RULE_START;
+  const hasUndead    = maxMonth >= UNDEAD_RULE_START;
+  const hasMana      = maxMonth >= MANA_RULE_START;
+  const hasElite     = maxMonth >= ELITE_RULE_START;
+  const hasDouble    = maxMonth >= DOUBLE_RULE_START;
+  const hasInvisible = maxMonth >= INVISIBLE_RULE_START;
 
   // Moyenne sur les mois joués (au moins 1 point)
   const playedMonths = data.filter(m => m.score > 0);
