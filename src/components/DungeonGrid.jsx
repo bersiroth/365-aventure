@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame, Ghost } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
 
@@ -341,6 +341,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
   const isUndead = day.type === 'UNDEAD';
   const isDouble = day.type === 'DOUBLE';
   const isNecromancer = day.type === 'NECROMANCER';
+  const isShaman = day.type === 'SHAMAN';
   const isElite = day.isElite ?? false;
   const isInvisible = day.isInvisible ?? false;
   const isInfluenced = day.isInfluenced ?? false;
@@ -366,13 +367,15 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
     ? 'bg-gradient-to-b from-violet-100 from-violet-400 to-violet-600'
     : isNecromancer
     ? 'bg-gradient-to-b from-green-950 via-green-950 to-green-900'
+    : isShaman
+    ? 'bg-gradient-to-b from-slate-900 via-purple-950 to-purple-900'
     : 'bg-gradient-to-b from-sky-600 via-sky-400 to-blue-300';
 
   return (
     <button
       onClick={handleClick}
       disabled={isReadOnly}
-      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +3 pts` : isNecromancer ? 'Nécromancien' : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
+      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +3 pts` : isNecromancer ? 'Nécromancien' : isShaman ? "Shaman de l'Ombre" : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
         rounded-sm
@@ -396,6 +399,9 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
       )}
       {isNecromancer && (
         <div className="absolute inset-0 ring-4 md:ring-8 ring-inset ring-green-400 pointer-events-none z-10" />
+      )}
+      {isShaman && (
+        <div className="absolute inset-0 ring-4 md:ring-8 ring-inset ring-purple-400 pointer-events-none z-10" />
       )}
 
       {/* Numéro du jour — haut-gauche (toujours jaune) */}
@@ -454,6 +460,18 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
               strokeWidth={1.8}
             />
             <span className="relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none text-green-900">
+              {day.value}
+            </span>
+          </div>
+
+        ) : isShaman ? (
+          /* SHAMAN — bouclier violet sombre avec valeur */
+          <div className="relative flex items-center justify-center w-[82%] h-[82%]">
+            <Shield
+              className="absolute inset-0 w-full h-full text-purple-800 fill-purple-200/80"
+              strokeWidth={1.8}
+            />
+            <span className="relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none text-purple-900">
               {day.value}
             </span>
           </div>
@@ -546,6 +564,13 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         </div>
       )}
 
+      {/* Indicateur Shaman de l'Ombre */}
+      {isShaman && (
+        <div className="absolute bottom-3.5 left-3 z-30">
+          <Ghost size={22} className="text-purple-400" />
+        </div>
+      )}
+
       {/* Indicateur potion de mana */}
       {day.hasMana && (
         <div className={`absolute bottom-2 right-0.5 z-30 drop-shadow-[0_0_4px_rgba(96,165,250,0.9)] ${isCompleted ? 'opacity-75' : ''}`}>
@@ -557,7 +582,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
       {isCompleted && (
         <>
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="absolute inset-0 pointer-events-none z-10"
             style={{
               backgroundColor: 'rgba(34, 197, 94, 0.75)',
               backgroundImage: isWingComplete

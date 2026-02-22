@@ -6,7 +6,7 @@ import {
   CartesianGrid, Tooltip, Legend,
   Area, AreaChart,
 } from 'recharts';
-import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap, Layers2, EyeOff, Axe, FlaskConical } from 'lucide-react';
+import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap, Layers2, EyeOff, Axe, FlaskConical, Ghost } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -32,6 +32,8 @@ const COLORS = {
   wings:       '#4ade80',
   invisibles:  '#9ca3af',
   necromancer: '#16a34a',
+  influenced:  '#f97316',
+  shaman:      '#a855f7',
 };
 
 const UNDEAD_RULE_START      = 2; // Mars (index 2)
@@ -41,6 +43,7 @@ const DOUBLE_RULE_START      = 6; // Juillet (index 6)
 const INVISIBLE_RULE_START   = 8; // Septembre (index 8)
 const NECROMANCER_RULE_START = 8; // Septembre (index 8)
 const INFLUENCED_RULE_START  = 9; // Octobre (index 9)
+const SHAMAN_RULE_START      = 10; // Novembre (index 10)
 
 
 function buildMonthlyData(yearData) {
@@ -65,6 +68,7 @@ function buildMonthlyData(yearData) {
       invisibles: s.invisiblesDefeated,
       necromancer: s.necromancersDefeated ?? 0,
       influenced: s.influencedBossesDefeated ?? 0,
+      shaman: s.shamansDefeated ?? 0,
     };
   });
 }
@@ -110,6 +114,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const hasInvisible   = maxMonth >= INVISIBLE_RULE_START;
   const hasNecromancer = maxMonth >= NECROMANCER_RULE_START;
   const hasInfluenced  = maxMonth >= INFLUENCED_RULE_START;
+  const hasShaman      = maxMonth >= SHAMAN_RULE_START;
 
   // Moyenne sur les mois joués (au moins 1 point)
   const playedMonths = data.filter(m => m.score > 0);
@@ -148,6 +153,10 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   // Boss influencés vaincus (depuis octobre)
   const influencedData = data.slice(INFLUENCED_RULE_START);
   const influencedDefeatedTotal = influencedData.reduce((s, m) => s + m.influenced, 0);
+
+  // Shamans vaincus (depuis novembre)
+  const shamanData = data.slice(SHAMAN_RULE_START);
+  const shamanDefeatedTotal = shamanData.reduce((s, m) => s + m.shaman, 0);
 
   const longestStreak = calcLongestStreak(yearData);
 
@@ -235,7 +244,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Moyennes par mois */}
       <Section title="Moyenne mensuelle">
         {(() => {
-          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasDouble ? 1 : 0) + (hasMana ? 1 : 0) + (hasInvisible ? 1 : 0) + (hasNecromancer ? 1 : 0) + (hasInfluenced ? 1 : 0);
+          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasDouble ? 1 : 0) + (hasMana ? 1 : 0) + (hasInvisible ? 1 : 0) + (hasNecromancer ? 1 : 0) + (hasInfluenced ? 1 : 0) + (hasShaman ? 1 : 0);
           const gridClass = optCount === 0 ? 'sm:grid-cols-5'
             : optCount === 1 ? 'sm:grid-cols-3'
             : optCount >= 4 ? 'sm:grid-cols-5'
@@ -251,6 +260,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             ...(hasInvisible ? [{ icon: <EyeOff size={22} className="text-gray-400" />, label: 'Invisibles/mois', value: avgInvisible, color: 'text-gray-300' }] : []),
             ...(hasNecromancer ? [{ icon: <Skull size={22} className="text-green-600" />, label: 'Nécromancien', value: necromancerDefeatedTotal, color: 'text-green-500' }] : []),
             ...(hasInfluenced ? [{ icon: <Flame size={22} className="text-orange-400" />, label: 'Boss influencés', value: influencedDefeatedTotal, color: 'text-orange-400' }] : []),
+            ...(hasShaman ? [{ icon: <Ghost size={22} className="text-purple-400" />, label: 'Shamans', value: shamanDefeatedTotal, color: 'text-purple-400' }] : []),
             { icon: <AlertTriangle size={22} className="text-violet-400" />,   label: 'Pièges/mois',      value: avg('traps'),    color: 'text-violet-400' },
             { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss/mois',        value: avg('bosses'),   color: 'text-orange-400' },
             { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes/mois',       value: avg('wings'),    color: 'text-green-400' },
@@ -314,9 +324,12 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             {hasUndead && <Bar dataKey="undead" name="Morts-Vivants" fill={COLORS.undead} radius={[0, 0, 0, 0]} stackId="a" />}
             {hasElite  && <Bar dataKey="elite"   name="Élites"         fill={COLORS.elite}   radius={[0, 0, 0, 0]} stackId="a" />}
             {hasDouble && <Bar dataKey="doubles" name="Monstres Doubles" fill={COLORS.doubles} radius={[0, 0, 0, 0]} stackId="a" />}
-            {hasInvisible && <Bar dataKey="invisibles" name="Invisibles" fill={COLORS.invisibles} radius={[0, 0, 0, 0]} stackId="a" />}
+            {hasInvisible   && <Bar dataKey="invisibles" name="Invisibles"      fill={COLORS.invisibles}  radius={[0, 0, 0, 0]} stackId="a" />}
+            {hasNecromancer && <Bar dataKey="necromancer" name="Nécromancien"   fill={COLORS.necromancer} radius={[0, 0, 0, 0]} stackId="a" />}
+            {hasInfluenced  && <Bar dataKey="influenced"  name="Boss influencés" fill={COLORS.influenced}  radius={[0, 0, 0, 0]} stackId="a" />}
+            {hasShaman      && <Bar dataKey="shaman"      name="Shamans"         fill={COLORS.shaman}      radius={[0, 0, 0, 0]} stackId="a" />}
             <Bar dataKey="traps"    name="Pièges"         fill={COLORS.traps}    radius={[0, 0, 0, 0]} stackId="a" />
-            <Bar dataKey="bosses"   name="Boss"          fill={COLORS.bosses}   radius={[2, 2, 0, 0]} stackId="a" />
+            <Bar dataKey="bosses"   name="Boss"           fill={COLORS.bosses}   radius={[2, 2, 0, 0]} stackId="a" />
           </BarChart>
         </ResponsiveContainer>
       </Section>
@@ -349,6 +362,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasInvisible && <th className="text-right py-2 font-medium text-gray-400">Invisibles</th>}
                 {hasNecromancer && <th className="text-right py-2 font-medium text-green-600">Nécro.</th>}
                 {hasInfluenced && <th className="text-right py-2 font-medium text-orange-400">Influen.</th>}
+                {hasShaman && <th className="text-right py-2 font-medium text-purple-400">Shamans</th>}
                 <th className="text-right py-2 font-medium text-violet-400">Pièges</th>
                 <th className="text-right py-2 font-medium text-orange-400">Boss</th>
                 <th className="text-right py-2 font-medium text-green-400">Ailes</th>
@@ -367,6 +381,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                   {hasInvisible && <td className="py-2 text-right text-gray-300">{row.invisibles}</td>}
                   {hasNecromancer && <td className="py-2 text-right text-green-500">{row.necromancer}</td>}
                   {hasInfluenced && <td className="py-2 text-right text-orange-400">{row.influenced}</td>}
+                  {hasShaman && <td className="py-2 text-right text-purple-400">{row.shaman}</td>}
                   <td className="py-2 text-right text-violet-400">{row.traps}</td>
                   <td className="py-2 text-right text-orange-400">{row.bosses}</td>
                   <td className="py-2 text-right text-green-400">{row.wings}</td>
@@ -385,6 +400,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasInvisible && <td className="py-2 text-right text-gray-300">{data.reduce((s, m) => s + m.invisibles, 0)}</td>}
                 {hasNecromancer && <td className="py-2 text-right text-green-500">{necromancerDefeatedTotal}</td>}
                 {hasInfluenced && <td className="py-2 text-right text-orange-400">{influencedDefeatedTotal}</td>}
+                {hasShaman && <td className="py-2 text-right text-purple-400">{shamanDefeatedTotal}</td>}
                 <td className="py-2 text-right text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
                 <td className="py-2 text-right text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
                 <td className="py-2 text-right text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>

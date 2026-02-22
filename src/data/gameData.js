@@ -130,6 +130,7 @@ export function calculateScore(yearData) {
   let invisiblesDefeated = 0;
   let necromancersDefeated = 0;
   let influencedBossesDefeated = 0;
+  let shamansDefeated = 0;
 
   yearData.forEach(month => {
     // ── Nécromancien : vérification par mois ──
@@ -142,6 +143,7 @@ export function calculateScore(yearData) {
       week.days.forEach(day => {
         if (!day.completed) return;
         if (day.type === 'NECROMANCER') { totalScore += 1; necromancersDefeated++; }
+        else if (day.type === 'SHAMAN') { totalScore += 1; shamansDefeated++; }
         else if (day.type === 'BOSS')   {
           totalScore += 2; bossesDefeated++;
           if (day.isInfluenced) { totalScore += 10; influencedBossesDefeated++; }
@@ -193,6 +195,7 @@ export function calculateScore(yearData) {
     invisiblesDefeated,
     necromancersDefeated,
     influencedBossesDefeated,
+    shamansDefeated,
   };
 }
 

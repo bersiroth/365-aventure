@@ -60,6 +60,7 @@ export function computeScoreFromSave(encoded) {
   let invisiblesDefeated = 0;
   let necromancersDefeated = 0;
   let influencedBossesDefeated = 0;
+  let shamansDefeated = 0;
   let globalIndex = 0;
 
   MONTHS_2026.forEach((month, monthIndex) => {
@@ -87,6 +88,7 @@ export function computeScoreFromSave(encoded) {
     monthDays.forEach(d => {
       if (!d.completed) return;
       if (d.type === 'NECROMANCER') { totalScore += 1; necromancersDefeated++; }
+      else if (d.type === 'SHAMAN') { totalScore += 1; shamansDefeated++; }
       else if (d.type === 'BOSS')   {
         totalScore += 2; bossesDefeated++;
         if (d.isInfluenced) { totalScore += 10; influencedBossesDefeated++; }
@@ -122,5 +124,5 @@ export function computeScoreFromSave(encoded) {
     }
   });
 
-  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned, invisiblesDefeated, necromancersDefeated, influencedBossesDefeated };
+  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned, invisiblesDefeated, necromancersDefeated, influencedBossesDefeated, shamansDefeated };
 }

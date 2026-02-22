@@ -92,6 +92,19 @@ export const MONTH_RULES = {
       },
     ],
   },
+  10: {
+    title: "Le Shaman de l'Ombre",
+    sections: [
+      {
+        heading: null,
+        body: "Chaque aile du donjon peut contenir un Shaman de l'Ombre sur la première case de la semaine.",
+      },
+      {
+        heading: 'Règle',
+        body: "Tant qu'il n'est pas vaincu, vous ne pouvez pas relancer les dés dans cette aile, sauf en utilisant des objets magiques.",
+      },
+    ],
+  },
   9: {
     title: "L'Influence des Morts-Vivants Enchaînés",
     sections: [
@@ -544,38 +557,40 @@ export const MONTH_CONFIGS = {
 
   // ──────────────────────────────────────────────────────────────
   //  NOVEMBRE (index 10)  — Dimanches : 1, 8, 15, 22, 29
+  //  Règle : Le Shaman de l'Ombre — première case de chaque aile
+  //  SHAMAN sur les Lundis : 2, 9, 16, 23, 30
   // ──────────────────────────────────────────────────────────────
   10: {
      1: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     2: { type: 'MONSTER', value: 1  },
+     2: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre (1ère case aile)
      3: { type: 'MONSTER', value: 1  },
      4: { type: 'MONSTER', value: 1  },
      5: { type: 'MONSTER', value: 1  },
      6: { type: 'MONSTER', value: 1  },
      7: { type: 'MONSTER', value: 1  },
      8: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     9: { type: 'MONSTER', value: 1  },
+     9: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
     10: { type: 'MONSTER', value: 1  },
     11: { type: 'MONSTER', value: 1  },
     12: { type: 'MONSTER', value: 1  },
     13: { type: 'MONSTER', value: 1  },
     14: { type: 'MONSTER', value: 1  },
     15: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    16: { type: 'MONSTER', value: 1  },
+    16: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
     17: { type: 'MONSTER', value: 1  },
     18: { type: 'MONSTER', value: 1  },
     19: { type: 'MONSTER', value: 1  },
     20: { type: 'MONSTER', value: 1  },
     21: { type: 'MONSTER', value: 1  },
     22: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    23: { type: 'MONSTER', value: 1  },
+    23: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
     24: { type: 'MONSTER', value: 1  },
     25: { type: 'MONSTER', value: 1  },
     26: { type: 'MONSTER', value: 1  },
     27: { type: 'MONSTER', value: 1  },
     28: { type: 'MONSTER', value: 1  },
     29: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    30: { type: 'MONSTER', value: 1  },
+    30: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
   },
 
   // ──────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -15,10 +15,10 @@ function CrossedBonesIcon({ size = 24, className }) {
 /**
  * Panneau d'affichage du score
  */
-export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite, showDouble, showInvisible, showNecromancer, showInfluenced }) {
+export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite, showDouble, showInvisible, showNecromancer, showInfluenced, showShaman }) {
   if (!score) return null;
 
-  const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0) + (showInfluenced ? 1 : 0);
+  const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0) + (showInfluenced ? 1 : 0) + (showShaman ? 1 : 0);
   const gridCols = optCount === 0 ? 'grid-cols-5'
     : optCount === 1 ? 'grid-cols-3'
     : optCount >= 4 ? 'grid-cols-5'
@@ -65,6 +65,7 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite,
             {showInvisible && <MiniStat icon={<EyeOff className="text-gray-400" size={18} />} value={score.invisiblesDefeated} color="text-gray-300" label="Invisibles" />}
             {showNecromancer && <MiniStat icon={<Skull className="text-green-600" size={18} />} value={score.necromancersDefeated ?? 0} color="text-green-500" label="Nécro." />}
             {showInfluenced && <MiniStat icon={<Flame className="text-orange-400" size={18} />} value={score.influencedBossesDefeated ?? 0} color="text-orange-400" label="Influen." />}
+            {showShaman && <MiniStat icon={<Ghost className="text-purple-400" size={18} />} value={score.shamansDefeated ?? 0} color="text-purple-400" label="Shamans" />}
             <MiniStat icon={<AlertTriangle className="text-violet-400" size={18} />} value={score.trapsDefeated} color="text-violet-400" label="Pièges" />
             <MiniStat icon={<Crown className="text-orange-400" size={18} />} value={score.bossesDefeated} color="text-orange-400" label="Boss" />
             <MiniStat icon={<Swords className="text-green-400" size={18} />} value={score.completeWings} color="text-green-400" label="Ailes" />
@@ -81,6 +82,7 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite,
             {showInvisible && <StatCard icon={<EyeOff className="text-gray-400" size={32} />} label="Invisibles" value={score.invisiblesDefeated} color="text-gray-300" subtext="+1 point" labelClassName="text-xs" />}
             {showNecromancer && <StatCard icon={<Skull className="text-green-600" size={32} />} label="Nécro" value={score.necromancersDefeated ?? 0} color="text-green-500" subtext="+1 point" labelClassName="text-xs" />}
             {showInfluenced && <StatCard icon={<Flame className="text-orange-400" size={32} />} label="Influencés" value={score.influencedBossesDefeated ?? 0} color="text-orange-400" subtext="+10 points bonus" labelClassName="text-xs" />}
+            {showShaman && <StatCard icon={<Ghost className="text-purple-400" size={32} />} label="Shamans" value={score.shamansDefeated ?? 0} color="text-purple-400" subtext="+1 point" labelClassName="text-xs" />}
             <StatCard icon={<AlertTriangle className="text-violet-400" size={32} />} label="Pièges" value={score.trapsDefeated} color="text-violet-400" subtext="+1 point" />
             <StatCard icon={<Crown className="text-orange-400" size={32} />} label="Boss" value={score.bossesDefeated} color="text-orange-400" subtext="+2 points" />
             <StatCard icon={<Swords className="text-green-400" size={32} />} label="Ailes" value={score.completeWings} color="text-green-400" subtext="+3 points" />

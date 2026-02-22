@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -15,7 +15,7 @@ import { getPlayers } from '../api';
 import { LEVEL_TITLES } from '../data/trophyData';
 
 
-export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible, showNecromancer, showInfluenced }) {
+export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible, showNecromancer, showInfluenced, showShaman }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -68,21 +68,15 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
           <div className="divide-y divide-gray-700/50">
             {/* Table header */}
             {(() => {
-              const optCount = (showUndead ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showMana ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0) + (showInfluenced ? 1 : 0);
-              const gridCols = optCount >= 5
-                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
-                : optCount === 4
-                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
-                : optCount === 3
-                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
-                : optCount === 2
-                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem_5rem]'
-                : optCount === 1
-                ? 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem_5rem]'
-                : 'grid-cols-[3rem_1fr_5rem_5rem_5rem_5rem_5rem]';
+              // Colonnes optionnelles du milieu (entre Monstres et Pièges)
+              const optMiddleCount = (showUndead ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0) + (showInfluenced ? 1 : 0) + (showShaman ? 1 : 0);
+              const optMiddleCols = optMiddleCount > 0 ? Array(optMiddleCount).fill('4rem').join(' ') + ' ' : '';
+              // Inline style pour éviter les problèmes de Tailwind JIT avec les colonnes dynamiques
+              // 4rem pour colonnes optionnelles (évite que 1fr = 0 quand beaucoup de colonnes)
+              const gridTemplateColumns = `3rem 1fr 5rem 5rem ${optMiddleCols}5rem 5rem 5rem${showMana ? ' 4rem' : ''}`;
               return (
                 <>
-                  <div className={`hidden md:grid ${gridCols} gap-2 px-6 py-3 text-xs text-gray-500 uppercase tracking-wide font-medieval`}>
+                  <div className="hidden md:grid gap-2 px-6 py-3 text-xs text-gray-500 uppercase tracking-wide font-medieval" style={{ gridTemplateColumns }}>
                     <div>#</div>
                     <div>Joueur</div>
                     <div className="text-center text-dungeon-gold">Score</div>
@@ -93,6 +87,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                     {showInvisible && <div className="text-center text-gray-400">Invis.</div>}
                     {showNecromancer && <div className="text-center text-green-600">Nécro.</div>}
                     {showInfluenced && <div className="text-center text-orange-400">Influen.</div>}
+                    {showShaman && <div className="text-center text-purple-400">Shamans</div>}
                     <div className="text-center text-violet-400">Pièges</div>
                     <div className="text-center text-orange-400">Boss</div>
                     <div className="text-center text-green-400">Ailes</div>
@@ -109,11 +104,11 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                         className={`w-full text-left transition-colors ${isCurrentPlayer ? 'bg-dungeon-gold/10 cursor-default' : 'hover:bg-dungeon-gold/5'}`}
                       >
                         {/* Desktop */}
-                        <div className={`hidden md:grid ${gridCols} gap-2 px-6 py-4 items-center`}>
+                        <div className="hidden md:grid gap-2 px-6 py-4 items-center" style={{ gridTemplateColumns }}>
                           <div className={`font-bold text-lg ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</div>
-                          <div className="truncate">
-                            <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
-                            {player.level != null && <span className="ml-2 text-xs font-normal text-gray-500">Niv.{player.level} — {LEVEL_TITLES[(player.level || 1) - 1]}</span>}
+                          <div className="min-w-0">
+                            <div className={`font-medieval font-bold truncate ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</div>
+                            {player.level != null && <div className="text-xs text-gray-500 truncate">Niv.{player.level} — {LEVEL_TITLES[(player.level || 1) - 1]}</div>}
                           </div>
                           <div className="text-center font-bold text-dungeon-gold">{player.total_score}</div>
                           <div className="text-center text-sky-400">{player.monsters_defeated}</div>
@@ -123,6 +118,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                           {showInvisible && <div className="text-center text-gray-300">{player.invisibles_defeated ?? 0}</div>}
                           {showNecromancer && <div className="text-center text-green-500">{player.necromancer_defeated ?? 0}</div>}
                           {showInfluenced && <div className="text-center text-orange-400">{player.influenced_bosses_defeated ?? 0}</div>}
+                          {showShaman && <div className="text-center text-purple-400">{player.shamans_defeated ?? 0}</div>}
                           <div className="text-center text-violet-400">{player.traps_defeated}</div>
                           <div className="text-center text-orange-400">{player.bosses_defeated}</div>
                           <div className="text-center text-green-400">{player.complete_wings}</div>
@@ -152,6 +148,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                             {showInvisible && <span className="text-gray-300"><EyeOff size={12} className="inline text-gray-400" /> {player.invisibles_defeated ?? 0}</span>}
                             {showNecromancer && <span className="text-green-500"><Skull size={12} className="inline text-green-600" /> {player.necromancer_defeated ?? 0}</span>}
                             {showInfluenced && <span className="text-orange-400"><Flame size={12} className="inline" /> {player.influenced_bosses_defeated ?? 0}</span>}
+                            {showShaman && <span className="text-purple-400"><Ghost size={12} className="inline" /> {player.shamans_defeated ?? 0}</span>}
                             <span className="text-violet-400"><AlertTriangle size={12} className="inline" /> {player.traps_defeated}</span>
                             <span><Crown size={12} className="inline text-orange-400" /> {player.bosses_defeated}</span>
                             <span><Swords size={12} className="inline text-green-400" /> {player.complete_wings}</span>

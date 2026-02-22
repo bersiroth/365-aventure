@@ -159,7 +159,7 @@ function App() {
         );
 
       case 'players':
-        return <PlayerList onSelectPlayer={handleSelectPlayer} currentPlayerId={player?.id} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} />;
+        return <PlayerList onSelectPlayer={handleSelectPlayer} currentPlayerId={player?.id} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} showShaman={maxMonth >= 10} />;
 
       case 'player-detail':
         return (
@@ -181,7 +181,7 @@ function App() {
         }
         return (
           <>
-            <ScorePanel score={score} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} />
+            <ScorePanel score={score} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} showShaman={maxMonth >= 10} />
             <MonthSelector
               months={yearData}
               selectedMonth={Math.min(selectedMonth, maxMonth)}
