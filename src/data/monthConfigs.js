@@ -76,7 +76,24 @@ export const MONTH_RULES = {
       },
       {
         heading: 'Bonus',
-        body: "Si vous réussissez, vous gagnez un bonus de 2 points. Le combat supplémentaire suit les mêmes règles qu'un combat normal.",
+        body: "Si vous réussissez, vous gagnez un bonus de 2 points.",
+      },
+      {
+        heading: 'Exemple',
+        body: "Sur une case avec deux monstres (valeurs 3 et 4), des résultat de dès tels 1, 3, 3, 4, 4 permettent de vaincre les deux monstres",
+      },
+    ],
+  },
+  8: {
+    title: 'Monstres Invisibles',
+    sections: [
+      {
+        heading: null,
+        body: "Les monstres invisibles apparaissent dans tout le donjon. Ils se distinguent par leur contour pointillé et leur bouclier rond.",
+      },
+      {
+        heading: 'Règle',
+        body: "Ils ne peuvent être affrontés que lorsque Mira se trouve précisément sur leur case.",
       },
     ],
   },
@@ -411,7 +428,7 @@ export const MONTH_CONFIGS = {
     25: { type: 'MONSTER', value: 1  },
     26: { type: 'MONSTER', value: 1  },
     27: { type: 'MONSTER', value: 1  },
-    28: { type: 'MONSTER', value: 1  },
+    28: { type: 'MONSTER', value: 1, isInvisible: true   },
     29: { type: 'MONSTER', value: 1  },
     30: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
     31: { type: 'MONSTER', value: 1  },
@@ -432,7 +449,7 @@ export const MONTH_CONFIGS = {
      9: { type: 'MONSTER', value: 1  },
     10: { type: 'MONSTER', value: 1  },
     11: { type: 'MONSTER', value: 1  },
-    12: { type: 'MONSTER', value: 1  },
+    12: { type: 'MONSTER', value: 1, isInvisible: true   },
     13: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
     14: { type: 'MONSTER', value: 1  },
     15: { type: 'MONSTER', value: 1  },

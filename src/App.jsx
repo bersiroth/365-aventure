@@ -93,7 +93,7 @@ function App() {
   const now = new Date();
   const maxMonth = now.getFullYear() < 2026 ? 0
     : now.getFullYear() > 2026 ? 11
-    : 7; // dev: 8 premiers mois débloqués
+    : 11; // dev: tous les mois débloqués
 
   // Connecté
   const navigateTo = (view) => {
@@ -133,7 +133,7 @@ function App() {
         );
 
       case 'players':
-        return <PlayerList onSelectPlayer={handleSelectPlayer} currentPlayerId={player?.id} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} />;
+        return <PlayerList onSelectPlayer={handleSelectPlayer} currentPlayerId={player?.id} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} />;
 
       case 'player-detail':
         return (
@@ -155,7 +155,7 @@ function App() {
         }
         return (
           <>
-            <ScorePanel score={score} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} />
+            <ScorePanel score={score} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} />
             <MonthSelector
               months={yearData}
               selectedMonth={Math.min(selectedMonth, maxMonth)}

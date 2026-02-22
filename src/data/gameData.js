@@ -52,6 +52,7 @@ export function generateYear2026() {
       const value = dayConfig?.value ?? (isBoss ? 17 : 1);
       const hasMana = dayConfig?.hasMana ?? false;
       const isElite = dayConfig?.isElite ?? false;
+      const isInvisible = dayConfig?.isInvisible ?? false;
       const value2 = dayConfig?.value2 ?? null;
       const manaSlot = hasMana ? manaCount++ : null;
 
@@ -69,6 +70,7 @@ export function generateYear2026() {
         hasMana,
         manaSlot,
         isElite,
+        isInvisible,
       };
 
       currentWeek.push(dayData);
@@ -123,6 +125,7 @@ export function calculateScore(yearData) {
   let bossesDefeated = 0;
   let completeWings = 0;
   let manaPotionsEarned = 0;
+  let invisiblesDefeated = 0;
 
   yearData.forEach(month => {
     // ── Points par jour ──
@@ -136,6 +139,7 @@ export function calculateScore(yearData) {
         else                            { totalScore += 1; monstersDefeated++; }
         if (day.isElite) eliteDefeated++;
         if (day.hasMana) manaPotionsEarned++;
+        if (day.isInvisible) invisiblesDefeated++;
       });
     });
 
@@ -170,6 +174,7 @@ export function calculateScore(yearData) {
     bossesDefeated,
     completeWings,
     manaPotionsEarned,
+    invisiblesDefeated,
   };
 }
 

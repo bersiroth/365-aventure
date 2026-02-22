@@ -39,8 +39,9 @@ for (const [col, type] of [
   ['trophies',            "TEXT NOT NULL DEFAULT '{}'"],
   ['trophy_xp',           'INTEGER NOT NULL DEFAULT 0'],
   ['level',               'INTEGER NOT NULL DEFAULT 1'],
-  ['elite_defeated',      'INTEGER NOT NULL DEFAULT 0'],
-  ['doubles_defeated',    'INTEGER NOT NULL DEFAULT 0'],
+  ['elite_defeated',        'INTEGER NOT NULL DEFAULT 0'],
+  ['doubles_defeated',      'INTEGER NOT NULL DEFAULT 0'],
+  ['invisibles_defeated',   'INTEGER NOT NULL DEFAULT 0'],
 ]) {
   try { db.exec(`ALTER TABLE players ADD COLUMN ${col} ${type}`); } catch {}
 }

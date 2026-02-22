@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
 /* Fiole de mana — corps rond, col étroit, bouchon rouge, liquide bleu lumineux */
@@ -346,6 +346,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
   const isUndead = day.type === 'UNDEAD';
   const isDouble = day.type === 'DOUBLE';
   const isElite = day.isElite ?? false;
+  const isInvisible = day.isInvisible ?? false;
   const isCompleted = day.completed;
 
   const handleClick = () => {
@@ -370,7 +371,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
     <button
       onClick={handleClick}
       disabled={isReadOnly}
-      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +2 pts` : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
+      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +2 pts` : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
         rounded-sm
@@ -391,6 +392,9 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
       )}
       {isElite && (
         <div className="absolute inset-0 ring-1 ring-inset ring-yellow-300/60 pointer-events-none" />
+      )}
+      {isInvisible && (
+        <div className="absolute inset-0 border-2 border-dashed border-blue-200/90 pointer-events-none z-10 rounded-sm" />
       )}
 
       {/* Numéro du jour — haut-gauche (toujours jaune) */}
@@ -424,6 +428,18 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
           <div className="relative flex items-center justify-center w-[85%] h-[85%]">
             <TrapTriangle className="absolute inset-0 w-full h-full text-red-600" />
             <span className="relative z-10 text-red-700 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none mt-[30%]">
+              {day.value}
+            </span>
+          </div>
+
+        ) : isInvisible ? (
+          /* INVISIBLE — bouclier rond (cercle) + translucide */
+          <div className="relative flex items-center justify-center w-[82%] h-[82%] opacity-75">
+            <Circle
+              className="absolute inset-0 w-full h-full text-blue-300/80 fill-gray-200/90"
+              strokeWidth={1.5}
+            />
+            <span className="relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none text-black/70">
               {day.value}
             </span>
           </div>

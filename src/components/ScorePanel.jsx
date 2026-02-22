@@ -1,4 +1,4 @@
-import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap, Layers2 } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap, Layers2, EyeOff } from 'lucide-react';
 
 function ManaPotionIcon({ size = 32 }) {
   return (
@@ -18,13 +18,13 @@ function ManaPotionIcon({ size = 32 }) {
 /**
  * Panneau d'affichage du score
  */
-export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite, showDouble }) {
+export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite, showDouble, showInvisible }) {
   if (!score) return null;
 
-  const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0);
+  const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showInvisible ? 1 : 0);
   const gridCols = optCount === 0 ? 'grid-cols-5'
     : optCount === 1 ? 'grid-cols-3'
-    : optCount === 4 ? 'grid-cols-5'
+    : optCount >= 4 ? 'grid-cols-5'
     : 'grid-cols-4';
 
   return (
@@ -61,10 +61,11 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite,
           {/* Mobile compact */}
           <div className={`md:hidden grid gap-[1px] bg-gray-700/40 rounded-lg overflow-hidden ${gridCols}`}>
             <MiniStat icon={<Trophy className="text-dungeon-gold" size={18} />} value={score.totalScore} color="text-dungeon-gold" label="Score" />
-            <MiniStat icon={<Skull className="text-gray-400" size={18} />} value={score.monstersDefeated} color="text-gray-300" label="Monstres" />
+            <MiniStat icon={<Skull className="text-sky-600" size={18} />} value={score.monstersDefeated} color="text-sky-400" label="Monstres" />
             {showUndead && <MiniStat icon={<Skull className="text-yellow-400" size={18} />} value={score.undeadDefeated} color="text-yellow-300" label="Morts" />}
             {showElite && <MiniStat icon={<Zap className="text-red-400" size={18} />} value={score.eliteDefeated} color="text-red-400" label="Élites" />}
             {showDouble && <MiniStat icon={<Layers2 className="text-indigo-400" size={18} />} value={score.doublesDefeated} color="text-indigo-400" label="Doubles" />}
+            {showInvisible && <MiniStat icon={<EyeOff className="text-gray-400" size={18} />} value={score.invisiblesDefeated} color="text-gray-300" label="Invisibles" />}
             <MiniStat icon={<AlertTriangle className="text-violet-400" size={18} />} value={score.trapsDefeated} color="text-violet-400" label="Pièges" />
             <MiniStat icon={<Crown className="text-orange-400" size={18} />} value={score.bossesDefeated} color="text-orange-400" label="Boss" />
             <MiniStat icon={<Swords className="text-green-400" size={18} />} value={score.completeWings} color="text-green-400" label="Ailes" />
@@ -74,10 +75,11 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite,
           {/* Desktop full cards */}
           <div className={`hidden md:grid gap-4 ${gridCols}`}>
             <StatCard icon={<Trophy className="text-dungeon-gold" size={32} />} value={score.totalScore} color="text-dungeon-gold" subtext="Score Total" />
-            <StatCard icon={<Skull className="text-gray-400" size={32} />} label="Monstres" value={score.monstersDefeated} color="text-gray-300" subtext="+1 pt/monstre" />
+            <StatCard icon={<Skull className="text-sky-600" size={32} />} label="Monstres" value={score.monstersDefeated} color="text-sky-400" subtext="+1 pt/monstre" />
             {showUndead && <StatCard icon={<Skull className="text-yellow-400" size={32} />} label="Morts" value={score.undeadDefeated} color="text-yellow-300" subtext="+1 pt/mort" labelClassName="text-xs" />}
             {showElite && <StatCard icon={<Zap className="text-red-400" size={32} />} label="Élites" value={score.eliteDefeated} color="text-red-400" subtext="+1 pt/élite" labelClassName="text-xs" />}
             {showDouble && <StatCard icon={<Layers2 className="text-indigo-400" size={32} />} label="Doubles" value={score.doublesDefeated} color="text-indigo-400" subtext="+2 pts/double" labelClassName="text-xs" />}
+            {showInvisible && <StatCard icon={<EyeOff className="text-gray-400" size={32} />} label="Invisibles" value={score.invisiblesDefeated} color="text-gray-300" subtext="+1 pt/invisible" labelClassName="text-xs" />}
             <StatCard icon={<AlertTriangle className="text-violet-400" size={32} />} label="Pièges" value={score.trapsDefeated} color="text-violet-400" subtext="+1 pt/piège" />
             <StatCard icon={<Crown className="text-orange-400" size={32} />} label="Boss" value={score.bossesDefeated} color="text-orange-400" subtext="+2 pts/boss" />
             <StatCard icon={<Swords className="text-green-400" size={32} />} label="Ailes" value={score.completeWings} color="text-green-400" subtext="+3 pts/aile" />

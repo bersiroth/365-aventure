@@ -57,6 +57,7 @@ export function computeScoreFromSave(encoded) {
   let bossesDefeated = 0;
   let completeWings = 0;
   let manaPotionsEarned = 0;
+  let invisiblesDefeated = 0;
   let globalIndex = 0;
 
   MONTHS_2026.forEach((month, monthIndex) => {
@@ -69,6 +70,7 @@ export function computeScoreFromSave(encoded) {
       const type = dayConfig?.type ?? (isBoss ? 'BOSS' : 'MONSTER');
       const hasMana = dayConfig?.hasMana ?? false;
       const isElite = dayConfig?.isElite ?? false;
+      const isInvisible = dayConfig?.isInvisible ?? false;
       const completed = bits[globalIndex] === 1;
 
       if (completed) {
@@ -79,6 +81,7 @@ export function computeScoreFromSave(encoded) {
         else                        { totalScore += 1; monstersDefeated++; }
         if (isElite) eliteDefeated++;
         if (hasMana) manaPotionsEarned++;
+        if (isInvisible) invisiblesDefeated++;
       }
 
       monthDays.push({ dayOfWeekIndex, completed });
@@ -104,5 +107,5 @@ export function computeScoreFromSave(encoded) {
     }
   });
 
-  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned };
+  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned, invisiblesDefeated };
 }
