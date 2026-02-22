@@ -52,6 +52,7 @@ export function computeScoreFromSave(encoded) {
   let monstersDefeated = 0;
   let undeadDefeated = 0;
   let eliteDefeated = 0;
+  let doublesDefeated = 0;
   let trapsDefeated = 0;
   let bossesDefeated = 0;
   let completeWings = 0;
@@ -74,6 +75,7 @@ export function computeScoreFromSave(encoded) {
         if (type === 'BOSS')        { totalScore += 2; bossesDefeated++; }
         else if (type === 'TRAP')   { totalScore += 1; trapsDefeated++; }
         else if (type === 'UNDEAD') { totalScore += 1; undeadDefeated++; }
+        else if (type === 'DOUBLE') { totalScore += 2; doublesDefeated++; }
         else                        { totalScore += 1; monstersDefeated++; }
         if (isElite) eliteDefeated++;
         if (hasMana) manaPotionsEarned++;
@@ -102,5 +104,5 @@ export function computeScoreFromSave(encoded) {
     }
   });
 
-  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned };
+  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned };
 }

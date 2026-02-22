@@ -67,6 +67,19 @@ export const MONTH_RULES = {
       },
     ],
   },
+  6: {
+    title: 'Monstres Doubles',
+    sections: [
+      {
+        heading: null,
+        body: "Sur les cases avec deux monstres, deux valeurs sont indiquées. Pour vaincre les deux monstres, vous devez obtenir deux dés de chaque valeur.",
+      },
+      {
+        heading: 'Bonus',
+        body: "Si vous réussissez, vous gagnez un bonus de 2 points. Le combat supplémentaire suit les mêmes règles qu'un combat normal.",
+      },
+    ],
+  },
   7: {
     title: 'Anneau Ancien',
     sections: [
@@ -334,37 +347,37 @@ export const MONTH_CONFIGS = {
   //  JUILLET (index 6)  — Dimanches : 5, 12, 19, 26
   // ──────────────────────────────────────────────────────────────
   6: {
-     1: { type: 'MONSTER', value: 1  },
-     2: { type: 'MONSTER', value: 1  },
-     3: { type: 'MONSTER', value: 1  },
-     4: { type: 'MONSTER', value: 1  },
-     5: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     6: { type: 'MONSTER', value: 1  },
-     7: { type: 'MONSTER', value: 1  },
-     8: { type: 'MONSTER', value: 1  },
-     9: { type: 'MONSTER', value: 1  },
-    10: { type: 'MONSTER', value: 1  },
-    11: { type: 'MONSTER', value: 1  },
-    12: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     1: { type: 'TRAP', value: 11  },
+     2: { type: 'DOUBLE', value: 2, value2: 3  },
+     3: { type: 'UNDEAD', value: 4  },
+     4: { type: 'MONSTER', value: 5, isElite: true  },
+     5: { type: 'BOSS',    value: 21 }, // Dimanche — TODO
+     6: { type: 'MONSTER', value: 2  },
+     7: { type: 'TRAP', value: -2  },
+     8: { type: 'MONSTER', value: 3  },
+     9: { type: 'MONSTER', value: 5, hasMana: true  },
+    10: { type: 'MONSTER', value: 6, isElite: true  },
+    11: { type: 'MONSTER', value: 6  },
+    12: { type: 'BOSS',    value: 24, hasMana: true }, // Dimanche — TODO
     13: { type: 'MONSTER', value: 1  },
-    14: { type: 'MONSTER', value: 1  },
-    15: { type: 'MONSTER', value: 1  },
-    16: { type: 'MONSTER', value: 1  },
-    17: { type: 'MONSTER', value: 1  },
-    18: { type: 'MONSTER', value: 1  },
-    19: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    20: { type: 'MONSTER', value: 1  },
-    21: { type: 'MONSTER', value: 1  },
-    22: { type: 'MONSTER', value: 1  },
-    23: { type: 'MONSTER', value: 1  },
-    24: { type: 'MONSTER', value: 1  },
-    25: { type: 'MONSTER', value: 1  },
-    26: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    27: { type: 'MONSTER', value: 1  },
-    28: { type: 'MONSTER', value: 1  },
-    29: { type: 'MONSTER', value: 1  },
-    30: { type: 'MONSTER', value: 1  },
-    31: { type: 'MONSTER', value: 1  },
+    14: { type: 'UNDEAD', value: 2  },
+    15: { type: 'DOUBLE', value: 3, value2: 4  },
+    16: { type: 'MONSTER', value: 5  },
+    17: { type: 'TRAP', value: -5  },
+    18: { type: 'UNDEAD', value: 6  },
+    19: { type: 'BOSS',    value: 22 }, // Dimanche — TODO
+    20: { type: 'UNDEAD', value: 1  },
+    21: { type: 'MONSTER', value: 3, isElite: true  },
+    22: { type: 'MONSTER', value: 3  },
+    23: { type: 'MONSTER', value: 3, hasMana: true  },
+    24: { type: 'DOUBLE', value: 4, value2: 5  },
+    25: { type: 'MONSTER', value: 5  },
+    26: { type: 'BOSS',    value: 24, isElite: true }, // Dimanche — TODO
+    27: { type: 'MONSTER', value: 2  },
+    28: { type: 'DOUBLE', value: 3, value2: 4  },
+    29: { type: 'TRAP', value: -4  },
+    30: { type: 'MONSTER', value: 5  },
+    31: { type: 'MONSTER', value: 6  },
   },
 
   // ──────────────────────────────────────────────────────────────

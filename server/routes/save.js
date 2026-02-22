@@ -37,14 +37,14 @@ router.put('/', requireAuth, (req, res) => {
   db.prepare(`
     UPDATE players
     SET save_data = ?, total_score = ?, monsters_defeated = ?, undead_defeated = ?,
-        elite_defeated = ?, traps_defeated = ?, bosses_defeated = ?, complete_wings = ?,
+        elite_defeated = ?, doubles_defeated = ?, traps_defeated = ?, bosses_defeated = ?, complete_wings = ?,
         mana_potions_earned = ?, trophies = ?, trophy_xp = ?, level = ?,
         updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `).run(
     save_data,
     score.totalScore, score.monstersDefeated, score.undeadDefeated,
-    score.eliteDefeated, score.trapsDefeated, score.bossesDefeated, score.completeWings,
+    score.eliteDefeated, score.doublesDefeated, score.trapsDefeated, score.bossesDefeated, score.completeWings,
     score.manaPotionsEarned, trophiesJson, trophyXp, level,
     req.playerId
   );

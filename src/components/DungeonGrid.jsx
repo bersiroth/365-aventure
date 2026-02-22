@@ -338,11 +338,13 @@ function WingCompleteBanner() {
  * MONSTER → bouclier bleu + valeur centrée
  * TRAP    → triangle rouge + valeur négative centrée
  * BOSS    → couronne dorée + valeur
+ * DOUBLE  → deux boucliers bleus côte à côte
  */
 function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
   const isBoss = day.type === 'BOSS';
   const isTrap = day.type === 'TRAP';
   const isUndead = day.type === 'UNDEAD';
+  const isDouble = day.type === 'DOUBLE';
   const isElite = day.isElite ?? false;
   const isCompleted = day.completed;
 
@@ -368,7 +370,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
     <button
       onClick={handleClick}
       disabled={isReadOnly}
-      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
+      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +2 pts` : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
         rounded-sm
@@ -426,6 +428,23 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
             </span>
           </div>
 
+        ) : isDouble ? (
+          /* DOUBLE — deux boucliers côte à côte */
+          <div className="relative flex items-center justify-center gap-[3%] w-full h-full px-[3%]">
+            <div className="relative flex items-center justify-center w-[47%] h-[78%]">
+              <Shield className="absolute inset-0 w-full h-full text-black fill-gray-300" strokeWidth={1.8} />
+              <span className="relative z-10 font-bold text-[10px] sm:text-[15px] md:text-[22px] leading-none text-black">
+                {day.value}
+              </span>
+            </div>
+            <div className="relative flex items-center justify-center w-[47%] h-[78%]">
+              <Shield className="absolute inset-0 w-full h-full text-black fill-gray-300" strokeWidth={1.8} />
+              <span className="relative z-10 font-bold text-[10px] sm:text-[15px] md:text-[22px] leading-none text-black">
+                {day.value2}
+              </span>
+            </div>
+          </div>
+
         ) : (
           /* MONSTER/UNDEAD/ELITE — bouclier avec valeur (rouge si élite) */
           <div className="relative flex items-center justify-center w-[82%] h-[82%]">
@@ -439,6 +458,13 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
           </div>
         )}
       </div>
+
+      {/* Badge +2 pour les monstres doubles */}
+      {isDouble && (
+        <div className="absolute bottom-0.5 right-0.5 z-30 bg-dungeon-gold text-dungeon-dark text-[7px] sm:text-[9px] font-bold leading-none px-0.5 sm:px-1 py-0.5 rounded">
+          +2
+        </div>
+      )}
 
       {/* Indicateur élite */}
       {isElite && (

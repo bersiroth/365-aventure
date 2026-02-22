@@ -52,6 +52,7 @@ export function generateYear2026() {
       const value = dayConfig?.value ?? (isBoss ? 17 : 1);
       const hasMana = dayConfig?.hasMana ?? false;
       const isElite = dayConfig?.isElite ?? false;
+      const value2 = dayConfig?.value2 ?? null;
       const manaSlot = hasMana ? manaCount++ : null;
 
       const dayData = {
@@ -64,6 +65,7 @@ export function generateYear2026() {
         type,
         completed: false,
         value,
+        value2,
         hasMana,
         manaSlot,
         isElite,
@@ -116,6 +118,7 @@ export function calculateScore(yearData) {
   let monstersDefeated = 0;
   let undeadDefeated = 0;
   let eliteDefeated = 0;
+  let doublesDefeated = 0;
   let trapsDefeated = 0;
   let bossesDefeated = 0;
   let completeWings = 0;
@@ -129,6 +132,7 @@ export function calculateScore(yearData) {
         if (day.type === 'BOSS')        { totalScore += 2; bossesDefeated++; }
         else if (day.type === 'TRAP')   { totalScore += 1; trapsDefeated++;  }
         else if (day.type === 'UNDEAD') { totalScore += 1; undeadDefeated++; }
+        else if (day.type === 'DOUBLE') { totalScore += 2; doublesDefeated++; }
         else                            { totalScore += 1; monstersDefeated++; }
         if (day.isElite) eliteDefeated++;
         if (day.hasMana) manaPotionsEarned++;
@@ -161,6 +165,7 @@ export function calculateScore(yearData) {
     monstersDefeated,
     undeadDefeated,
     eliteDefeated,
+    doublesDefeated,
     trapsDefeated,
     bossesDefeated,
     completeWings,

@@ -1,4 +1,4 @@
-import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap, Layers2 } from 'lucide-react';
 
 function ManaPotionIcon({ size = 32 }) {
   return (
@@ -18,11 +18,14 @@ function ManaPotionIcon({ size = 32 }) {
 /**
  * Panneau d'affichage du score
  */
-export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite }) {
+export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite, showDouble }) {
   if (!score) return null;
 
-  const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0);
-  const gridCols = optCount === 0 ? 'grid-cols-5' : optCount === 1 ? 'grid-cols-3' : 'grid-cols-4';
+  const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0);
+  const gridCols = optCount === 0 ? 'grid-cols-5'
+    : optCount === 1 ? 'grid-cols-3'
+    : optCount === 4 ? 'grid-cols-5'
+    : 'grid-cols-4';
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
@@ -61,6 +64,7 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite 
             <MiniStat icon={<Skull className="text-gray-400" size={18} />} value={score.monstersDefeated} color="text-gray-300" label="Monstres" />
             {showUndead && <MiniStat icon={<Skull className="text-yellow-400" size={18} />} value={score.undeadDefeated} color="text-yellow-300" label="Morts" />}
             {showElite && <MiniStat icon={<Zap className="text-red-400" size={18} />} value={score.eliteDefeated} color="text-red-400" label="Élites" />}
+            {showDouble && <MiniStat icon={<Layers2 className="text-indigo-400" size={18} />} value={score.doublesDefeated} color="text-indigo-400" label="Doubles" />}
             <MiniStat icon={<AlertTriangle className="text-violet-400" size={18} />} value={score.trapsDefeated} color="text-violet-400" label="Pièges" />
             <MiniStat icon={<Crown className="text-orange-400" size={18} />} value={score.bossesDefeated} color="text-orange-400" label="Boss" />
             <MiniStat icon={<Swords className="text-green-400" size={18} />} value={score.completeWings} color="text-green-400" label="Ailes" />
@@ -73,6 +77,7 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite 
             <StatCard icon={<Skull className="text-gray-400" size={32} />} label="Monstres" value={score.monstersDefeated} color="text-gray-300" subtext="+1 pt/monstre" />
             {showUndead && <StatCard icon={<Skull className="text-yellow-400" size={32} />} label="Morts" value={score.undeadDefeated} color="text-yellow-300" subtext="+1 pt/mort" labelClassName="text-xs" />}
             {showElite && <StatCard icon={<Zap className="text-red-400" size={32} />} label="Élites" value={score.eliteDefeated} color="text-red-400" subtext="+1 pt/élite" labelClassName="text-xs" />}
+            {showDouble && <StatCard icon={<Layers2 className="text-indigo-400" size={32} />} label="Doubles" value={score.doublesDefeated} color="text-indigo-400" subtext="+2 pts/double" labelClassName="text-xs" />}
             <StatCard icon={<AlertTriangle className="text-violet-400" size={32} />} label="Pièges" value={score.trapsDefeated} color="text-violet-400" subtext="+1 pt/piège" />
             <StatCard icon={<Crown className="text-orange-400" size={32} />} label="Boss" value={score.bossesDefeated} color="text-orange-400" subtext="+2 pts/boss" />
             <StatCard icon={<Swords className="text-green-400" size={32} />} label="Ailes" value={score.completeWings} color="text-green-400" subtext="+3 pts/aile" />

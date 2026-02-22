@@ -133,7 +133,7 @@ function App() {
         );
 
       case 'players':
-        return <PlayerList onSelectPlayer={handleSelectPlayer} currentPlayerId={player?.id} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showMana={maxMonth >= 1} />;
+        return <PlayerList onSelectPlayer={handleSelectPlayer} currentPlayerId={player?.id} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} />;
 
       case 'player-detail':
         return (
@@ -155,7 +155,7 @@ function App() {
         }
         return (
           <>
-            <ScorePanel score={score} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showMana={maxMonth >= 1} />
+            <ScorePanel score={score} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} />
             <MonthSelector
               months={yearData}
               selectedMonth={Math.min(selectedMonth, maxMonth)}
