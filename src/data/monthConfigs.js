@@ -21,8 +21,12 @@
  *                  Affichage : couronne dorée avec la valeur
  *
  *   'NECROMANCER'— Case nécromancien : combat spécial — si non vaincu, les points
- *                  des morts-vivants ne comptent pas
- *                  Affichage : crâne violet avec la valeur
+ *                  des morts-vivants du mois ne comptent pas
+ *                  Affichage : bouclier vert sombre avec la valeur
+ *
+ * Flags combinables :
+ *   isInfluenced: true  — Boss influencé par un Mort-Vivant dans la même aile
+ *                         Si le Mort-Vivant de l'aile est vaincu, +10 pts bonus
  *
  * Format :
  *   numéro_du_jour: { type: 'MONSTER' | 'TRAP' | 'BOSS', value: number }
@@ -80,11 +84,32 @@ export const MONTH_RULES = {
       },
       {
         heading: 'Bonus',
-        body: "Si vous réussissez, vous gagnez un bonus de 2 points.",
+        body: "Si vous réussissez, vous gagnez un bonus de 2 points (soit 3 points au total : 1 pt de victoire + 2 pts de bonus).",
       },
       {
         heading: 'Exemple',
         body: "Sur une case avec deux monstres (valeurs 3 et 4), des résultat de dès tels 1, 3, 3, 4, 4 permettent de vaincre les deux monstres",
+      },
+    ],
+  },
+  9: {
+    title: "L'Influence des Morts-Vivants Enchaînés",
+    sections: [
+      {
+        heading: null,
+        body: "Certains boss, marqués d'un bouclier en feu, sont influencés par la présence d'un Mort-Vivant Enchaîné dans leur aile.",
+      },
+      {
+        heading: 'Affaiblissement',
+        body: "Si vous vainquez le Mort-Vivant Enchaîné de l'aile (la règle de Mars s'applique), la valeur du boss est divisée par deux.",
+      },
+      {
+        heading: 'Bonus',
+        body: "Vaincre ce boss affaibli rapporte un bonus de +10 points.",
+      },
+      {
+        heading: 'Objets magiques',
+        body: "À partir de ce mois, tous les objets magiques peuvent être utilisés deux fois par mois au lieu d'une.",
       },
     ],
   },
@@ -480,33 +505,35 @@ export const MONTH_CONFIGS = {
 
   // ──────────────────────────────────────────────────────────────
   //  OCTOBRE (index 9)  — Dimanches : 4, 11, 18, 25
+  //  Règle : Influence des Morts-Vivants Enchaînés
+  //  Boss avec isInfluenced: true → si UNDEAD de l'aile vaincu, +10 pts bonus
   // ──────────────────────────────────────────────────────────────
   9: {
      1: { type: 'MONSTER', value: 1  },
-     2: { type: 'MONSTER', value: 1  },
+     2: { type: 'UNDEAD',  value: 1  }, // Aile du boss 4 — TODO: vérifier
      3: { type: 'MONSTER', value: 1  },
-     4: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     4: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
      5: { type: 'MONSTER', value: 1  },
      6: { type: 'MONSTER', value: 1  },
-     7: { type: 'MONSTER', value: 1  },
+     7: { type: 'UNDEAD',  value: 1  }, // Aile du boss 11 — TODO: vérifier
      8: { type: 'MONSTER', value: 1  },
      9: { type: 'MONSTER', value: 1  },
     10: { type: 'MONSTER', value: 1  },
-    11: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+    11: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
     12: { type: 'MONSTER', value: 1  },
     13: { type: 'MONSTER', value: 1  },
-    14: { type: 'MONSTER', value: 1  },
+    14: { type: 'UNDEAD',  value: 1  }, // Aile du boss 18 — TODO: vérifier
     15: { type: 'MONSTER', value: 1  },
     16: { type: 'MONSTER', value: 1  },
     17: { type: 'MONSTER', value: 1  },
-    18: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+    18: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
     19: { type: 'MONSTER', value: 1  },
     20: { type: 'MONSTER', value: 1  },
-    21: { type: 'MONSTER', value: 1  },
+    21: { type: 'UNDEAD',  value: 1  }, // Aile du boss 25 — TODO: vérifier
     22: { type: 'MONSTER', value: 1  },
     23: { type: 'MONSTER', value: 1  },
     24: { type: 'MONSTER', value: 1  },
-    25: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+    25: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
     26: { type: 'MONSTER', value: 1  },
     27: { type: 'MONSTER', value: 1  },
     28: { type: 'MONSTER', value: 1  },

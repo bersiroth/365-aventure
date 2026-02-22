@@ -40,6 +40,7 @@ const ELITE_RULE_START       = 4; // Mai (index 4)
 const DOUBLE_RULE_START      = 6; // Juillet (index 6)
 const INVISIBLE_RULE_START   = 8; // Septembre (index 8)
 const NECROMANCER_RULE_START = 8; // Septembre (index 8)
+const INFLUENCED_RULE_START  = 9; // Octobre (index 9)
 
 
 function buildMonthlyData(yearData) {
@@ -63,6 +64,7 @@ function buildMonthlyData(yearData) {
       mana: s.manaPotionsEarned,
       invisibles: s.invisiblesDefeated,
       necromancer: s.necromancersDefeated ?? 0,
+      influenced: s.influencedBossesDefeated ?? 0,
     };
   });
 }
@@ -107,6 +109,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const hasDouble      = maxMonth >= DOUBLE_RULE_START;
   const hasInvisible   = maxMonth >= INVISIBLE_RULE_START;
   const hasNecromancer = maxMonth >= NECROMANCER_RULE_START;
+  const hasInfluenced  = maxMonth >= INFLUENCED_RULE_START;
 
   // Moyenne sur les mois joués (au moins 1 point)
   const playedMonths = data.filter(m => m.score > 0);
@@ -141,6 +144,10 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   // Nécromancien vaincu (depuis septembre, max 1)
   const necromancerData = data.slice(NECROMANCER_RULE_START);
   const necromancerDefeatedTotal = necromancerData.reduce((s, m) => s + m.necromancer, 0);
+
+  // Boss influencés vaincus (depuis octobre)
+  const influencedData = data.slice(INFLUENCED_RULE_START);
+  const influencedDefeatedTotal = influencedData.reduce((s, m) => s + m.influenced, 0);
 
   const longestStreak = calcLongestStreak(yearData);
 
@@ -228,10 +235,9 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Moyennes par mois */}
       <Section title="Moyenne mensuelle">
         {(() => {
-          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasDouble ? 1 : 0) + (hasMana ? 1 : 0) + (hasInvisible ? 1 : 0) + (hasNecromancer ? 1 : 0);
+          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasDouble ? 1 : 0) + (hasMana ? 1 : 0) + (hasInvisible ? 1 : 0) + (hasNecromancer ? 1 : 0) + (hasInfluenced ? 1 : 0);
           const gridClass = optCount === 0 ? 'sm:grid-cols-5'
             : optCount === 1 ? 'sm:grid-cols-3'
-            : optCount >= 6 ? 'sm:grid-cols-6'
             : optCount >= 4 ? 'sm:grid-cols-5'
             : 'sm:grid-cols-4';
           return (
@@ -244,6 +250,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             ...(hasDouble ? [{ icon: <Layers2 size={22} className="text-indigo-400" />, label: 'Doubles/mois', value: avgDouble, color: 'text-indigo-400'  }] : []),
             ...(hasInvisible ? [{ icon: <EyeOff size={22} className="text-gray-400" />, label: 'Invisibles/mois', value: avgInvisible, color: 'text-gray-300' }] : []),
             ...(hasNecromancer ? [{ icon: <Skull size={22} className="text-green-600" />, label: 'Nécromancien', value: necromancerDefeatedTotal, color: 'text-green-500' }] : []),
+            ...(hasInfluenced ? [{ icon: <Flame size={22} className="text-orange-400" />, label: 'Boss influencés', value: influencedDefeatedTotal, color: 'text-orange-400' }] : []),
             { icon: <AlertTriangle size={22} className="text-violet-400" />,   label: 'Pièges/mois',      value: avg('traps'),    color: 'text-violet-400' },
             { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss/mois',        value: avg('bosses'),   color: 'text-orange-400' },
             { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes/mois',       value: avg('wings'),    color: 'text-green-400' },
@@ -341,6 +348,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasDouble && <th className="text-right py-2 font-medium text-indigo-400">Doubles</th>}
                 {hasInvisible && <th className="text-right py-2 font-medium text-gray-400">Invisibles</th>}
                 {hasNecromancer && <th className="text-right py-2 font-medium text-green-600">Nécro.</th>}
+                {hasInfluenced && <th className="text-right py-2 font-medium text-orange-400">Influen.</th>}
                 <th className="text-right py-2 font-medium text-violet-400">Pièges</th>
                 <th className="text-right py-2 font-medium text-orange-400">Boss</th>
                 <th className="text-right py-2 font-medium text-green-400">Ailes</th>
@@ -358,6 +366,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                   {hasDouble && <td className="py-2 text-right text-indigo-400">{row.doubles}</td>}
                   {hasInvisible && <td className="py-2 text-right text-gray-300">{row.invisibles}</td>}
                   {hasNecromancer && <td className="py-2 text-right text-green-500">{row.necromancer}</td>}
+                  {hasInfluenced && <td className="py-2 text-right text-orange-400">{row.influenced}</td>}
                   <td className="py-2 text-right text-violet-400">{row.traps}</td>
                   <td className="py-2 text-right text-orange-400">{row.bosses}</td>
                   <td className="py-2 text-right text-green-400">{row.wings}</td>
@@ -375,6 +384,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasDouble && <td className="py-2 text-right text-indigo-400">{data.reduce((s, m) => s + m.doubles, 0)}</td>}
                 {hasInvisible && <td className="py-2 text-right text-gray-300">{data.reduce((s, m) => s + m.invisibles, 0)}</td>}
                 {hasNecromancer && <td className="py-2 text-right text-green-500">{necromancerDefeatedTotal}</td>}
+                {hasInfluenced && <td className="py-2 text-right text-orange-400">{influencedDefeatedTotal}</td>}
                 <td className="py-2 text-right text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
                 <td className="py-2 text-right text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
                 <td className="py-2 text-right text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>

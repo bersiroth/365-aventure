@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
 
@@ -54,7 +54,8 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
     // Aile conquise = tous les jours réels de la ligne sont validés
     const realDays = cells.filter(c => !c.isEmpty).map(c => c.day);
     const isWingComplete = realDays.length === 7 && realDays.every(d => d.completed);
-    return { cells, isWingComplete };
+    const undeadDefeatedInWing = realDays.some(d => d.type === 'UNDEAD' && d.completed);
+    return { cells, isWingComplete, undeadDefeatedInWing };
   });
 
   return (
@@ -142,6 +143,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
                         onClick={onDayClick}
                         isReadOnly={isReadOnly}
                         isWingComplete={row.isWingComplete}
+                        undeadDefeatedInWing={row.undeadDefeatedInWing}
                       />
                     )
                   )}
@@ -163,6 +165,8 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
  */
 function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, hasStaff, staffUsed, onStaffToggle, hasCape, capeUsed, onCapeToggle, hasRing, ringUsed, onRingToggle }) {
   const manaDays = allDays.filter(d => d.hasMana);
+  const doubleUse = monthIndex >= 9; // À partir d'octobre : 2 utilisations par mois
+  const numSlots = doubleUse ? 2 : 1;
 
   return (
     <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 bg-blue-950/30 border-b border-blue-400/20 min-h-[34px] sm:min-h-[40px]">
@@ -214,24 +218,29 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
           <span className="text-dungeon-gold/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
             Bâton du Sage
           </span>
-          <button
-            disabled={isReadOnly}
-            onClick={() => !isReadOnly && onStaffToggle?.(monthIndex)}
-            title={staffUsed ? 'Pouvoir utilisé ce mois — cliquer pour annuler' : 'Utiliser le Bâton du Sage ce mois'}
-            className={`
-              flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
-              ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
-              ${staffUsed
-                ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
-                : 'border-dungeon-gold/70 bg-dungeon-gold/10 text-dungeon-gold hover:bg-dungeon-gold/20 shadow-[0_0_6px_rgba(212,175,55,0.3)]'
-              }
-            `}
-          >
-            <Wand2 size={14} className={staffUsed ? 'opacity-30' : ''} />
-          </button>
-          {staffUsed && (
-            <span className="text-gray-600 text-[10px] font-medieval italic">utilisé</span>
-          )}
+          <div className="flex gap-1">
+            {Array.from({ length: numSlots }, (_, i) => {
+              const used = staffUsed?.[i] ?? false;
+              return (
+                <button
+                  key={i}
+                  disabled={isReadOnly}
+                  onClick={() => !isReadOnly && onStaffToggle?.(monthIndex, i)}
+                  title={used ? 'Utilisé — cliquer pour annuler' : `Utiliser le Bâton du Sage${numSlots > 1 ? ` (${i + 1}e fois)` : ''}`}
+                  className={`
+                    flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
+                    ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
+                    ${used
+                      ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
+                      : 'border-dungeon-gold/70 bg-dungeon-gold/10 text-dungeon-gold hover:bg-dungeon-gold/20 shadow-[0_0_6px_rgba(212,175,55,0.3)]'
+                    }
+                  `}
+                >
+                  {used ? <X size={10} /> : <Wand2 size={14} />}
+                </button>
+              );
+            })}
+          </div>
         </>
       )}
 
@@ -242,24 +251,29 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
           <span className="text-amber-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
             Anneau Ancien
           </span>
-          <button
-            disabled={isReadOnly}
-            onClick={() => !isReadOnly && onRingToggle?.(monthIndex)}
-            title={ringUsed ? 'Pouvoir utilisé ce mois — cliquer pour annuler' : 'Utiliser l\'Anneau Ancien ce mois'}
-            className={`
-              flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
-              ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
-              ${ringUsed
-                ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
-                : 'border-amber-400/70 bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 shadow-[0_0_6px_rgba(251,191,36,0.3)]'
-              }
-            `}
-          >
-            <Gem size={14} className={ringUsed ? 'opacity-30' : ''} />
-          </button>
-          {ringUsed && (
-            <span className="text-gray-600 text-[10px] font-medieval italic">utilisé</span>
-          )}
+          <div className="flex gap-1">
+            {Array.from({ length: numSlots }, (_, i) => {
+              const used = ringUsed?.[i] ?? false;
+              return (
+                <button
+                  key={i}
+                  disabled={isReadOnly}
+                  onClick={() => !isReadOnly && onRingToggle?.(monthIndex, i)}
+                  title={used ? 'Utilisé — cliquer pour annuler' : `Utiliser l'Anneau Ancien${numSlots > 1 ? ` (${i + 1}e fois)` : ''}`}
+                  className={`
+                    flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
+                    ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
+                    ${used
+                      ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
+                      : 'border-amber-400/70 bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 shadow-[0_0_6px_rgba(251,191,36,0.3)]'
+                    }
+                  `}
+                >
+                  {used ? <X size={10} /> : <Gem size={14} />}
+                </button>
+              );
+            })}
+          </div>
         </>
       )}
 
@@ -270,24 +284,29 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
           <span className="text-teal-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
             Cape des Illusions
           </span>
-          <button
-            disabled={isReadOnly}
-            onClick={() => !isReadOnly && onCapeToggle?.(monthIndex)}
-            title={capeUsed ? 'Pouvoir utilisé ce mois — cliquer pour annuler' : 'Utiliser la Cape des Illusions ce mois'}
-            className={`
-              flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
-              ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
-              ${capeUsed
-                ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
-                : 'border-teal-400/70 bg-teal-400/10 text-teal-400 hover:bg-teal-400/20 shadow-[0_0_6px_rgba(45,212,191,0.3)]'
-              }
-            `}
-          >
-            <Sparkles size={14} className={capeUsed ? 'opacity-30' : ''} />
-          </button>
-          {capeUsed && (
-            <span className="text-gray-600 text-[10px] font-medieval italic">utilisée</span>
-          )}
+          <div className="flex gap-1">
+            {Array.from({ length: numSlots }, (_, i) => {
+              const used = capeUsed?.[i] ?? false;
+              return (
+                <button
+                  key={i}
+                  disabled={isReadOnly}
+                  onClick={() => !isReadOnly && onCapeToggle?.(monthIndex, i)}
+                  title={used ? 'Utilisée — cliquer pour annuler' : `Utiliser la Cape des Illusions${numSlots > 1 ? ` (${i + 1}e fois)` : ''}`}
+                  className={`
+                    flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 transition-all
+                    ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
+                    ${used
+                      ? 'border-gray-700 bg-dungeon-dark/60 text-gray-600'
+                      : 'border-teal-400/70 bg-teal-400/10 text-teal-400 hover:bg-teal-400/20 shadow-[0_0_6px_rgba(45,212,191,0.3)]'
+                    }
+                  `}
+                >
+                  {used ? <X size={10} /> : <Sparkles size={14} />}
+                </button>
+              );
+            })}
+          </div>
         </>
       )}
     </div>
@@ -316,7 +335,7 @@ function WingCompleteBanner() {
  * BOSS    → couronne dorée + valeur
  * DOUBLE  → deux boucliers bleus côte à côte
  */
-function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
+function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWing }) {
   const isBoss = day.type === 'BOSS';
   const isTrap = day.type === 'TRAP';
   const isUndead = day.type === 'UNDEAD';
@@ -324,6 +343,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
   const isNecromancer = day.type === 'NECROMANCER';
   const isElite = day.isElite ?? false;
   const isInvisible = day.isInvisible ?? false;
+  const isInfluenced = day.isInfluenced ?? false;
   const isCompleted = day.completed;
 
   const handleClick = () => {
@@ -338,6 +358,8 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
   // Piège   : violet doux → lavande clair  (blanc violet)
   const bgClass = isElite
     ? 'bg-gradient-to-b from-red-600 via-red-500 to-rose-300'  // tout type élite → fond rouge
+    : isBoss && isInfluenced
+    ? 'bg-gradient-to-b from-yellow-600 via-yellow-500 to-amber-400'  // boss influencé → fond jaune
     : isBoss
     ? 'bg-gradient-to-b from-red-800 via-orange-700 to-amber-600'
     : isTrap
@@ -350,7 +372,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
     <button
       onClick={handleClick}
       disabled={isReadOnly}
-      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +2 pts` : isNecromancer ? 'Nécromancien' : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
+      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +3 pts` : isNecromancer ? 'Nécromancien' : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
         rounded-sm
@@ -391,16 +413,29 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
       {/* ── Icône centrale — toujours visible ── */}
       <div className="absolute inset-0 flex items-center justify-center">
         {isBoss ? (
-          /* BOSS — bouclier avec valeur (rouge si élite) */
-          <div className="relative flex items-center justify-center w-[82%] h-[82%]">
-            <Shield
-              className="absolute inset-0 w-full h-full text-black fill-gray-300"
-              strokeWidth={1.8}
-            />
-            <span className={`relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none ${isElite ? 'text-red-600' : 'text-black'}`}>
-              {day.value}
-            </span>
-          </div>
+          isInfluenced && !undeadDefeatedInWing ? (
+            /* BOSS INFLUENCÉ — cercle avec bordure rouge + valeur */
+            <div className="relative flex items-center justify-center w-[82%] h-[82%]">
+              <Circle
+                className="absolute inset-0 w-full h-full text-red-600 fill-gray-300/90"
+                strokeWidth={3}
+              />
+              <span className={`relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none ${isElite ? 'text-red-600' : 'text-black'}`}>
+                {day.value}
+              </span>
+            </div>
+          ) : (
+            /* BOSS classique (ou boss influencé affaibli par UNDEAD) — bouclier avec valeur */
+            <div className="relative flex items-center justify-center w-[82%] h-[82%]">
+              <Shield
+                className="absolute inset-0 w-full h-full text-black fill-gray-300"
+                strokeWidth={1.8}
+              />
+              <span className={`relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none ${isElite ? 'text-red-600' : 'text-black'}`}>
+                {isInfluenced && undeadDefeatedInWing ? Math.ceil(day.value / 2) : day.value}
+              </span>
+            </div>
+          )
 
         ) : isTrap ? (
           /* TRAP — triangle : trait rouge vif, fond blanc, valeur rouge */
@@ -466,6 +501,16 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
         )}
       </div>
 
+      {/* Badge valeur originale barrée (boss influencé affaibli par UNDEAD) */}
+      {isInfluenced && undeadDefeatedInWing && (
+        <div className="absolute bottom-3 left-3 z-20">
+          <div className="relative flex items-center justify-center" style={{ width: 18, height: 18 }}>
+            <Circle size={40} className="absolute text-red-500/70 fill-gray-600/60" strokeWidth={2} />
+            <span className="absolute z-10 text-[6px] sm:text-[18px] font-bold text-gray-300 line-through leading-none">{day.value}</span>
+          </div>
+        </div>
+      )}
+
       {/* Badge +2 pour les monstres doubles */}
       {isDouble && (
         <div className="absolute bottom-0.5 right-0.5 z-30 bg-dungeon-gold text-dungeon-dark text-[7px] sm:text-[9px] font-bold leading-none px-0.5 sm:px-1 py-0.5 rounded">
@@ -473,10 +518,24 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
         </div>
       )}
 
+      {/* Badge +10 pour les boss influencés */}
+      {isInfluenced && (
+        <div className="absolute bottom-0.5 right-0.5 z-30 bg-orange-500 text-white text-[7px] sm:text-[9px] font-bold leading-none px-0.5 sm:px-1 py-0.5 rounded">
+          +10
+        </div>
+      )}
+
+      {/* Indicateur boss influencé */}
+      {isInfluenced && (
+        <div className="absolute top-0.5 right-0.5 z-30">
+          <Flame size={14} className="text-orange-400 fill-orange-400 drop-shadow-[0_0_4px_rgba(251,146,60,0.9)]" />
+        </div>
+      )}
+
       {/* Indicateur élite */}
       {isElite && (
-        <div className="absolute bottom-1 left-1 z-30">
-          <Zap size={14} className="text-yellow-300 fill-yellow-300 drop-shadow-[0_0_4px_rgba(253,224,71,0.9)]" />
+        <div className="absolute bottom-2 left-1 z-30">
+          <Zap size={18} className="text-yellow-300 fill-yellow-300 drop-shadow-[0_0_4px_rgba(253,224,71,0.9)]" />
         </div>
       )}
 
@@ -489,8 +548,8 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete }) {
 
       {/* Indicateur potion de mana */}
       {day.hasMana && (
-        <div className={`absolute bottom-0.5 right-0.5 z-30 drop-shadow-[0_0_4px_rgba(96,165,250,0.9)] ${isCompleted ? 'opacity-75' : ''}`}>
-          <FlaskConical size={14} className="text-blue-300" />
+        <div className={`absolute bottom-2 right-0.5 z-30 drop-shadow-[0_0_4px_rgba(96,165,250,0.9)] ${isCompleted ? 'opacity-75' : ''}`}>
+          <FlaskConical size={20} className="text-blue-700" />
         </div>
       )}
 

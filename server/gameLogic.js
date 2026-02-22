@@ -59,6 +59,7 @@ export function computeScoreFromSave(encoded) {
   let manaPotionsEarned = 0;
   let invisiblesDefeated = 0;
   let necromancersDefeated = 0;
+  let influencedBossesDefeated = 0;
   let globalIndex = 0;
 
   MONTHS_2026.forEach((month, monthIndex) => {
@@ -72,8 +73,9 @@ export function computeScoreFromSave(encoded) {
       const hasMana = dayConfig?.hasMana ?? false;
       const isElite = dayConfig?.isElite ?? false;
       const isInvisible = dayConfig?.isInvisible ?? false;
+      const isInfluenced = dayConfig?.isInfluenced ?? false;
       const completed = bits[globalIndex] === 1;
-      monthDays.push({ dayOfWeekIndex, type, hasMana, isElite, isInvisible, completed });
+      monthDays.push({ dayOfWeekIndex, type, hasMana, isElite, isInvisible, isInfluenced, completed });
       globalIndex++;
     }
 
@@ -85,13 +87,16 @@ export function computeScoreFromSave(encoded) {
     monthDays.forEach(d => {
       if (!d.completed) return;
       if (d.type === 'NECROMANCER') { totalScore += 1; necromancersDefeated++; }
-      else if (d.type === 'BOSS')   { totalScore += 2; bossesDefeated++; }
+      else if (d.type === 'BOSS')   {
+        totalScore += 2; bossesDefeated++;
+        if (d.isInfluenced) { totalScore += 10; influencedBossesDefeated++; }
+      }
       else if (d.type === 'TRAP')   { totalScore += 1; trapsDefeated++; }
       else if (d.type === 'UNDEAD') {
         undeadDefeated++;
         if (!monthHasNecromancer || monthNecromancerDefeated) totalScore += 1;
       }
-      else if (d.type === 'DOUBLE') { totalScore += 2; doublesDefeated++; }
+      else if (d.type === 'DOUBLE') { totalScore += 3; doublesDefeated++; }
       else                          { totalScore += 1; monstersDefeated++; }
       if (d.isElite) eliteDefeated++;
       if (d.hasMana) manaPotionsEarned++;
@@ -117,5 +122,5 @@ export function computeScoreFromSave(encoded) {
     }
   });
 
-  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned, invisiblesDefeated, necromancersDefeated };
+  return { totalScore, monstersDefeated, undeadDefeated, eliteDefeated, doublesDefeated, trapsDefeated, bossesDefeated, completeWings, manaPotionsEarned, invisiblesDefeated, necromancersDefeated, influencedBossesDefeated };
 }

@@ -53,6 +53,7 @@ export function generateYear2026() {
       const hasMana = dayConfig?.hasMana ?? false;
       const isElite = dayConfig?.isElite ?? false;
       const isInvisible = dayConfig?.isInvisible ?? false;
+      const isInfluenced = dayConfig?.isInfluenced ?? false;
       const value2 = dayConfig?.value2 ?? null;
       const manaSlot = hasMana ? manaCount++ : null;
 
@@ -71,6 +72,7 @@ export function generateYear2026() {
         manaSlot,
         isElite,
         isInvisible,
+        isInfluenced,
       };
 
       currentWeek.push(dayData);
@@ -91,11 +93,11 @@ export function generateYear2026() {
 
     monthData.manaUsed  = new Array(manaCount).fill(false);
     monthData.hasStaff  = monthIndex >= 3; // Bâton du Sage — avril et suivants
-    monthData.staffUsed = false;
+    monthData.staffUsed = [false, false];
     monthData.hasCape   = monthIndex >= 5; // Cape des Illusions — juin et suivants
-    monthData.capeUsed  = false;
+    monthData.capeUsed  = [false, false];
     monthData.hasRing   = monthIndex >= 7; // Anneau Ancien — août et suivants
-    monthData.ringUsed  = false;
+    monthData.ringUsed  = [false, false];
     year.push(monthData);
   });
 
@@ -127,6 +129,7 @@ export function calculateScore(yearData) {
   let manaPotionsEarned = 0;
   let invisiblesDefeated = 0;
   let necromancersDefeated = 0;
+  let influencedBossesDefeated = 0;
 
   yearData.forEach(month => {
     // ── Nécromancien : vérification par mois ──
@@ -139,13 +142,16 @@ export function calculateScore(yearData) {
       week.days.forEach(day => {
         if (!day.completed) return;
         if (day.type === 'NECROMANCER') { totalScore += 1; necromancersDefeated++; }
-        else if (day.type === 'BOSS')   { totalScore += 2; bossesDefeated++; }
+        else if (day.type === 'BOSS')   {
+          totalScore += 2; bossesDefeated++;
+          if (day.isInfluenced) { totalScore += 10; influencedBossesDefeated++; }
+        }
         else if (day.type === 'TRAP')   { totalScore += 1; trapsDefeated++;  }
         else if (day.type === 'UNDEAD') {
           undeadDefeated++;
           if (!monthHasNecromancer || monthNecromancerDefeated) totalScore += 1;
         }
-        else if (day.type === 'DOUBLE') { totalScore += 2; doublesDefeated++; }
+        else if (day.type === 'DOUBLE') { totalScore += 3; doublesDefeated++; }
         else                            { totalScore += 1; monstersDefeated++; }
         if (day.isElite) eliteDefeated++;
         if (day.hasMana) manaPotionsEarned++;
@@ -186,6 +192,7 @@ export function calculateScore(yearData) {
     manaPotionsEarned,
     invisiblesDefeated,
     necromancersDefeated,
+    influencedBossesDefeated,
   };
 }
 
@@ -207,10 +214,14 @@ export function serializeSave(yearData) {
   const manaBits  = yearData.flatMap(month =>
     (month.manaUsed ?? []).map(used => used ? 1 : 0)
   );
-  const staffBits = yearData.map(month => month.staffUsed ? 1 : 0);
-  const capeBits  = yearData.map(month => month.capeUsed  ? 1 : 0);
-  const ringBits  = yearData.map(month => month.ringUsed  ? 1 : 0);
-  const bits = [...dayBits, ...manaBits, ...staffBits, ...capeBits, ...ringBits];
+  const staffBits  = yearData.map(month => month.staffUsed?.[0] ? 1 : 0);
+  const capeBits   = yearData.map(month => month.capeUsed?.[0]  ? 1 : 0);
+  const ringBits   = yearData.map(month => month.ringUsed?.[0]  ? 1 : 0);
+  // Bits du 2e slot (à partir d'octobre — rétrocompatibilité : absents = false)
+  const staffBits2 = yearData.map(month => month.staffUsed?.[1] ? 1 : 0);
+  const capeBits2  = yearData.map(month => month.capeUsed?.[1]  ? 1 : 0);
+  const ringBits2  = yearData.map(month => month.ringUsed?.[1]  ? 1 : 0);
+  const bits = [...dayBits, ...manaBits, ...staffBits, ...capeBits, ...ringBits, ...staffBits2, ...capeBits2, ...ringBits2];
   // Empaquetage en octets (LSB en premier)
   const bytes = [];
   for (let i = 0; i < bits.length; i += 8) {
@@ -253,17 +264,25 @@ export function deserializeSave(encoded) {
         idx < bits.length ? bits[idx++] === 1 : false
       );
     });
-    // Lire les bits bâton du sage (optionnels)
+    // Lire les bits slot 0 (optionnels)
     yearData.forEach(month => {
-      month.staffUsed = idx < bits.length ? bits[idx++] === 1 : false;
+      month.staffUsed = [idx < bits.length ? bits[idx++] === 1 : false, false];
     });
-    // Lire les bits cape des illusions (optionnels)
     yearData.forEach(month => {
-      month.capeUsed = idx < bits.length ? bits[idx++] === 1 : false;
+      month.capeUsed  = [idx < bits.length ? bits[idx++] === 1 : false, false];
     });
-    // Lire les bits anneau ancien (optionnels)
     yearData.forEach(month => {
-      month.ringUsed = idx < bits.length ? bits[idx++] === 1 : false;
+      month.ringUsed  = [idx < bits.length ? bits[idx++] === 1 : false, false];
+    });
+    // Lire les bits slot 1 (optionnels — nouvelles sauvegardes)
+    yearData.forEach(month => {
+      month.staffUsed[1] = idx < bits.length ? bits[idx++] === 1 : false;
+    });
+    yearData.forEach(month => {
+      month.capeUsed[1]  = idx < bits.length ? bits[idx++] === 1 : false;
+    });
+    yearData.forEach(month => {
+      month.ringUsed[1]  = idx < bits.length ? bits[idx++] === 1 : false;
     });
     return yearData;
   } catch {

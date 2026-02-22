@@ -194,12 +194,14 @@ export function useGameEngine(player) {
   /**
    * Marque le bâton du sage comme utilisé ce mois (ou annule)
    */
-  const toggleStaffUsed = useCallback((monthIndex) => {
+  const toggleStaffUsed = useCallback((monthIndex, slotIndex = 0) => {
     if (!yearData) return;
 
     const newYearData = [...yearData];
     const month = { ...newYearData[monthIndex] };
-    month.staffUsed = !month.staffUsed;
+    const newUsed = [...(month.staffUsed ?? [false, false])];
+    newUsed[slotIndex] = !newUsed[slotIndex];
+    month.staffUsed = newUsed;
     newYearData[monthIndex] = month;
 
     setYearData(newYearData);
@@ -215,12 +217,14 @@ export function useGameEngine(player) {
   /**
    * Marque l'anneau ancien comme utilisé ce mois (ou annule)
    */
-  const toggleRingUsed = useCallback((monthIndex) => {
+  const toggleRingUsed = useCallback((monthIndex, slotIndex = 0) => {
     if (!yearData) return;
 
     const newYearData = [...yearData];
     const month = { ...newYearData[monthIndex] };
-    month.ringUsed = !month.ringUsed;
+    const newUsed = [...(month.ringUsed ?? [false, false])];
+    newUsed[slotIndex] = !newUsed[slotIndex];
+    month.ringUsed = newUsed;
     newYearData[monthIndex] = month;
 
     setYearData(newYearData);
@@ -236,12 +240,14 @@ export function useGameEngine(player) {
   /**
    * Marque la cape des illusions comme utilisée ce mois (ou annule)
    */
-  const toggleCapeUsed = useCallback((monthIndex) => {
+  const toggleCapeUsed = useCallback((monthIndex, slotIndex = 0) => {
     if (!yearData) return;
 
     const newYearData = [...yearData];
     const month = { ...newYearData[monthIndex] };
-    month.capeUsed = !month.capeUsed;
+    const newUsed = [...(month.capeUsed ?? [false, false])];
+    newUsed[slotIndex] = !newUsed[slotIndex];
+    month.capeUsed = newUsed;
     newYearData[monthIndex] = month;
 
     setYearData(newYearData);

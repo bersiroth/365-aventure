@@ -42,7 +42,8 @@ for (const [col, type] of [
   ['elite_defeated',        'INTEGER NOT NULL DEFAULT 0'],
   ['doubles_defeated',      'INTEGER NOT NULL DEFAULT 0'],
   ['invisibles_defeated',   'INTEGER NOT NULL DEFAULT 0'],
-  ['necromancer_defeated',  'INTEGER NOT NULL DEFAULT 0'],
+  ['necromancer_defeated',      'INTEGER NOT NULL DEFAULT 0'],
+  ['influenced_bosses_defeated','INTEGER NOT NULL DEFAULT 0'],
 ]) {
   try { db.exec(`ALTER TABLE players ADD COLUMN ${col} ${type}`); } catch {}
 }
