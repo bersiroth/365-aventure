@@ -1,4 +1,4 @@
-import { TROPHY_DEFINITIONS, TROPHY_TIERS } from '../data/trophyData';
+import { TROPHY_DEFINITIONS } from '../data/trophyData';
 
 /**
  * Calcule les métriques nécessaires à l'évaluation des trophées
@@ -7,10 +7,6 @@ function computeTrophyMetrics(yearData) {
   let totalDaysCompleted = 0;
   let longestStreak = 0;
   let currentStreak = 0;
-  let totalManaUsed = 0;
-  let totalStaffUsed = 0;
-  let monthsWithScore = 0;
-  let perfectMonths = 0;
 
   const allDays = yearData
     .flatMap(m => m.weeks.flatMap(w => w.days))
@@ -26,17 +22,7 @@ function computeTrophyMetrics(yearData) {
     }
   }
 
-  yearData.forEach(month => {
-    const monthDays = month.weeks.flatMap(w => w.days);
-    const completedInMonth = monthDays.filter(d => d.completed).length;
-    if (completedInMonth > 0) monthsWithScore++;
-    if (completedInMonth === monthDays.length && monthDays.length > 0) perfectMonths++;
-
-    totalManaUsed += (month.manaUsed || []).filter(Boolean).length;
-    if (month.staffUsed) totalStaffUsed++;
-  });
-
-  return { totalDaysCompleted, longestStreak, totalManaUsed, totalStaffUsed, monthsWithScore, perfectMonths };
+  return { totalDaysCompleted, longestStreak };
 }
 
 /**
@@ -55,40 +41,40 @@ export function evaluateTrophies(yearData, score, existingTrophies = {}) {
 
   const checks = {
     // Bronze
-    premier_sang:        m.totalDaysCompleted >= 1,
-    chasseur_novice:     score.monstersDefeated >= 10,
-    piegeur:             score.trapsDefeated >= 5,
-    dimanche_noir:       score.bossesDefeated >= 1,
-    collectionneur:      score.manaPotionsEarned >= 1,
-    alchimiste_debutant: m.totalManaUsed >= 1,
-    baton_du_sage:       m.totalStaffUsed >= 1,
-    premiere_aile:       score.completeWings >= 1,
-    pas_de_repos:        m.longestStreak >= 7,
-    aventurier:          score.totalScore >= 50,
-    centurion:           score.totalScore >= 100,
-    revenant:            score.undeadDefeated >= 1,
-    trois_mois:          m.monthsWithScore >= 3,
-    cinq_boss:           score.bossesDefeated >= 5,
-    dix_pieges:          score.trapsDefeated >= 10,
+    premier_sang:      m.totalDaysCompleted >= 1,
+    piegeur:           score.trapsDefeated >= 1,
+    premier_boss:      score.bossesDefeated >= 1,
+    chasseur_20:       score.monstersDefeated >= 20,
+    premiere_aile:     score.completeWings >= 1,
+    alchimiste:        score.manaPotionsEarned >= 1,
+    serie_7:           m.longestStreak >= 7,
+    score_50:          score.totalScore >= 50,
+    score_100:         score.totalScore >= 100,
+    revenant:          score.undeadDefeated >= 1,
+    elite_abattu:      score.eliteDefeated >= 1,
+    double_vaincu:     score.doublesDefeated >= 1,
+    invisible_vaincu:  score.invisiblesDefeated >= 1,
+    influence_brisee:  score.influencedBossesDefeated >= 1,
+    shaman_vaincu:     score.shamansDefeated >= 1,
 
     // Argent
-    chasseur_aguerri:    score.monstersDefeated >= 75,
-    roi_des_boss:        score.bossesDefeated >= 25,
-    conquerant_ailes:    score.completeWings >= 10,
-    maitre_potions:      m.totalManaUsed >= 10,
-    endurance:           m.longestStreak >= 21,
-    mi_parcours:         score.totalScore >= 500,
-    mois_parfait:        m.perfectMonths >= 1,
-    chasseur_morts:      score.undeadDefeated >= 25,
-    baton_maitrise:      m.totalStaffUsed >= 6,
-    piege_expert:        score.trapsDefeated >= 25,
+    massacreur:        score.monstersDefeated >= 60,
+    briseur_boss:      score.bossesDefeated >= 15,
+    conquerant:        score.completeWings >= 8,
+    piegeur_expert:    score.trapsDefeated >= 20,
+    score_200:         score.totalScore >= 200,
+    score_300:         score.totalScore >= 300,
+    chasseur_morts:    score.undeadDefeated >= 15,
+    invisible_5:       score.invisiblesDefeated >= 5,
+    elite_10:          score.eliteDefeated >= 10,
+    double_10:         score.doublesDefeated >= 10,
 
     // Or
-    legende_donjon:      score.totalScore >= 1000,
-    inarretable:         m.longestStreak >= 60,
-    perfectionniste:     m.perfectMonths >= 3,
-    maitre_armes:        m.totalDaysCompleted >= 200,
-    donjon_complet:      m.totalDaysCompleted >= 365,
+    legende:           score.totalScore >= 450,
+    massacreur_120:    score.monstersDefeated >= 120,
+    boss_final_vaincu: score.finalBossDefeated >= 1,
+    trois_necros:      score.necromancersDefeated >= 3,
+    boss_influences_3: score.influencedBossesDefeated >= 3,
   };
 
   for (const [trophyId, earned] of Object.entries(checks)) {

@@ -263,26 +263,52 @@ export function useGameEngine(player) {
   /**
    * Remplissage aléatoire d'un mois (outils dev)
    */
-  const fillMonthRandom = useCallback((monthIndex) => {
+  const fillMonthRandom = useCallback((monthIndex, fillRatio = 0.5) => {
     if (!yearData) return;
     const newYearData = yearData.map((month, i) => {
       if (i !== monthIndex) return month;
       return {
         ...month,
         weeks: month.weeks.map(week => {
-          const days = week.days.map(day => ({ ...day, completed: Math.random() < 0.5 }));
+          const days = week.days.map(day => ({ ...day, completed: Math.random() < fillRatio }));
           return { ...week, days, completed: days.length === 7 && days.every(d => d.completed) };
         }),
       };
     });
     setYearData(newYearData);
     const encoded = serializeSave(newYearData);
-    if (player) {
-      syncToServer(encoded);
-    } else {
-      saveToLocalStorage(newYearData);
-    }
+    if (player) { syncToServer(encoded); } else { saveToLocalStorage(newYearData); }
   }, [yearData, player]);
+
+  /**
+   * Remplissage aléatoire de tous les mois d'un coup (outils dev)
+   */
+  const fillAllMonthsRandom = useCallback((fillRatio = 0.5) => {
+    if (!yearData) return;
+    const newYearData = yearData.map(month => ({
+      ...month,
+      weeks: month.weeks.map(week => {
+        const days = week.days.map(day => ({ ...day, completed: Math.random() < fillRatio }));
+        return { ...week, days, completed: days.length === 7 && days.every(d => d.completed) };
+      }),
+    }));
+    setYearData(newYearData);
+    const encoded = serializeSave(newYearData);
+    if (player) { syncToServer(encoded); } else { saveToLocalStorage(newYearData); }
+  }, [yearData, player]);
+
+  /**
+   * Remet les trophées à zéro (outils dev)
+   */
+  const resetTrophies = useCallback(() => {
+    setTrophies({});
+    trophiesRef.current = {};
+    isInitialLoadRef.current = true;
+    if (player && yearData) {
+      const encoded = serializeSave(yearData);
+      syncToServer(encoded);
+    }
+  }, [player, yearData]);
 
   /**
    * Remplit ou vide tous les jours d'un mois (outils dev)
@@ -380,6 +406,8 @@ export function useGameEngine(player) {
     levelInfo,
     setMonthCompleted,
     fillMonthRandom,
+    fillAllMonthsRandom,
+    resetTrophies,
     exportBackup,
     importBackup,
     importLoading,

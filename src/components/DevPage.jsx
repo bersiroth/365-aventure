@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, Trash2, Calendar, CheckSquare, Square, Shuffle } from 'lucide-react';
+import { AlertTriangle, Trash2, Calendar, CheckSquare, Square, Shuffle, Trophy } from 'lucide-react';
 import { devReset } from '../api';
 
 const MONTH_NAMES = [
@@ -7,16 +7,15 @@ const MONTH_NAMES = [
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ];
 
-export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthCompleted, fillMonthRandom }) {
+export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthCompleted, fillMonthRandom, fillAllMonthsRandom, resetTrophies }) {
   const [confirmReset, setConfirmReset] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [resetDone, setResetDone] = useState(false);
+  const [confirmTrophyReset, setConfirmTrophyReset] = useState(false);
+  const [fillRatio, setFillRatio] = useState(50);
 
   const handleReset = async () => {
-    if (!confirmReset) {
-      setConfirmReset(true);
-      return;
-    }
+    if (!confirmReset) { setConfirmReset(true); return; }
     setResetting(true);
     try {
       await devReset();
@@ -27,6 +26,12 @@ export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthComplet
     } finally {
       setResetting(false);
     }
+  };
+
+  const handleTrophyReset = () => {
+    if (!confirmTrophyReset) { setConfirmTrophyReset(true); return; }
+    resetTrophies();
+    setConfirmTrophyReset(false);
   };
 
   return (
@@ -64,15 +69,38 @@ export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthComplet
               {resetting ? 'Suppression...' : confirmReset ? 'Oui, tout supprimer' : 'Reset la BDD'}
             </button>
             {confirmReset && (
-              <button
-                onClick={() => setConfirmReset(false)}
-                className="text-gray-500 text-sm hover:text-gray-300"
-              >
+              <button onClick={() => setConfirmReset(false)} className="text-gray-500 text-sm hover:text-gray-300">
                 Annuler
               </button>
             )}
           </div>
         )}
+      </Section>
+
+      {/* Trophées */}
+      <Section title="Trophées" icon={<Trophy size={16} />}>
+        <p className="text-gray-400 text-sm mb-4">Remet tous les trophées à zéro pour retester les déclenchements.</p>
+        <div className="flex items-center gap-3 flex-wrap">
+          {confirmTrophyReset && (
+            <p className="text-red-400 text-sm">Confirmer la remise à zéro ?</p>
+          )}
+          <button
+            onClick={handleTrophyReset}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medieval font-semibold text-sm transition-colors ${
+              confirmTrophyReset
+                ? 'bg-red-600 hover:bg-red-500 text-white'
+                : 'border border-red-700 text-red-400 hover:bg-red-900/30'
+            }`}
+          >
+            <Trophy size={14} />
+            {confirmTrophyReset ? 'Oui, tout effacer' : 'Reset les trophées'}
+          </button>
+          {confirmTrophyReset && (
+            <button onClick={() => setConfirmTrophyReset(false)} className="text-gray-500 text-sm hover:text-gray-300">
+              Annuler
+            </button>
+          )}
+        </div>
       </Section>
 
       {/* Mois actif */}
@@ -101,9 +129,38 @@ export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthComplet
 
       {/* Remplir / Vider les mois */}
       <Section title="Remplir / Vider un mois" icon={<CheckSquare size={16} />}>
-        <p className="text-gray-400 text-sm mb-4">
+        <p className="text-gray-400 text-sm mb-3">
           Marque tous les jours d'un mois comme complétés ou non complétés.
         </p>
+
+        {/* Slider taux de remplissage + bouton aléa global */}
+        <div className="mb-4 p-3 bg-dungeon-dark/40 rounded-lg border border-amber-700/20 space-y-3">
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-gray-400 font-medieval uppercase tracking-wide">Taux de remplissage aléatoire</span>
+              <span className="text-amber-400 font-bold text-sm font-medieval">{fillRatio} %</span>
+            </div>
+            <input
+              type="range"
+              min={20}
+              max={80}
+              value={fillRatio}
+              onChange={e => setFillRatio(parseInt(e.target.value, 10))}
+              className="w-full accent-amber-400"
+            />
+            <div className="flex justify-between text-xs text-gray-600 mt-0.5">
+              <span>20 %</span>
+              <span>80 %</span>
+            </div>
+          </div>
+          <button
+            onClick={() => fillAllMonthsRandom(fillRatio / 100)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-amber-900/30 border border-amber-600 text-amber-400 hover:bg-amber-900/50 transition-colors"
+          >
+            <Shuffle size={14} /> Aléa sur tous les mois ({fillRatio} %)
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
           {MONTH_NAMES.map((name, i) => {
             const monthData = yearData?.[i];
@@ -123,7 +180,7 @@ export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthComplet
                     <CheckSquare size={12} /> Remplir
                   </button>
                   <button
-                    onClick={() => fillMonthRandom(i)}
+                    onClick={() => fillMonthRandom(i, fillRatio / 100)}
                     className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs font-medieval bg-amber-900/20 border border-amber-700 text-amber-400 hover:bg-amber-900/40 transition-colors"
                   >
                     <Shuffle size={12} /> Aléa

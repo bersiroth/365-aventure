@@ -48,6 +48,8 @@ function App() {
     toggleRingUsed,
     setMonthCompleted,
     fillMonthRandom,
+    fillAllMonthsRandom,
+    resetTrophies,
     score,
     trophies,
     newTrophies,
@@ -167,6 +169,8 @@ function App() {
             setDevMaxMonth={setDevMaxMonth}
             setMonthCompleted={setMonthCompleted}
             fillMonthRandom={fillMonthRandom}
+            fillAllMonthsRandom={fillAllMonthsRandom}
+            resetTrophies={resetTrophies}
           />
         );
 

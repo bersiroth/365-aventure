@@ -388,8 +388,10 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
   const finalBossCurrentValue = isFinalBoss ? (finalBossData?.currentValue ?? 2048) : day.value;
   const finalBossPreviousValue = isFinalBoss ? (finalBossData?.previousValue ?? null) : null;
 
-  // Valeur effective à valider (boss final : dynamique, sinon valeur du jour)
-  const effectiveValue = isFinalBoss ? finalBossCurrentValue : day.value;
+  // Valeur effective à valider (boss final : dynamique, boss influencé affaibli : divisé par 2, sinon valeur du jour)
+  const effectiveValue = isFinalBoss
+    ? finalBossCurrentValue
+    : (isInfluenced && undeadDefeatedInWing ? Math.ceil(day.value / 2) : day.value);
 
   const handleClick = () => {
     if (isReadOnly) return;

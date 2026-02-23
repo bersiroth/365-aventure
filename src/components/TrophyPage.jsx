@@ -1,7 +1,7 @@
 import { Award, Lock, User, TrendingDown } from 'lucide-react';
 import {
   Swords, Skull, AlertTriangle, Crown, FlaskConical,
-  Wand2, Shield, Flame, Trophy, Calendar,
+  Shield, Flame, Trophy, Zap, Layers2, EyeOff, Ghost,
 } from 'lucide-react';
 import { TROPHY_DEFINITIONS, TROPHY_TIERS } from '../data/trophyData';
 import { ScorePanel } from './ScorePanel';
@@ -9,7 +9,7 @@ import { calculateScore } from '../data/gameData';
 
 const ICON_MAP = {
   Swords, Skull, AlertTriangle, Crown, FlaskConical,
-  Wand2, Shield, Flame, Trophy, Calendar, Award,
+  Shield, Flame, Trophy, Award, Zap, Layers2, EyeOff, Ghost,
 };
 
 const TIER_ORDER = ['OR', 'ARGENT', 'BRONZE'];
