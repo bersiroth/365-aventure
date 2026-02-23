@@ -18,7 +18,7 @@ function buildMonthlyScores(yearData) {
   if (!yearData) return [];
   return yearData.map((monthData) => {
     const s = calculateScore([monthData]);
-    return { score: s.totalScore };
+    return { score: s.totalScore, wings: s.completeWings };
   });
 }
 
@@ -60,7 +60,11 @@ export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 1
         .filter(Boolean).filter(m => m.index !== bestMonthIdx);
       return pastMonths.length > 0 ? pastMonths.reduce((w, m) => m.score < w.score ? m : w) : null;
     })();
-    return { longestStreak, bestMonth, mostCommonMonster, bestBossValue, worstMonth };
+    const bestWingsMonthIdx = data.reduce((bestIdx, m, i) => m.wings > data[bestIdx].wings ? i : bestIdx, 0);
+    const bestWingsMonth = data[bestWingsMonthIdx]?.wings > 0
+      ? { wings: data[bestWingsMonthIdx].wings, name: yearData[bestWingsMonthIdx].name }
+      : null;
+    return { longestStreak, bestMonth, mostCommonMonster, bestBossValue, worstMonth, bestWingsMonth };
   })() : null;
 
   return (
@@ -119,6 +123,15 @@ export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 1
                   <div>
                     <div className="text-3xl font-bold text-orange-400 leading-none">{exploits.bestBossValue}</div>
                     <div className="text-xs text-gray-400 mt-1">meilleure valeur de boss vaincu</div>
+                  </div>
+                </div>
+              )}
+              {exploits.bestWingsMonth && (
+                <div className="flex items-center gap-3">
+                  <Swords size={28} className="text-green-400 shrink-0" />
+                  <div>
+                    <div className="text-3xl font-bold text-green-400 leading-none">{exploits.bestWingsMonth.wings}</div>
+                    <div className="text-xs text-gray-400 mt-1">ailes en un mois — {exploits.bestWingsMonth.name}</div>
                   </div>
                 </div>
               )}

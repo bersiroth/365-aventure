@@ -431,7 +431,7 @@ export const MONTH_CONFIGS = {
   //  JUILLET (index 6)  — Dimanches : 5, 12, 19, 26
   // ──────────────────────────────────────────────────────────────
   6: {
-     1: { type: 'TRAP', value: 11  },
+     1: { type: 'TRAP', value: -1  },
      2: { type: 'DOUBLE', value: 2, value2: 3  },
      3: { type: 'UNDEAD', value: 4  },
      4: { type: 'MONSTER', value: 5, isElite: true  },
@@ -458,7 +458,7 @@ export const MONTH_CONFIGS = {
     25: { type: 'MONSTER', value: 5  },
     26: { type: 'BOSS',    value: 24, isElite: true }, // Dimanche — TODO
     27: { type: 'MONSTER', value: 2  },
-    28: { type: 'DOUBLE', value: 3, value2: 4  },
+    28: { type: 'DOUBLE', value: 3, value2: 4, hasMana: true  },
     29: { type: 'TRAP', value: -4  },
     30: { type: 'MONSTER', value: 5  },
     31: { type: 'MONSTER', value: 6  },
@@ -468,36 +468,36 @@ export const MONTH_CONFIGS = {
   //  AOÛT (index 7)  — Dimanches : 2, 9, 16, 23, 30
   // ──────────────────────────────────────────────────────────────
   7: {
-     1: { type: 'MONSTER', value: 1  },
-     2: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     3: { type: 'MONSTER', value: 1  },
-     4: { type: 'MONSTER', value: 1  },
-     5: { type: 'MONSTER', value: 1  },
-     6: { type: 'MONSTER', value: 1  },
-     7: { type: 'MONSTER', value: 1  },
-     8: { type: 'MONSTER', value: 1  },
-     9: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    10: { type: 'MONSTER', value: 1  },
-    11: { type: 'MONSTER', value: 1  },
-    12: { type: 'MONSTER', value: 1  },
-    13: { type: 'MONSTER', value: 1  },
-    14: { type: 'MONSTER', value: 1  },
-    15: { type: 'MONSTER', value: 1  },
-    16: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    17: { type: 'MONSTER', value: 1  },
-    18: { type: 'MONSTER', value: 1  },
-    19: { type: 'MONSTER', value: 1  },
-    20: { type: 'MONSTER', value: 1  },
-    21: { type: 'MONSTER', value: 1  },
-    22: { type: 'MONSTER', value: 1  },
-    23: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     1: { type: 'MONSTER', value: 3, hasMana: true  },
+     2: { type: 'BOSS',    value: 21 }, // Dimanche — TODO
+     3: { type: 'TRAP', value: -1  },
+     4: { type: 'UNDEAD', value: 1  },
+     5: { type: 'MONSTER', value: 2  },
+     6: { type: 'DOUBLE', value: 3, value2: 4 },
+     7: { type: 'MONSTER', value: 5  },
+     8: { type: 'TRAP', value: -6 },
+     9: { type: 'BOSS', value: 22, isElite: true }, // Dimanche — TODO
+    10: { type: 'MONSTER', value: 2  },
+    11: { type: 'TRAP', value: -2  },
+    12: { type: 'MONSTER', value: 3, isElite: true  },
+    13: { type: 'DOUBLE', value: 4, value2: 5  },
+    14: { type: 'UNDEAD', value: 5  },
+    15: { type: 'MONSTER', value: 6  },
+    16: { type: 'BOSS',    value: 20 }, // Dimanche — TODO
+    17: { type: 'MONSTER', value: 1, isElite: true  },
+    18: { type: 'DOUBLE', value: 2, value2: 3  },
+    19: { type: 'UNDEAD', value: 4, hasMana: true  },
+    20: { type: 'TRAP', value: -4  },
+    21: { type: 'MONSTER', value: 5  },
+    22: { type: 'MONSTER', value: 5  },
+    23: { type: 'BOSS', value: 23, isElite: true }, // Dimanche — TODO
     24: { type: 'MONSTER', value: 1  },
-    25: { type: 'MONSTER', value: 1  },
-    26: { type: 'MONSTER', value: 1  },
-    27: { type: 'MONSTER', value: 1  },
-    28: { type: 'MONSTER', value: 1, isInvisible: true   },
-    29: { type: 'MONSTER', value: 1  },
-    30: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+    25: { type: 'MONSTER', value: 2  },
+    26: { type: 'TRAP', value: -3  },
+    27: { type: 'UNDEAD', value: 4  },
+    28: { type: 'DOUBLE', value: 5, value2: 6, hasMana: true },
+    29: { type: 'MONSTER', value: 6  },
+    30: { type: 'BOSS',    value: 21 }, // Dimanche — TODO
     31: { type: 'MONSTER', value: 1  },
   },
 
@@ -506,35 +506,35 @@ export const MONTH_CONFIGS = {
   // ──────────────────────────────────────────────────────────────
   8: {
      1: { type: 'MONSTER', value: 1  },
-     2: { type: 'UNDEAD', value: 1  },
-     3: { type: 'MONSTER', value: 1  },
-     4: { type: 'MONSTER', value: 1  },
-     5: { type: 'MONSTER', value: 1  },
-     6: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     7: { type: 'MONSTER', value: 1  },
-     8: { type: 'MONSTER', value: 1  },
-     9: { type: 'MONSTER', value: 1  },
-    10: { type: 'MONSTER', value: 1  },
-    11: { type: 'MONSTER', value: 1  },
-    12: { type: 'MONSTER', value: 1, isInvisible: true   },
-    13: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    14: { type: 'MONSTER', value: 1  },
-    15: { type: 'MONSTER', value: 1  },
-    16: { type: 'MONSTER', value: 1  },
-    17: { type: 'MONSTER', value: 1  },
-    18: { type: 'MONSTER', value: 1  },
-    19: { type: 'MONSTER', value: 1  },
-    20: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    21: { type: 'MONSTER', value: 1  },
-    22: { type: 'MONSTER', value: 1  },
-    23: { type: 'MONSTER', value: 1  },
-    24: { type: 'MONSTER', value: 1  },
-    25: { type: 'MONSTER', value: 1  },
-    26: { type: 'MONSTER', value: 1  },
-    27: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    28: { type: 'MONSTER', value: 1  },
-    29: { type: 'MONSTER', value: 1  },
-    30: { type: 'NECROMANCER', value: 1  }, // Mercredi — TODO: vérifier la valeur
+     2: { type: 'UNDEAD', value: 2  },
+     3: { type: 'TRAP', value: -3  },
+     4: { type: 'TRAP', value: -4  },
+     5: { type: 'MONSTER', value: 5  },
+     6: { type: 'BOSS',    value: 19, isElite: true }, // Dimanche — TODO
+     7: { type: 'TRAP', value: -2  },
+     8: { type: 'TRAP', value: -2  },
+     9: { type: 'MONSTER', value: 3  },
+    10: { type: 'UNDEAD', value: 4, hasMana: true  },
+    11: { type: 'DOUBLE', value: 5, value2: 6  },
+    12: { type: 'MONSTER', value: 6, isInvisible: true   },
+    13: { type: 'BOSS',    value: 23, isElite: true }, // Dimanche — TODO
+    14: { type: 'MONSTER', value: 2  },
+    15: { type: 'UNDEAD', value: 2  },
+    16: { type: 'DOUBLE', value: 3, value2: 4, hasMana: true  },
+    17: { type: 'MONSTER', value: 4, isElite: true  },
+    18: { type: 'UNDEAD', value: 4  },
+    19: { type: 'DOUBLE', value: 5, value2: 6  },
+    20: { type: 'BOSS',    value: 25 }, // Dimanche — TODO
+    21: { type: 'MONSTER', value: 1 , isElite: true },
+    22: { type: 'DOUBLE', value: 2, value2: 3  },
+    23: { type: 'TRAP', value: -3  },
+    24: { type: 'UNDEAD', value: 4  },
+    25: { type: 'MONSTER', value: 5, hasMana: true  },
+    26: { type: 'MONSTER', value: 5  },
+    27: { type: 'BOSS',    value: 23 }, // Dimanche — TODO
+    28: { type: 'MONSTER', value: 2  },
+    29: { type: 'NECROMANCER', value: 4  },
+    30: { type: 'MONSTER', value: 6  }, // Mercredi — TODO: vérifier la valeur
   },
 
   // ──────────────────────────────────────────────────────────────
@@ -543,37 +543,37 @@ export const MONTH_CONFIGS = {
   //  Boss avec isInfluenced: true → si UNDEAD de l'aile vaincu, +10 pts bonus
   // ──────────────────────────────────────────────────────────────
   9: {
-     1: { type: 'MONSTER', value: 1  },
-     2: { type: 'UNDEAD',  value: 1  }, // Aile du boss 4 — TODO: vérifier
-     3: { type: 'MONSTER', value: 1  },
-     4: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
-     5: { type: 'MONSTER', value: 1  },
-     6: { type: 'MONSTER', value: 1  },
-     7: { type: 'UNDEAD',  value: 1  }, // Aile du boss 11 — TODO: vérifier
-     8: { type: 'MONSTER', value: 1  },
-     9: { type: 'MONSTER', value: 1  },
-    10: { type: 'MONSTER', value: 1  },
-    11: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
-    12: { type: 'MONSTER', value: 1  },
-    13: { type: 'MONSTER', value: 1  },
-    14: { type: 'UNDEAD',  value: 1  }, // Aile du boss 18 — TODO: vérifier
-    15: { type: 'MONSTER', value: 1  },
-    16: { type: 'MONSTER', value: 1  },
-    17: { type: 'MONSTER', value: 1  },
-    18: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
-    19: { type: 'MONSTER', value: 1  },
-    20: { type: 'MONSTER', value: 1  },
-    21: { type: 'UNDEAD',  value: 1  }, // Aile du boss 25 — TODO: vérifier
-    22: { type: 'MONSTER', value: 1  },
-    23: { type: 'MONSTER', value: 1  },
-    24: { type: 'MONSTER', value: 1  },
-    25: { type: 'BOSS',    value: 17, isInfluenced: true }, // Dimanche — TODO: valeur
-    26: { type: 'MONSTER', value: 1  },
-    27: { type: 'MONSTER', value: 1  },
-    28: { type: 'MONSTER', value: 1  },
-    29: { type: 'MONSTER', value: 1  },
-    30: { type: 'MONSTER', value: 1  },
-    31: { type: 'MONSTER', value: 1  },
+     1: { type: 'DOUBLE', value: 1, value2: 2  },
+     2: { type: 'DOUBLE',  value: 2, value2: 3, isInvisible: true  }, // Aile du boss 4 — TODO: vérifier
+     3: { type: 'DOUBLE', value: 3, value2: 4  },
+     4: { type: 'BOSS',    value: 22, isElite: true, hasMana: true }, // Dimanche — TODO: valeur
+     5: { type: 'DOUBLE', value: 1, value2: 2  },
+     6: { type: 'TRAP', value: -3  },
+     7: { type: 'UNDEAD',  value: 4  }, // Aile du boss 11 — TODO: vérifier
+     8: { type: 'MONSTER', value: 5, isElite: true  },
+     9: { type: 'TRAP', value: -5  },
+    10: { type: 'MONSTER', value: 6  },
+    11: { type: 'BOSS',    value: 28, isInfluenced: true }, // Dimanche — TODO: valeur
+    12: { type: 'TRAP', value: -1  },
+    13: { type: 'UNDEAD', value: 2  },
+    14: { type: 'MONSTER',  value: 2  }, // Aile du boss 18 — TODO: vérifier
+    15: { type: 'MONSTER', value: 3, isInvisible: true  },
+    16: { type: 'MONSTER', value: 5 , isElite: true },
+    17: { type: 'MONSTER', value: 6  },
+    18: { type: 'BOSS',    value: 30, isInfluenced: true }, // Dimanche — TODO: valeur
+    19: { type: 'MONSTER', value: 1, isInvisible: true  },
+    20: { type: 'TRAP', value: -2  },
+    21: { type: 'MONSTER',  value: 4, isElite: true, hasMana: true  }, // Aile du boss 25 — TODO: vérifier
+    22: { type: 'TRAP', value: -4  },
+    23: { type: 'UNDEAD', value: 6  },
+    24: { type: 'MONSTER', value: 6  },
+    25: { type: 'BOSS',    value: 32, isInfluenced: true, hasMana: true }, // Dimanche — TODO: valeur
+    26: { type: 'MONSTER', value: 3  },
+    27: { type: 'MONSTER', value: 3, isInvisible: true  },
+    28: { type: 'TRAP', value: -3  },
+    29: { type: 'TRAP', value: -4  },
+    30: { type: 'TRAP', value: -5  },
+    31: { type: 'NECROMANCER', value: 5  },
   },
 
   // ──────────────────────────────────────────────────────────────
@@ -582,36 +582,36 @@ export const MONTH_CONFIGS = {
   //  SHAMAN sur les Lundis : 2, 9, 16, 23, 30
   // ──────────────────────────────────────────────────────────────
   10: {
-     1: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     1: { type: 'BOSS',    value: 21 }, // Dimanche — TODO
      2: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre (1ère case aile)
-     3: { type: 'MONSTER', value: 1  },
-     4: { type: 'MONSTER', value: 1  },
-     5: { type: 'MONSTER', value: 1  },
-     6: { type: 'MONSTER', value: 1  },
-     7: { type: 'MONSTER', value: 1  },
-     8: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     9: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
-    10: { type: 'MONSTER', value: 1  },
-    11: { type: 'MONSTER', value: 1  },
-    12: { type: 'MONSTER', value: 1  },
-    13: { type: 'MONSTER', value: 1  },
-    14: { type: 'MONSTER', value: 1  },
-    15: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     3: { type: 'TRAP', value: -1  },
+     4: { type: 'DOUBLE', value: 2, value2: 3, hasMana: true  },
+     5: { type: 'UNDEAD', value: 4  },
+     6: { type: 'MONSTER', value: 5  },
+     7: { type: 'TRAP', value: -6  },
+     8: { type: 'BOSS',    value: 32, isElite: true, isInfluenced: true, hasMana: true }, // Dimanche — TODO
+     9: { type: 'MONSTER',  value: 2  }, // Lundi — Shaman de l'Ombre
+    10: { type: 'TRAP', value: -3  },
+    11: { type: 'MONSTER', value: 3, isElite: true  },
+    12: { type: 'MONSTER', value: 4, isInvisible: true  },
+    13: { type: 'UNDEAD', value: 4  },
+    14: { type: 'DOUBLE', value: 5, value2: 6  },
+    15: { type: 'BOSS',    value: 34, isInfluenced: true }, // Dimanche — TODO
     16: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
-    17: { type: 'MONSTER', value: 1  },
-    18: { type: 'MONSTER', value: 1  },
-    19: { type: 'MONSTER', value: 1  },
-    20: { type: 'MONSTER', value: 1  },
-    21: { type: 'MONSTER', value: 1  },
-    22: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    23: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
-    24: { type: 'MONSTER', value: 1  },
-    25: { type: 'MONSTER', value: 1  },
-    26: { type: 'MONSTER', value: 1  },
-    27: { type: 'MONSTER', value: 1  },
-    28: { type: 'MONSTER', value: 1  },
-    29: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    30: { type: 'SHAMAN',  value: 1  }, // Lundi — Shaman de l'Ombre
+    17: { type: 'TRAP', value: -2  },
+    18: { type: 'UNDEAD', value: 3  },
+    19: { type: 'DOUBLE', value: 4, value2: 5  },
+    20: { type: 'DOUBLE', value: 4, value2: 5, hasMana: true  },
+    21: { type: 'MONSTER', value: 6 , isInvisible: true },
+    22: { type: 'BOSS',    value: 38, isElite: true, isInfluenced: true }, // Dimanche — TODO
+    23: { type: 'MONSTER',  value: 2  }, // Lundi — Shaman de l'Ombre
+    24: { type: 'DOUBLE', value: 3, value2: 4, isInvisible: true  },
+    25: { type: 'MONSTER', value: 5  },
+    26: { type: 'MONSTER', value: 5, isElite: true  },
+    27: { type: 'MONSTER', value: 5  },
+    28: { type: 'NECROMANCER', value: 6  },
+    29: { type: 'BOSS',    value: 19 }, // Dimanche — TODO
+    30: { type: 'MONSTER',  value: 3  }, // Lundi — Shaman de l'Ombre
   },
 
   // ──────────────────────────────────────────────────────────────
@@ -622,36 +622,36 @@ export const MONTH_CONFIGS = {
   //  BOSS FINAL  : 31 (Jeudi — case spéciale hors dimanche)
   // ──────────────────────────────────────────────────────────────
   11: {
-     1: { type: 'MONSTER', value: 1  },
-     2: { type: 'MONSTER', value: 1  },
-     3: { type: 'UNDEAD',  value: 1  }, // Jeudi
-     4: { type: 'MONSTER', value: 1  },
-     5: { type: 'MONSTER', value: 1  },
-     6: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-     7: { type: 'MONSTER', value: 1  },
-     8: { type: 'UNDEAD',  value: 1  }, // Mardi
-     9: { type: 'MONSTER', value: 1  },
-    10: { type: 'MONSTER', value: 1  },
-    11: { type: 'UNDEAD',  value: 1  }, // Vendredi
-    12: { type: 'MONSTER', value: 1  },
-    13: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    14: { type: 'MONSTER', value: 1  },
-    15: { type: 'MONSTER', value: 1  },
-    16: { type: 'UNDEAD',  value: 1  }, // Mercredi
-    17: { type: 'MONSTER', value: 1  },
-    18: { type: 'MONSTER', value: 1  },
-    19: { type: 'UNDEAD',  value: 1  }, // Samedi
-    20: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
+     1: { type: 'DOUBLE', value: 1, value2: 2  },
+     2: { type: 'TRAP', value: -3  },
+     3: { type: 'UNDEAD',  value: 4  }, // Jeudi
+     4: { type: 'MONSTER', value: 4, isInvisible: true  },
+     5: { type: 'DOUBLE', value: 5, value2: 6  },
+     6: { type: 'BOSS',    value: 22, isElite: true , hasMana: true}, // Dimanche — TODO
+     7: { type: 'SHAMAN', value: 1, hasMana: true  },
+     8: { type: 'UNDEAD',  value: 3  }, // Mardi
+     9: { type: 'MONSTER', value: 3, isElite: true  },
+    10: { type: 'MONSTER', value: 3, isInvisible: true  },
+    11: { type: 'UNDEAD',  value: 3  }, // Vendredi
+    12: { type: 'MONSTER', value: 6, isElite: true , hasMana: true },
+    13: { type: 'BOSS',    value: 24, isInvisible: true }, // Dimanche — TODO
+    14: { type: 'SHAMAN', value: 1  },
+    15: { type: 'TRAP', value: -2  },
+    16: { type: 'UNDEAD',  value: 3  }, // Mercredi
+    17: { type: 'TRAP', value: -4  },
+    18: { type: 'MONSTER', value: 5, isElite: true  },
+    19: { type: 'UNDEAD',  value: 6  }, // Samedi
+    20: { type: 'BOSS',    value: 26, isElite: true }, // Dimanche — TODO
     21: { type: 'UNDEAD',  value: 1  }, // Lundi
-    22: { type: 'MONSTER', value: 1  },
-    23: { type: 'MONSTER', value: 1  },
-    24: { type: 'UNDEAD',  value: 1  }, // Jeudi
-    25: { type: 'MONSTER', value: 1  },
-    26: { type: 'NECROMANCER', value: 1  }, // Samedi
-    27: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    28: { type: 'MONSTER', value: 1  },
-    29: { type: 'UNDEAD',  value: 1  }, // Mardi
-    30: { type: 'MONSTER', value: 1  },
+    22: { type: 'DOUBLE', value: 2, value2: 3, isInvisible: true  },
+    23: { type: 'MONSTER', value: 3, isElite: true  },
+    24: { type: 'UNDEAD',  value: 4  }, // Jeudi
+    25: { type: 'DOUBLE', value: 5, value2: 6  },
+    26: { type: 'NECROMANCER', value: 6  }, // Samedi
+    27: { type: 'BOSS',    value: 28, isInvisible: true }, // Dimanche — TODO
+    28: { type: 'TRAP', value: -1  },
+    29: { type: 'UNDEAD',  value: 2  }, // Mardi
+    30: { type: 'TRAP', value: -3  },
     31: { type: 'BOSS', value: 2048, isFinalBoss: true }, // Jeudi — Boss Final
   },
 };
