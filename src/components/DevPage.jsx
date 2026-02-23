@@ -104,7 +104,7 @@ export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthComplet
         <p className="text-gray-400 text-sm mb-4">
           Marque tous les jours d'un mois comme complétés ou non complétés.
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
           {MONTH_NAMES.map((name, i) => {
             const monthData = yearData?.[i];
             const total = monthData?.weeks.flatMap(w => w.days).length ?? 0;
@@ -118,21 +118,21 @@ export function DevPage({ yearData, devMaxMonth, setDevMaxMonth, setMonthComplet
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => setMonthCompleted(i, true)}
-                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-xs font-medieval bg-green-900/40 border border-green-700 text-green-400 hover:bg-green-900/70 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs font-medieval bg-green-900/40 border border-green-700 text-green-400 hover:bg-green-900/70 transition-colors"
                   >
-                    <CheckSquare size={11} /> Remplir
+                    <CheckSquare size={12} /> Remplir
                   </button>
                   <button
                     onClick={() => fillMonthRandom(i)}
-                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-xs font-medieval bg-amber-900/20 border border-amber-700 text-amber-400 hover:bg-amber-900/40 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs font-medieval bg-amber-900/20 border border-amber-700 text-amber-400 hover:bg-amber-900/40 transition-colors"
                   >
-                    <Shuffle size={11} /> Aléa
+                    <Shuffle size={12} /> Aléa
                   </button>
                   <button
                     onClick={() => setMonthCompleted(i, false)}
-                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-xs font-medieval bg-red-900/20 border border-red-800 text-red-400 hover:bg-red-900/40 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs font-medieval bg-red-900/20 border border-red-800 text-red-400 hover:bg-red-900/40 transition-colors"
                   >
-                    <Square size={11} /> Vider
+                    <Square size={12} /> Vider
                   </button>
                 </div>
               </div>

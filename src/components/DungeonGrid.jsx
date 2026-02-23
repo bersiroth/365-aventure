@@ -199,10 +199,10 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
   const numSlots = doubleUse ? 2 : 1;
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 bg-blue-950/30 border-b border-blue-400/20 min-h-[34px] sm:min-h-[40px]">
+    <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 px-3 sm:px-4 py-2 bg-blue-950/30 border-b border-blue-400/20 min-h-[34px] sm:min-h-[40px]">
 
       {/* Potions de mana */}
-      <span className="text-blue-300 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
+      <span className="hidden sm:inline text-blue-300 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
         Potions de mana
       </span>
       <div className="flex flex-wrap gap-1 sm:gap-1.5">
@@ -244,8 +244,8 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
       {/* Bâton du Sage */}
       {hasStaff && (
         <>
-          <div className="w-px self-stretch bg-dungeon-gold/20 mx-1" />
-          <span className="text-dungeon-gold/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
+          <div className="hidden sm:block w-px self-stretch bg-dungeon-gold/20 mx-1" />
+          <span className="hidden sm:inline text-dungeon-gold/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
             Bâton du Sage
           </span>
           <div className="flex gap-1">
@@ -277,8 +277,8 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
       {/* Anneau Ancien */}
       {hasRing && (
         <>
-          <div className="w-px self-stretch bg-dungeon-gold/20 mx-1" />
-          <span className="text-amber-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
+          <div className="hidden sm:block w-px self-stretch bg-dungeon-gold/20 mx-1" />
+          <span className="hidden sm:inline text-amber-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
             Anneau Ancien
           </span>
           <div className="flex gap-1">
@@ -310,8 +310,8 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
       {/* Cape des Illusions */}
       {hasCape && (
         <>
-          <div className="w-px self-stretch bg-dungeon-gold/20 mx-1" />
-          <span className="text-teal-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
+          <div className="hidden sm:block w-px self-stretch bg-dungeon-gold/20 mx-1" />
+          <span className="hidden sm:inline text-teal-400/70 font-medieval text-[10px] sm:text-xs uppercase tracking-wide whitespace-nowrap shrink-0">
             Cape des Illusions
           </span>
           <div className="flex gap-1">
@@ -577,9 +577,9 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         )}
       </div>
 
-      {/* Badge valeur originale barrée (boss influencé affaibli par UNDEAD) */}
+      {/* Badge valeur originale barrée (boss influencé affaibli par UNDEAD) — masqué mobile */}
       {isInfluenced && undeadDefeatedInWing && (
-        <div className="absolute bottom-3 left-3 z-20">
+        <div className="absolute bottom-3 left-3 z-20 hidden sm:block">
           <div className="relative flex items-center justify-center" style={{ width: 18, height: 18 }}>
             <Circle size={40} className="absolute text-red-500/70 fill-gray-600/60" strokeWidth={2} />
             <span className="absolute z-10 text-[6px] sm:text-[18px] font-bold text-gray-300 line-through leading-none">{day.value}</span>
@@ -587,9 +587,9 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         </div>
       )}
 
-      {/* Badge valeur précédente barrée (boss final, si au moins 1 UNDEAD vaincu) */}
+      {/* Badge valeur précédente barrée (boss final) — masqué mobile */}
       {isFinalBoss && finalBossPreviousValue !== null && (
-        <div className="absolute bottom-3 left-3 z-20">
+        <div className="absolute bottom-3 left-3 z-20 hidden sm:block">
           <div className="relative flex items-center justify-center" style={{ width: 18, height: 18 }}>
             <Circle size={40} className="absolute text-red-500/70 fill-gray-600/60" strokeWidth={2} />
             <span className="absolute z-10 text-[5px] sm:text-[10px] font-bold text-gray-300 line-through leading-none">{finalBossPreviousValue}</span>
@@ -625,31 +625,32 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         </div>
       )}
 
-      {/* Indicateur élite */}
+      {/* Indicateur élite — masqué mobile */}
       {isElite && (
-        <div className="absolute bottom-2 left-1 z-30">
+        <div className="absolute bottom-2 left-1 z-30 hidden sm:block">
           <Zap size={18} className="text-yellow-300 fill-yellow-300 drop-shadow-[0_0_4px_rgba(253,224,71,0.9)]" />
         </div>
       )}
 
-      {/* Indicateur nécromancien */}
+      {/* Indicateur nécromancien — masqué mobile */}
       {isNecromancer && (
-        <div className="absolute bottom-3.5 left-3 z-30">
+        <div className="absolute bottom-3.5 left-3 z-30 hidden sm:block">
           <Skull size={22} className="text-green-600" />
         </div>
       )}
 
-      {/* Indicateur Shaman de l'Ombre */}
+      {/* Indicateur Shaman de l'Ombre — masqué mobile */}
       {isShaman && (
-        <div className="absolute bottom-3.5 left-3 z-30">
+        <div className="absolute bottom-3.5 left-3 z-30 hidden sm:block">
           <Ghost size={22} className="text-purple-400" />
         </div>
       )}
 
       {/* Indicateur potion de mana */}
       {day.hasMana && (
-        <div className={`absolute bottom-2 right-0.5 z-30 drop-shadow-[0_0_4px_rgba(96,165,250,0.9)] ${isCompleted ? 'opacity-75' : ''}`}>
-          <FlaskConical size={20} className="text-blue-700" />
+        <div className={`absolute bottom-0.5 right-0 sm:bottom-2 sm:right-0.5 z-30 drop-shadow-[0_0_4px_rgba(96,165,250,0.9)] ${isCompleted ? 'opacity-75' : ''}`}>
+          <FlaskConical size={14} className="text-blue-700 sm:hidden" />
+          <FlaskConical size={20} className="text-blue-700 hidden sm:block" />
         </div>
       )}
 

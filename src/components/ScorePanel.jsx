@@ -114,8 +114,8 @@ function MiniStat({ icon, value, color, label }) {
  */
 function StatCard({ icon, label, value, color, subtext, labelClassName = 'text-xs' }) {
   return (
-    <div className="bg-dungeon-dark/50 rounded-lg p-4 border border-gray-700 hover:border-dungeon-gold/50 transition-colors flex flex-row items-center gap-2 justify-center">
-      <div className="shrink-0 pr-4">{icon}</div>
+    <div className="bg-dungeon-dark/50 rounded-lg p-4 border border-gray-700 hover:border-dungeon-gold/50 transition-colors flex flex-row items-center gap-2">
+      <div className="w-16 flex items-center justify-center shrink-0">{icon}</div>
       <div className="flex flex-col justify-center">
         <div className="flex items-center gap-2">
           <span className={`text-3xl font-bold leading-none ${color}`}>{value}</span>

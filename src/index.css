@@ -9,6 +9,12 @@
   }
 }
 
+@media (min-width: 640px) {
+  html {
+    font-size: 17px;
+  }
+}
+
 /* Animation pour les cartes */
 @keyframes pulse-gold {
   0%, 100% {

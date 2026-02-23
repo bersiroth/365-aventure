@@ -201,7 +201,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
 
       {/* Exploits */}
       <Section title="Exploits">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex items-center gap-3">
             <Flame size={28} className="text-orange-500 shrink-0" />
             <div>
@@ -251,34 +251,27 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Moyennes par mois */}
       <Section title="Moyenne mensuelle">
         {(() => {
-          const optCount = (hasUndead ? 1 : 0) + (hasElite ? 1 : 0) + (hasDouble ? 1 : 0) + (hasMana ? 1 : 0) + (hasInvisible ? 1 : 0) + (hasNecromancer ? 1 : 0) + (hasInfluenced ? 1 : 0) + (hasShaman ? 1 : 0);
-          const gridClass = optCount === 0 ? 'sm:grid-cols-5'
-            : optCount === 1 ? 'sm:grid-cols-3'
-            : optCount >= 4 ? 'sm:grid-cols-5'
-            : 'sm:grid-cols-4';
           return (
-        <div className={`grid gap-3 grid-cols-2 ${gridClass}`}>
+        <div className="grid gap-3 grid-cols-2 sm:grid-cols-7">
           {[
-            { icon: <Trophy size={22} className="text-dungeon-gold" />,       label: 'Score/mois',       value: avg('score'),    color: 'text-dungeon-gold' },
-            { icon: <Axe size={22} className="text-sky-600" />,            label: 'Monstres/mois',    value: avg('monsters'), color: 'text-sky-400' },
-            ...(hasUndead ? [{ icon: <CrossedBonesIcon size={22} className="text-yellow-400" />, label: 'Morts/mois', value: avgUndead, color: 'text-yellow-300' }] : []),
-            ...(hasElite  ? [{ icon: <Zap size={22} className="text-red-400" />,      label: 'Élites/mois',  value: avgElite,  color: 'text-red-400'    }] : []),
-            ...(hasDouble ? [{ icon: <Layers2 size={22} className="text-indigo-400" />, label: 'Doubles/mois', value: avgDouble, color: 'text-indigo-400'  }] : []),
-            ...(hasInvisible ? [{ icon: <EyeOff size={22} className="text-gray-400" />, label: 'Invisibles/mois', value: avgInvisible, color: 'text-gray-300' }] : []),
-            ...(hasNecromancer ? [{ icon: <Skull size={22} className="text-green-600" />, label: 'Nécromancien', value: necromancerDefeatedTotal, color: 'text-green-500' }] : []),
-            ...(hasInfluenced ? [{ icon: <Flame size={22} className="text-orange-400" />, label: 'Boss influencés', value: influencedDefeatedTotal, color: 'text-orange-400' }] : []),
+            { icon: <Trophy size={22} className="text-dungeon-gold" />,       label: 'Score',       value: avg('score'),    color: 'text-dungeon-gold' },
+            { icon: <Axe size={22} className="text-sky-600" />,            label: 'Monstres',    value: avg('monsters'), color: 'text-sky-400' },
+            ...(hasUndead ? [{ icon: <CrossedBonesIcon size={22} className="text-yellow-400" />, label: 'Morts', value: avgUndead, color: 'text-yellow-300' }] : []),
+            ...(hasElite  ? [{ icon: <Zap size={22} className="text-red-400" />,      label: 'Élites',  value: avgElite,  color: 'text-red-400'    }] : []),
+            ...(hasDouble ? [{ icon: <Layers2 size={22} className="text-indigo-400" />, label: 'Doubles', value: avgDouble, color: 'text-indigo-400'  }] : []),
+            ...(hasInvisible ? [{ icon: <EyeOff size={22} className="text-gray-400" />, label: 'Invisibles', value: avgInvisible, color: 'text-gray-300' }] : []),
+            ...(hasNecromancer ? [{ icon: <Skull size={22} className="text-green-600" />, label: 'Nécro', value: necromancerDefeatedTotal, color: 'text-green-500' }] : []),
+            ...(hasInfluenced ? [{ icon: <Flame size={22} className="text-orange-400" />, label: 'Influencés', value: influencedDefeatedTotal, color: 'text-orange-400' }] : []),
             ...(hasShaman ? [{ icon: <Ghost size={22} className="text-purple-400" />, label: 'Shamans', value: shamanDefeatedTotal, color: 'text-purple-400' }] : []),
-            { icon: <AlertTriangle size={22} className="text-violet-400" />,   label: 'Pièges/mois',      value: avg('traps'),    color: 'text-violet-400' },
-            { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss/mois',        value: avg('bosses'),   color: 'text-orange-400' },
-            { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes/mois',       value: avg('wings'),    color: 'text-green-400' },
-            ...(hasMana ? [{ icon: <FlaskConical size={22} className="text-blue-400" />, label: 'Potions/mois', value: avgMana, color: 'text-blue-400' }] : []),
+            { icon: <AlertTriangle size={22} className="text-violet-400" />,   label: 'Pièges',      value: avg('traps'),    color: 'text-violet-400' },
+            { icon: <Crown size={22} className="text-orange-400" />,          label: 'Boss',        value: avg('bosses'),   color: 'text-orange-400' },
+            { icon: <Swords size={22} className="text-green-400" />,          label: 'Ailes',       value: avg('wings'),    color: 'text-green-400' },
+            ...(hasMana ? [{ icon: <FlaskConical size={22} className="text-blue-400" />, label: 'Potions', value: avgMana, color: 'text-blue-400' }] : []),
           ].map(({ icon, label, value, color }) => (
-            <div key={label} className="bg-dungeon-stone border border-dungeon-gold/30 rounded-lg p-3 flex items-center gap-3">
-              {icon}
-              <div>
-                <div className={`text-2xl font-bold leading-none ${color}`}>{value}</div>
-                <div className="text-xs text-gray-500 mt-0.5">{label}</div>
-              </div>
+            <div key={label} className="bg-dungeon-stone border border-dungeon-gold/30 rounded-lg p-3 flex items-center sm:gap-3 gap-2">
+              <div className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] flex items-center justify-center shrink-0">{icon}</div>
+              <div className={`sm:leading-none leading-none sm:text-2xl text-xl w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] font-bold  ${color}`}>{value}</div>
+              <div className="text-xs text-gray-400">{label}</div>
             </div>
           ))}
         </div>
@@ -325,8 +318,12 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={tooltipStyle} />
-            <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
+            <Tooltip
+              contentStyle={{ ...tooltipStyle, fontSize: 10, padding: '4px 8px' }}
+              wrapperStyle={{ maxWidth: '55%', zIndex: 100 }}
+              itemStyle={{ padding: '1px 0' }}
+            />
+            <Legend wrapperStyle={{ fontSize: 11, color: '#9ca3af' }} />
             <Bar dataKey="monsters" name="Monstres"      fill={COLORS.monsters} radius={[2, 2, 0, 0]} stackId="a" />
             {hasUndead && <Bar dataKey="undead" name="Morts-Vivants" fill={COLORS.undead} radius={[0, 0, 0, 0]} stackId="a" />}
             {hasElite  && <Bar dataKey="elite"   name="Élites"         fill={COLORS.elite}   radius={[0, 0, 0, 0]} stackId="a" />}
@@ -358,64 +355,64 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Tableau récapitulatif */}
       <Section title="Récapitulatif mensuel">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-separate border-spacing-x-1 sm:border-spacing-x-0">
             <thead>
-              <tr className="text-gray-500 text-xs uppercase border-b border-gray-700">
-                <th className="text-left py-2 font-medium">Mois</th>
-                <th className="text-right py-2 font-medium text-dungeon-gold">Score</th>
-                <th className="text-right py-2 font-medium text-sky-600">Monstres</th>
-                {hasUndead && <th className="text-right py-2 font-medium text-yellow-400">Morts</th>}
-                {hasElite  && <th className="text-right py-2 font-medium text-red-400">Élites</th>}
-                {hasDouble && <th className="text-right py-2 font-medium text-indigo-400">Doubles</th>}
-                {hasInvisible && <th className="text-right py-2 font-medium text-gray-400">Invisibles</th>}
-                {hasNecromancer && <th className="text-right py-2 font-medium text-green-600">Nécro.</th>}
-                {hasInfluenced && <th className="text-right py-2 font-medium text-orange-400">Influen.</th>}
-                {hasShaman && <th className="text-right py-2 font-medium text-purple-400">Shamans</th>}
-                {hasFinalBoss && <th className="text-right py-2 font-medium text-rose-400">Boss F.</th>}
-                <th className="text-right py-2 font-medium text-violet-400">Pièges</th>
-                <th className="text-right py-2 font-medium text-orange-400">Boss</th>
-                <th className="text-right py-2 font-medium text-green-400">Ailes</th>
-                {hasMana && <th className="text-right py-2 font-medium text-blue-400">Potions</th>}
+              <tr className="border-b border-gray-700">
+                <th className="text-left py-2 font-medium text-xs uppercase text-gray-500">Mois</th>
+                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-dungeon-gold font-medium text-xs">Score</span><Trophy size={13} className="text-dungeon-gold sm:hidden inline" /></th>
+                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-sky-400 font-medium text-xs">Monstres</span><Axe size={13} className="text-sky-600 sm:hidden inline" /></th>
+                {hasUndead && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-yellow-300 font-medium text-xs">Morts</span><CrossedBonesIcon size={13} className="text-yellow-400 sm:hidden inline" /></th>}
+                {hasElite  && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-red-400 font-medium text-xs">Élites</span><Zap size={13} className="text-red-400 sm:hidden inline" /></th>}
+                {hasDouble && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-indigo-400 font-medium text-xs">Doubles</span><Layers2 size={13} className="text-indigo-400 sm:hidden inline" /></th>}
+                {hasInvisible && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-gray-300 font-medium text-xs">Invisibles</span><EyeOff size={13} className="text-gray-400 sm:hidden inline" /></th>}
+                {hasNecromancer && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-green-500 font-medium text-xs">Nécro</span><Skull size={13} className="text-green-600 sm:hidden inline" /></th>}
+                {hasInfluenced && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-orange-400 font-medium text-xs">Influencés</span><Flame size={13} className="text-orange-400 sm:hidden inline" /></th>}
+                {hasShaman && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-purple-400 font-medium text-xs">Shamans</span><Ghost size={13} className="text-purple-400 sm:hidden inline" /></th>}
+                {hasFinalBoss && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-rose-400 font-medium text-xs">Boss Final</span><Star size={13} className="text-rose-400 sm:hidden inline" /></th>}
+                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-violet-400 font-medium text-xs">Pièges</span><AlertTriangle size={13} className="text-violet-400 sm:hidden inline" /></th>
+                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-orange-400 font-medium text-xs">Boss</span><Crown size={13} className="text-orange-400 sm:hidden inline" /></th>
+                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-green-400 font-medium text-xs">Ailes</span><Swords size={13} className="text-green-400 sm:hidden inline" /></th>
+                {hasMana && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-blue-400 font-medium text-xs">Potions</span><FlaskConical size={13} className="text-blue-400 sm:hidden inline" /></th>}
               </tr>
             </thead>
             <tbody>
               {data.map((row, i) => (
                 <tr key={row.month} className={`border-b border-gray-800 ${i % 2 === 0 ? 'bg-dungeon-dark/30' : ''}`}>
                   <td className="py-2 font-medieval text-gray-300">{yearData[i].name}</td>
-                  <td className="py-2 text-right font-bold text-dungeon-gold">{row.score}</td>
-                  <td className="py-2 text-right text-sky-400">{row.monsters}</td>
-                  {hasUndead && <td className="py-2 text-right text-yellow-300">{row.undead}</td>}
-                  {hasElite  && <td className="py-2 text-right text-red-400">{row.elite}</td>}
-                  {hasDouble && <td className="py-2 text-right text-indigo-400">{row.doubles}</td>}
-                  {hasInvisible && <td className="py-2 text-right text-gray-300">{row.invisibles}</td>}
-                  {hasNecromancer && <td className="py-2 text-right text-green-500">{row.necromancer}</td>}
-                  {hasInfluenced && <td className="py-2 text-right text-orange-400">{row.influenced}</td>}
-                  {hasShaman && <td className="py-2 text-right text-purple-400">{row.shaman}</td>}
-                  {hasFinalBoss && <td className="py-2 text-right text-rose-400">{row.finalBoss}</td>}
-                  <td className="py-2 text-right text-violet-400">{row.traps}</td>
-                  <td className="py-2 text-right text-orange-400">{row.bosses}</td>
-                  <td className="py-2 text-right text-green-400">{row.wings}</td>
-                  {hasMana && <td className="py-2 text-right text-blue-400">{row.mana}</td>}
+                  <td className="py-2 text-right px-1 font-bold text-dungeon-gold">{row.score}</td>
+                  <td className="py-2 text-right px-1 text-sky-400">{row.monsters}</td>
+                  {hasUndead && <td className="py-2 text-right px-1 text-yellow-300">{row.undead}</td>}
+                  {hasElite  && <td className="py-2 text-right px-1 text-red-400">{row.elite}</td>}
+                  {hasDouble && <td className="py-2 text-right px-1 text-indigo-400">{row.doubles}</td>}
+                  {hasInvisible && <td className="py-2 text-right px-1 text-gray-300">{row.invisibles}</td>}
+                  {hasNecromancer && <td className="py-2 text-right px-1 text-green-500">{row.necromancer}</td>}
+                  {hasInfluenced && <td className="py-2 text-right px-1 text-orange-400">{row.influenced}</td>}
+                  {hasShaman && <td className="py-2 text-right px-1 text-purple-400">{row.shaman}</td>}
+                  {hasFinalBoss && <td className="py-2 text-right px-1 text-rose-400">{row.finalBoss}</td>}
+                  <td className="py-2 text-right px-1 text-violet-400">{row.traps}</td>
+                  <td className="py-2 text-right px-1 text-orange-400">{row.bosses}</td>
+                  <td className="py-2 text-right px-1 text-green-400">{row.wings}</td>
+                  {hasMana && <td className="py-2 text-right px-1 text-blue-400">{row.mana}</td>}
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-dungeon-gold/30 font-bold">
                 <td className="py-2 font-medieval text-dungeon-gold">Total</td>
-                <td className="py-2 text-right text-dungeon-gold">{data.reduce((s, m) => s + m.score, 0)}</td>
-                <td className="py-2 text-right text-sky-400">{data.reduce((s, m) => s + m.monsters, 0)}</td>
-                {hasUndead && <td className="py-2 text-right text-yellow-300">{data.reduce((s, m) => s + m.undead, 0)}</td>}
-                {hasElite  && <td className="py-2 text-right text-red-400">{data.reduce((s, m) => s + m.elite, 0)}</td>}
-                {hasDouble && <td className="py-2 text-right text-indigo-400">{data.reduce((s, m) => s + m.doubles, 0)}</td>}
-                {hasInvisible && <td className="py-2 text-right text-gray-300">{data.reduce((s, m) => s + m.invisibles, 0)}</td>}
-                {hasNecromancer && <td className="py-2 text-right text-green-500">{necromancerDefeatedTotal}</td>}
-                {hasInfluenced && <td className="py-2 text-right text-orange-400">{influencedDefeatedTotal}</td>}
-                {hasShaman && <td className="py-2 text-right text-purple-400">{shamanDefeatedTotal}</td>}
-                {hasFinalBoss && <td className="py-2 text-right text-rose-400">{finalBossDefeatedTotal}</td>}
-                <td className="py-2 text-right text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
-                <td className="py-2 text-right text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
-                <td className="py-2 text-right text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>
-                {hasMana && <td className="py-2 text-right text-blue-400">{data.reduce((s, m) => s + m.mana, 0)}</td>}
+                <td className="py-2 text-right px-1 text-dungeon-gold">{data.reduce((s, m) => s + m.score, 0)}</td>
+                <td className="py-2 text-right px-1 text-sky-400">{data.reduce((s, m) => s + m.monsters, 0)}</td>
+                {hasUndead && <td className="py-2 text-right px-1 text-yellow-300">{data.reduce((s, m) => s + m.undead, 0)}</td>}
+                {hasElite  && <td className="py-2 text-right px-1 text-red-400">{data.reduce((s, m) => s + m.elite, 0)}</td>}
+                {hasDouble && <td className="py-2 text-right px-1 text-indigo-400">{data.reduce((s, m) => s + m.doubles, 0)}</td>}
+                {hasInvisible && <td className="py-2 text-right px-1 text-gray-300">{data.reduce((s, m) => s + m.invisibles, 0)}</td>}
+                {hasNecromancer && <td className="py-2 text-right px-1 text-green-500">{necromancerDefeatedTotal}</td>}
+                {hasInfluenced && <td className="py-2 text-right px-1 text-orange-400">{influencedDefeatedTotal}</td>}
+                {hasShaman && <td className="py-2 text-right px-1 text-purple-400">{shamanDefeatedTotal}</td>}
+                {hasFinalBoss && <td className="py-2 text-right px-1 text-rose-400">{finalBossDefeatedTotal}</td>}
+                <td className="py-2 text-right px-1 text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
+                <td className="py-2 text-right px-1 text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
+                <td className="py-2 text-right px-1 text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>
+                {hasMana && <td className="py-2 text-right px-1 text-blue-400">{data.reduce((s, m) => s + m.mana, 0)}</td>}
               </tr>
             </tfoot>
           </table>
