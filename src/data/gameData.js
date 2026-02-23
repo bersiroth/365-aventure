@@ -54,6 +54,7 @@ export function generateYear2026() {
       const isElite = dayConfig?.isElite ?? false;
       const isInvisible = dayConfig?.isInvisible ?? false;
       const isInfluenced = dayConfig?.isInfluenced ?? false;
+      const isFinalBoss = dayConfig?.isFinalBoss ?? false;
       const value2 = dayConfig?.value2 ?? null;
       const manaSlot = hasMana ? manaCount++ : null;
 
@@ -73,6 +74,7 @@ export function generateYear2026() {
         isElite,
         isInvisible,
         isInfluenced,
+        isFinalBoss,
       };
 
       currentWeek.push(dayData);
@@ -125,6 +127,7 @@ export function calculateScore(yearData) {
   let doublesDefeated = 0;
   let trapsDefeated = 0;
   let bossesDefeated = 0;
+  let finalBossDefeated = 0;
   let completeWings = 0;
   let manaPotionsEarned = 0;
   let invisiblesDefeated = 0;
@@ -147,6 +150,7 @@ export function calculateScore(yearData) {
         else if (day.type === 'BOSS')   {
           totalScore += 2; bossesDefeated++;
           if (day.isInfluenced) { totalScore += 10; influencedBossesDefeated++; }
+          if (day.isFinalBoss)  { totalScore += 30; finalBossDefeated++; }
         }
         else if (day.type === 'TRAP')   { totalScore += 1; trapsDefeated++;  }
         else if (day.type === 'UNDEAD') {
@@ -175,7 +179,9 @@ export function calculateScore(yearData) {
         const idx = row * 7 + col - offset;
         if (idx >= 0 && idx < allDays.length) rowDays.push(allDays[idx]);
       }
-      if (rowDays.length === 7 && rowDays.every(d => d.completed)) {
+      const wingHasUndead = rowDays.some(d => d.type === 'UNDEAD');
+      const wingUndeadBlocked = wingHasUndead && monthHasNecromancer && !monthNecromancerDefeated;
+      if (rowDays.length === 7 && rowDays.every(d => d.completed) && !wingUndeadBlocked) {
         totalScore += 3;
         completeWings++;
       }
@@ -190,6 +196,7 @@ export function calculateScore(yearData) {
     doublesDefeated,
     trapsDefeated,
     bossesDefeated,
+    finalBossDefeated,
     completeWings,
     manaPotionsEarned,
     invisiblesDefeated,

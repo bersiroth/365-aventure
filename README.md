@@ -10,6 +10,7 @@ Application web auto-hébergée pour suivre votre progression dans le jeu "365 A
 - **365 jours** de combats pour l'année 2026
 - **Validation des cases** en un clic avec sauvegarde automatique
 - **Ailes conquises** : bannière visuelle quand les 7 jours d'une semaine sont validés
+- **Blocage de validation** : impossible de valider une case de valeur > 30 (max 5 dés × 6), popup explicative
 - **Mode lecture seule** pour consulter la progression d'un autre joueur
 
 ### Système de scoring
@@ -20,12 +21,13 @@ Application web auto-hébergée pour suivre votre progression dans le jeu "365 A
 | Mort-Vivant vaincu | +1 pt (si Nécromancien du mois vaincu ou absent) |
 | Monstre Invisible vaincu | +1 pt |
 | Monstre Élite vaincu | +1 pt (en plus du type de base) |
-| Monstres Doubles vaincus | +2 pts |
+| Monstres Doubles vaincus | +3 pts |
 | Nécromancien vaincu | +1 pt |
 | Shaman de l'Ombre vaincu | +1 pt |
 | Boss terrassé (Dimanche) | +2 pts |
 | Boss Influencé terrassé | +2 pts + 10 pts bonus |
-| Aile complète (7 jours) | +3 pts bonus |
+| Boss Final terrassé (31 Déc.) | +2 pts + 30 pts bonus |
+| Aile complète (7 jours) | +3 pts bonus (bloquée si UNDEAD non débloqué) |
 
 ### Comptes & Multijoueur
 - **Inscription / Connexion** avec mot de passe haché (bcrypt)
@@ -47,9 +49,9 @@ Application web auto-hébergée pour suivre votre progression dans le jeu "365 A
 
 ### Statistiques
 - Score cumulé, score par mois (graphiques)
-- Combats par mois (barres empilées par type)
+- Combats par mois (barres empilées par type, dont Boss Final)
 - Moyennes mensuelles par catégorie
-- Tableau récapitulatif mensuel complet
+- Tableau récapitulatif mensuel complet (dont Boss Final)
 - Exploits : meilleur mois, plus longue série, monstre le plus vaincu, pire mois
 
 ---
@@ -66,11 +68,12 @@ Chaque mois débloque une nouvelle règle affichée dans le calendrier via le bo
 | Avril | **Bâton du Sage** | Pouvoir 1×/mois — retourner un dé rouge sur sa face opposée |
 | Mai | **Monstres Élites** | Flag `isElite` — vaincre en max 2 jets au lieu de 3 |
 | Juin | **Cape des Illusions** | Pouvoir 1×/mois — modifier un dé bleu pour qu'il corresponde à l'autre |
-| Juillet | **Monstres Doubles** | Type `DOUBLE` avec deux valeurs — nécessite 2 dés de chaque valeur, +2 pts |
+| Juillet | **Monstres Doubles** | Type `DOUBLE` avec deux valeurs — nécessite 2 dés de chaque valeur, +3 pts |
 | Août | **Anneau Ancien** | Pouvoir 1×/mois — enchaîner un combat supplémentaire après 4 dés identiques |
-| Septembre | **Monstres Invisibles & Nécromancien** | Flag `isInvisible` + type `NECROMANCER` — si le Nécromancien du mois n'est pas vaincu, les points des Morts-Vivants de ce mois ne comptent pas |
+| Septembre | **Monstres Invisibles & Nécromancien** | Flag `isInvisible` + type `NECROMANCER` — si le Nécromancien du mois n'est pas vaincu : points des Morts-Vivants annulés, ailes contenant un UNDEAD non comptabilisées |
 | Octobre | **Boss Influencé & Objets Magiques ×2** | Flag `isInfluenced` sur les boss (dimanche) — valeur affichée dans un cercle rouge, +10 pts bonus ; si un `UNDEAD` de l'aile est vaincu, la valeur du boss est divisée par 2. Les objets magiques (Bâton, Cape, Anneau) peuvent être utilisés **2 fois** ce mois |
 | Novembre | **Shaman de l'Ombre** | Type `SHAMAN` — apparaît en début d'aile (lundi), bloque les relances de dés jusqu'à sa défaite |
+| Décembre | **Le Défi Final** | Boss Final le 31 décembre — valeur de base 2048, divisée par 2 pour chaque `UNDEAD` du mois vaincu (uniquement si le `NECROMANCER` est vaincu), +30 pts bonus |
 
 ---
 
@@ -82,8 +85,8 @@ Chaque mois débloque une nouvelle règle affichée dans le calendrier via le bo
 | `BOSS` | Bouclier gris (Dimanche) | +2 pts | `{ type: 'BOSS', value: N }` |
 | `TRAP` | Triangle violet | +1 pt | `{ type: 'TRAP', value: -N }` |
 | `UNDEAD` | Bouclier jaune + anneau doré épais | +1 pt (si Nécromancien du mois vaincu ou absent) | `{ type: 'UNDEAD', value: N }` |
-| `DOUBLE` | Deux boucliers bleus | +2 pts | `{ type: 'DOUBLE', value: N, value2: M }` |
-| `NECROMANCER` | Bouclier vert sombre + anneau vert + 💀 | +1 pt, débloque les pts UNDEAD du mois | `{ type: 'NECROMANCER', value: N }` |
+| `DOUBLE` | Deux boucliers bleus | +3 pts | `{ type: 'DOUBLE', value: N, value2: M }` |
+| `NECROMANCER` | Bouclier vert sombre + anneau vert + 💀 | +1 pt, débloque les pts UNDEAD et les ailes du mois | `{ type: 'NECROMANCER', value: N }` |
 | `SHAMAN` | Bouclier violet + anneau violet + 👻 | +1 pt | `{ type: 'SHAMAN', value: N }` |
 
 ### Flags combinables
@@ -91,8 +94,16 @@ Chaque mois débloque une nouvelle règle affichée dans le calendrier via le bo
 |---|---|---|
 | `isElite: true` | Fond rouge, badge ⚡ bas-gauche | Compteur séparé `eliteDefeated` |
 | `isInvisible: true` | Bordure pointillée épaisse, bouclier rond translucide | Compteur séparé `invisiblesDefeated` |
-| `isInfluenced: true` | Fond jaune, cercle rouge + badge 🔥 + badge +10 | +10 pts bonus ; si `UNDEAD` de l'aile vaincu → valeur divisée par 2, affichage bouclier | `{ isInfluenced: true }` sur un `BOSS` |
+| `isInfluenced: true` | Fond jaune, cercle rouge + badge 🔥 + badge +10 | +10 pts bonus ; si `UNDEAD` de l'aile vaincu → valeur divisée par 2, affichage bouclier |
+| `isFinalBoss: true` | Fond jaune, cercle rouge + badge 🔥 + badge +30 | Valeur dynamique (2048 ÷ 2 par UNDEAD vaincu si NECRO vaincu), +30 pts bonus |
 | `hasMana: true` | Icône fiole bas-droite | Octroie une potion de mana |
+
+### Overlays de validation
+| État | Overlay |
+|---|---|
+| Case validée (normal) | Vert transparent + ✓ (rayures si aile complète) |
+| `UNDEAD` validé, Nécromancien non vaincu | Orange rayé + 💀 (points et aile en attente) |
+| Aile complète avec UNDEAD bloqué | Pas de bannière "Aile Conquise" |
 
 ---
 

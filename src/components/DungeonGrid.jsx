@@ -24,6 +24,7 @@ const DAY_HEADERS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'
  */
 export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, onStaffToggle, onCapeToggle, onRingToggle }) {
   const [rulesOpen, setRulesOpen] = useState(false);
+  const [valueTooHighOpen, setValueTooHighOpen] = useState(false);
   if (!monthData) return null;
 
   const monthRule = MONTH_RULES[monthData.index];
@@ -39,6 +40,25 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
   const firstDayIndex = allDays[0]?.dayOfWeekIndex ?? 1;
   const offset = (firstDayIndex - 1 + 7) % 7;
 
+  // ── Boss Final (Décembre) — calcul dynamique de la valeur ──
+  // La valeur 2048 est divisée par 2 pour chaque UNDEAD vaincu (si le NECRO du mois est aussi vaincu).
+  // Le boss est verrouillé jusqu'à ce que tous les autres jours du mois soient validés.
+  const finalBossData = (() => {
+    const finalBossDay = allDays.find(d => d.isFinalBoss);
+    if (!finalBossDay) return null;
+    const necroDefeated = allDays.some(d => d.type === 'NECROMANCER' && d.completed);
+    const effectiveUndeadCount = necroDefeated
+      ? allDays.filter(d => d.type === 'UNDEAD' && d.completed).length
+      : 0;
+    const currentValue = Math.round(2048 / Math.pow(2, effectiveUndeadCount));
+    const previousValue = effectiveUndeadCount > 0 ? currentValue * 2 : null;
+    return { currentValue, previousValue };
+  })();
+
+  // ── Nécromancien du mois (pour le blocage des ailes) ──
+  const monthHasNecromancer = allDays.some(d => d.type === 'NECROMANCER');
+  const monthNecromancerDefeated = allDays.some(d => d.type === 'NECROMANCER' && d.completed);
+
   // ── Construction des lignes d'affichage (Mon→Sun, 7 colonnes) ──
   // Chaque ligne est calculée depuis la liste plate + offset,
   // indépendamment des semaines data (qui commencent le dimanche).
@@ -51,9 +71,11 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
       }
       return { isEmpty: true };
     });
-    // Aile conquise = tous les jours réels de la ligne sont validés
+    // Aile conquise = tous les jours réels validés ET pas d'UNDEAD bloqué par le nécromancien
     const realDays = cells.filter(c => !c.isEmpty).map(c => c.day);
-    const isWingComplete = realDays.length === 7 && realDays.every(d => d.completed);
+    const wingHasUndead = realDays.some(d => d.type === 'UNDEAD');
+    const wingUndeadBlocked = wingHasUndead && monthHasNecromancer && !monthNecromancerDefeated;
+    const isWingComplete = realDays.length === 7 && realDays.every(d => d.completed) && !wingUndeadBlocked;
     const undeadDefeatedInWing = realDays.some(d => d.type === 'UNDEAD' && d.completed);
     return { cells, isWingComplete, undeadDefeatedInWing };
   });
@@ -81,6 +103,11 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
       {/* Modal règles */}
       {rulesOpen && monthRule && (
         <RulesModal rule={monthRule} onClose={() => setRulesOpen(false)} />
+      )}
+
+      {/* Modal valeur trop haute */}
+      {valueTooHighOpen && (
+        <ValueTooHighModal onClose={() => setValueTooHighOpen(false)} />
       )}
 
       {/* Grille calendrier */}
@@ -144,6 +171,9 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
                         isReadOnly={isReadOnly}
                         isWingComplete={row.isWingComplete}
                         undeadDefeatedInWing={row.undeadDefeatedInWing}
+                        undeadNeedsNecro={monthHasNecromancer && !monthNecromancerDefeated}
+                        finalBossData={cell.day.isFinalBoss ? finalBossData : null}
+                        onValueTooHigh={() => setValueTooHighOpen(true)}
                       />
                     )
                   )}
@@ -335,22 +365,35 @@ function WingCompleteBanner() {
  * BOSS    → couronne dorée + valeur
  * DOUBLE  → deux boucliers bleus côte à côte
  */
-function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWing }) {
+function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWing, undeadNeedsNecro, finalBossData, onValueTooHigh }) {
   const isBoss = day.type === 'BOSS';
   const isTrap = day.type === 'TRAP';
   const isUndead = day.type === 'UNDEAD';
   const isDouble = day.type === 'DOUBLE';
   const isNecromancer = day.type === 'NECROMANCER';
   const isShaman = day.type === 'SHAMAN';
+  const isFinalBoss = day.isFinalBoss ?? false;
   const isElite = day.isElite ?? false;
   const isInvisible = day.isInvisible ?? false;
   const isInfluenced = day.isInfluenced ?? false;
   const isCompleted = day.completed;
+  // UNDEAD validé mais nécromancien du mois pas encore vaincu → overlay d'attente
+  const isUndeadBlocked = isUndead && isCompleted && (undeadNeedsNecro ?? false);
+
+  // Valeur affichée sur le boss final (dynamique) et badge barré (valeur précédente)
+  const finalBossCurrentValue = isFinalBoss ? (finalBossData?.currentValue ?? 2048) : day.value;
+  const finalBossPreviousValue = isFinalBoss ? (finalBossData?.previousValue ?? null) : null;
+
+  // Valeur effective à valider (boss final : dynamique, sinon valeur du jour)
+  const effectiveValue = isFinalBoss ? finalBossCurrentValue : day.value;
 
   const handleClick = () => {
-    if (!isReadOnly) {
-      onClick(day.monthIndex, day.weekIndex, day.dayIndex);
+    if (isReadOnly) return;
+    if (!isCompleted && effectiveValue > 30) {
+      onValueTooHigh();
+      return;
     }
+    onClick(day.monthIndex, day.weekIndex, day.dayIndex);
   };
 
   // Couleur de fond selon le type — calquée sur le calendrier physique
@@ -359,8 +402,8 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
   // Piège   : violet doux → lavande clair  (blanc violet)
   const bgClass = isElite
     ? 'bg-gradient-to-b from-red-600 via-red-500 to-rose-300'  // tout type élite → fond rouge
-    : isBoss && isInfluenced
-    ? 'bg-gradient-to-b from-yellow-600 via-yellow-500 to-amber-400'  // boss influencé → fond jaune
+    : isBoss && (isInfluenced || isFinalBoss)
+    ? 'bg-gradient-to-b from-yellow-600 via-yellow-500 to-amber-400'  // boss influencé / boss final → fond jaune
     : isBoss
     ? 'bg-gradient-to-b from-red-800 via-orange-700 to-amber-600'
     : isTrap
@@ -375,7 +418,11 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
     <button
       onClick={handleClick}
       disabled={isReadOnly}
-      title={`${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +3 pts` : isNecromancer ? 'Nécromancien' : isShaman ? "Shaman de l'Ombre" : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`}
+      title={
+        isFinalBoss
+          ? `${day.dayOfWeek} ${day.day} — Boss Final (valeur : ${finalBossCurrentValue} pts, +30 pts bonus)${finalBossPreviousValue !== null ? ` — précédente : ${finalBossPreviousValue}` : ''}`
+          : `${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +3 pts` : isNecromancer ? 'Nécromancien' : isShaman ? "Shaman de l'Ombre" : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`
+      }
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
         rounded-sm
@@ -418,7 +465,18 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
 
       {/* ── Icône centrale — toujours visible ── */}
       <div className="absolute inset-0 flex items-center justify-center">
-        {isBoss ? (
+        {isFinalBoss ? (
+          /* BOSS FINAL — cercle rouge + valeur dynamique (peut être grand : 2048→256) */
+          <div className="relative flex items-center justify-center w-[82%] h-[82%]">
+            <Circle
+              className="absolute inset-0 w-full h-full text-red-600 fill-gray-300/90"
+              strokeWidth={3}
+            />
+            <span className="relative z-10 font-bold text-[9px] sm:text-[15px] md:text-[22px] leading-none text-black">
+              {finalBossCurrentValue}
+            </span>
+          </div>
+        ) : isBoss ? (
           isInfluenced && !undeadDefeatedInWing ? (
             /* BOSS INFLUENCÉ — cercle avec bordure rouge + valeur */
             <div className="relative flex items-center justify-center w-[82%] h-[82%]">
@@ -529,6 +587,16 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         </div>
       )}
 
+      {/* Badge valeur précédente barrée (boss final, si au moins 1 UNDEAD vaincu) */}
+      {isFinalBoss && finalBossPreviousValue !== null && (
+        <div className="absolute bottom-3 left-3 z-20">
+          <div className="relative flex items-center justify-center" style={{ width: 18, height: 18 }}>
+            <Circle size={40} className="absolute text-red-500/70 fill-gray-600/60" strokeWidth={2} />
+            <span className="absolute z-10 text-[5px] sm:text-[10px] font-bold text-gray-300 line-through leading-none">{finalBossPreviousValue}</span>
+          </div>
+        </div>
+      )}
+
       {/* Badge +2 pour les monstres doubles */}
       {isDouble && (
         <div className="absolute bottom-0.5 right-0.5 z-30 bg-dungeon-gold text-dungeon-dark text-[7px] sm:text-[9px] font-bold leading-none px-0.5 sm:px-1 py-0.5 rounded">
@@ -543,8 +611,15 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         </div>
       )}
 
-      {/* Indicateur boss influencé */}
-      {isInfluenced && (
+      {/* Badge +30 pour le boss final */}
+      {isFinalBoss && (
+        <div className="absolute bottom-0.5 right-0.5 z-30 bg-orange-500 text-white text-[7px] sm:text-[9px] font-bold leading-none px-0.5 sm:px-1 py-0.5 rounded">
+          +30
+        </div>
+      )}
+
+      {/* Indicateur boss influencé / boss final */}
+      {(isInfluenced || isFinalBoss) && (
         <div className="absolute top-0.5 right-0.5 z-30">
           <Flame size={14} className="text-orange-400 fill-orange-400 drop-shadow-[0_0_4px_rgba(251,146,60,0.9)]" />
         </div>
@@ -578,8 +653,24 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         </div>
       )}
 
-      {/* Overlay vert transparent + coche quand validé */}
-      {isCompleted && (
+      {/* Overlay UNDEAD bloqué (validé mais nécromancien pas encore vaincu) */}
+      {isUndeadBlocked && (
+        <>
+          <div
+            className="absolute inset-0 pointer-events-none z-10"
+            style={{
+              backgroundColor: 'rgba(217, 119, 6, 0.80)',
+              backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(180, 83, 9, 0.4) 5px, rgba(180, 83, 9, 0.4) 9px)',
+            }}
+          />
+          <div className="absolute top-1 right-1 z-20">
+            <Skull size={14} className="text-amber-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" />
+          </div>
+        </>
+      )}
+
+      {/* Overlay vert transparent + coche quand validé (et non bloqué) */}
+      {isCompleted && !isUndeadBlocked && (
         <>
           <div
             className="absolute inset-0 pointer-events-none z-10"
@@ -598,7 +689,48 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
           </div>
         </>
       )}
+
     </button>
+  );
+}
+
+/**
+ * Modal affichée quand la valeur du jour dépasse 30 (max 5 dés × 6)
+ */
+function ValueTooHighModal({ onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-sm bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-red-500/60 shadow-[0_0_40px_rgba(239,68,68,0.2)] p-6"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/30">
+            <X className="text-red-400" size={20} />
+          </div>
+          <h3 className="text-lg font-medieval font-bold text-red-400 leading-tight">Validation impossible</h3>
+        </div>
+
+        <div className="h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent mb-4" />
+
+        <p className="text-sm text-gray-300 leading-relaxed mb-1">
+          Mira n'est pas assez forte pour battre ce boss !
+        </p>
+        <p className="text-sm text-gray-400 leading-relaxed">
+          Impossible de valider plus de 30 pts (5 dés × 6).
+        </p>
+
+        <button
+          onClick={onClose}
+          className="mt-5 w-full py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 font-medieval text-sm hover:bg-red-500/20 transition-colors"
+        >
+          Ok
+        </button>
+      </div>
+    </div>
   );
 }
 

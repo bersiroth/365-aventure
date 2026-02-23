@@ -6,7 +6,7 @@ import {
   CartesianGrid, Tooltip, Legend,
   Area, AreaChart,
 } from 'recharts';
-import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap, Layers2, EyeOff, Axe, FlaskConical, Ghost } from 'lucide-react';
+import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap, Layers2, EyeOff, Axe, FlaskConical, Ghost, Star } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -34,6 +34,7 @@ const COLORS = {
   necromancer: '#16a34a',
   influenced:  '#f97316',
   shaman:      '#a855f7',
+  finalBoss:   '#e11d48',
 };
 
 const UNDEAD_RULE_START      = 2; // Mars (index 2)
@@ -44,6 +45,7 @@ const INVISIBLE_RULE_START   = 8; // Septembre (index 8)
 const NECROMANCER_RULE_START = 8; // Septembre (index 8)
 const INFLUENCED_RULE_START  = 9; // Octobre (index 9)
 const SHAMAN_RULE_START      = 10; // Novembre (index 10)
+const FINAL_BOSS_RULE_START  = 11; // Décembre (index 11)
 
 
 function buildMonthlyData(yearData) {
@@ -69,6 +71,7 @@ function buildMonthlyData(yearData) {
       necromancer: s.necromancersDefeated ?? 0,
       influenced: s.influencedBossesDefeated ?? 0,
       shaman: s.shamansDefeated ?? 0,
+      finalBoss: s.finalBossDefeated ?? 0,
     };
   });
 }
@@ -115,6 +118,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   const hasNecromancer = maxMonth >= NECROMANCER_RULE_START;
   const hasInfluenced  = maxMonth >= INFLUENCED_RULE_START;
   const hasShaman      = maxMonth >= SHAMAN_RULE_START;
+  const hasFinalBoss   = maxMonth >= FINAL_BOSS_RULE_START;
 
   // Moyenne sur les mois joués (au moins 1 point)
   const playedMonths = data.filter(m => m.score > 0);
@@ -157,6 +161,9 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   // Shamans vaincus (depuis novembre)
   const shamanData = data.slice(SHAMAN_RULE_START);
   const shamanDefeatedTotal = shamanData.reduce((s, m) => s + m.shaman, 0);
+
+  // Boss Final vaincu (décembre uniquement)
+  const finalBossDefeatedTotal = data[FINAL_BOSS_RULE_START]?.finalBoss ?? 0;
 
   const longestStreak = calcLongestStreak(yearData);
 
@@ -328,6 +335,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             {hasNecromancer && <Bar dataKey="necromancer" name="Nécromancien"   fill={COLORS.necromancer} radius={[0, 0, 0, 0]} stackId="a" />}
             {hasInfluenced  && <Bar dataKey="influenced"  name="Boss influencés" fill={COLORS.influenced}  radius={[0, 0, 0, 0]} stackId="a" />}
             {hasShaman      && <Bar dataKey="shaman"      name="Shamans"         fill={COLORS.shaman}      radius={[0, 0, 0, 0]} stackId="a" />}
+            {hasFinalBoss   && <Bar dataKey="finalBoss"   name="Boss Final"      fill={COLORS.finalBoss}   radius={[0, 0, 0, 0]} stackId="a" />}
             <Bar dataKey="traps"    name="Pièges"         fill={COLORS.traps}    radius={[0, 0, 0, 0]} stackId="a" />
             <Bar dataKey="bosses"   name="Boss"           fill={COLORS.bosses}   radius={[2, 2, 0, 0]} stackId="a" />
           </BarChart>
@@ -363,6 +371,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasNecromancer && <th className="text-right py-2 font-medium text-green-600">Nécro.</th>}
                 {hasInfluenced && <th className="text-right py-2 font-medium text-orange-400">Influen.</th>}
                 {hasShaman && <th className="text-right py-2 font-medium text-purple-400">Shamans</th>}
+                {hasFinalBoss && <th className="text-right py-2 font-medium text-rose-400">Boss F.</th>}
                 <th className="text-right py-2 font-medium text-violet-400">Pièges</th>
                 <th className="text-right py-2 font-medium text-orange-400">Boss</th>
                 <th className="text-right py-2 font-medium text-green-400">Ailes</th>
@@ -382,6 +391,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                   {hasNecromancer && <td className="py-2 text-right text-green-500">{row.necromancer}</td>}
                   {hasInfluenced && <td className="py-2 text-right text-orange-400">{row.influenced}</td>}
                   {hasShaman && <td className="py-2 text-right text-purple-400">{row.shaman}</td>}
+                  {hasFinalBoss && <td className="py-2 text-right text-rose-400">{row.finalBoss}</td>}
                   <td className="py-2 text-right text-violet-400">{row.traps}</td>
                   <td className="py-2 text-right text-orange-400">{row.bosses}</td>
                   <td className="py-2 text-right text-green-400">{row.wings}</td>
@@ -401,6 +411,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
                 {hasNecromancer && <td className="py-2 text-right text-green-500">{necromancerDefeatedTotal}</td>}
                 {hasInfluenced && <td className="py-2 text-right text-orange-400">{influencedDefeatedTotal}</td>}
                 {hasShaman && <td className="py-2 text-right text-purple-400">{shamanDefeatedTotal}</td>}
+                {hasFinalBoss && <td className="py-2 text-right text-rose-400">{finalBossDefeatedTotal}</td>}
                 <td className="py-2 text-right text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
                 <td className="py-2 text-right text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
                 <td className="py-2 text-right text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>

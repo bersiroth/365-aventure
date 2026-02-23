@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost, Star } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -15,7 +15,7 @@ import { getPlayers } from '../api';
 import { LEVEL_TITLES } from '../data/trophyData';
 
 
-export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible, showNecromancer, showInfluenced, showShaman }) {
+export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible, showNecromancer, showInfluenced, showShaman, showFinalBoss }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -69,7 +69,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
             {/* Table header */}
             {(() => {
               // Colonnes optionnelles du milieu (entre Monstres et Pièges)
-              const optMiddleCount = (showUndead ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0) + (showInfluenced ? 1 : 0) + (showShaman ? 1 : 0);
+              const optMiddleCount = (showUndead ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0) + (showInfluenced ? 1 : 0) + (showShaman ? 1 : 0) + (showFinalBoss ? 1 : 0);
               const optMiddleCols = optMiddleCount > 0 ? Array(optMiddleCount).fill('4rem').join(' ') + ' ' : '';
               // Inline style pour éviter les problèmes de Tailwind JIT avec les colonnes dynamiques
               // 4rem pour colonnes optionnelles (évite que 1fr = 0 quand beaucoup de colonnes)
@@ -88,6 +88,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                     {showNecromancer && <div className="text-center text-green-600">Nécro.</div>}
                     {showInfluenced && <div className="text-center text-orange-400">Influen.</div>}
                     {showShaman && <div className="text-center text-purple-400">Shamans</div>}
+                    {showFinalBoss && <div className="text-center text-rose-400">Boss F.</div>}
                     <div className="text-center text-violet-400">Pièges</div>
                     <div className="text-center text-orange-400">Boss</div>
                     <div className="text-center text-green-400">Ailes</div>
@@ -119,6 +120,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                           {showNecromancer && <div className="text-center text-green-500">{player.necromancer_defeated ?? 0}</div>}
                           {showInfluenced && <div className="text-center text-orange-400">{player.influenced_bosses_defeated ?? 0}</div>}
                           {showShaman && <div className="text-center text-purple-400">{player.shamans_defeated ?? 0}</div>}
+                          {showFinalBoss && <div className="text-center text-rose-400">{player.final_boss_defeated ?? 0}</div>}
                           <div className="text-center text-violet-400">{player.traps_defeated}</div>
                           <div className="text-center text-orange-400">{player.bosses_defeated}</div>
                           <div className="text-center text-green-400">{player.complete_wings}</div>
@@ -149,6 +151,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                             {showNecromancer && <span className="text-green-500"><Skull size={12} className="inline text-green-600" /> {player.necromancer_defeated ?? 0}</span>}
                             {showInfluenced && <span className="text-orange-400"><Flame size={12} className="inline" /> {player.influenced_bosses_defeated ?? 0}</span>}
                             {showShaman && <span className="text-purple-400"><Ghost size={12} className="inline" /> {player.shamans_defeated ?? 0}</span>}
+                            {showFinalBoss && <span className="text-rose-400"><Star size={12} className="inline" /> {player.final_boss_defeated ?? 0}</span>}
                             <span className="text-violet-400"><AlertTriangle size={12} className="inline" /> {player.traps_defeated}</span>
                             <span><Crown size={12} className="inline text-orange-400" /> {player.bosses_defeated}</span>
                             <span><Swords size={12} className="inline text-green-400" /> {player.complete_wings}</span>

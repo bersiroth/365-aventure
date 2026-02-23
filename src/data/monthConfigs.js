@@ -92,6 +92,27 @@ export const MONTH_RULES = {
       },
     ],
   },
+  11: {
+    title: 'Le Défi Final',
+    sections: [
+      {
+        heading: null,
+        body: "Dans l'ultime chambre du donjon se dresse le Maître des Morts-Vivants. Huit Morts-Vivants Enchaînés rôdent dans le donjon ce mois-ci.",
+      },
+      {
+        heading: 'Affaiblissement',
+        body: "Pour chaque Mort-Vivant Enchaîné vaincu (la règle de mars s'applique), la valeur du Boss Final est divisée par deux. Sa valeur de base est 2048.",
+      },
+      {
+        heading: 'Accès',
+        body: "Le Boss Final ne peut être affronté que le 31 décembre, une fois toutes les autres cases du mois validées.",
+      },
+      {
+        heading: 'Bonus',
+        body: "Vaincre le Boss Final rapporte un bonus de 30 points.",
+      },
+    ],
+  },
   10: {
     title: "Le Shaman de l'Ombre",
     sections: [
@@ -595,38 +616,42 @@ export const MONTH_CONFIGS = {
 
   // ──────────────────────────────────────────────────────────────
   //  DÉCEMBRE (index 11)  — Dimanches : 6, 13, 20, 27
+  //  Règle : Le Défi Final — Boss Final le 31 (valeur 2048, ÷2 par UNDEAD vaincu)
+  //  UNDEAD : 3, 8, 11, 16, 19, 21, 24, 29
+  //  NECROMANCER : 26  (règle mars : si absent → UNDEAD ne réduisent pas le boss)
+  //  BOSS FINAL  : 31 (Jeudi — case spéciale hors dimanche)
   // ──────────────────────────────────────────────────────────────
   11: {
      1: { type: 'MONSTER', value: 1  },
      2: { type: 'MONSTER', value: 1  },
-     3: { type: 'MONSTER', value: 1  },
+     3: { type: 'UNDEAD',  value: 1  }, // Jeudi
      4: { type: 'MONSTER', value: 1  },
      5: { type: 'MONSTER', value: 1  },
      6: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
      7: { type: 'MONSTER', value: 1  },
-     8: { type: 'MONSTER', value: 1  },
+     8: { type: 'UNDEAD',  value: 1  }, // Mardi
      9: { type: 'MONSTER', value: 1  },
     10: { type: 'MONSTER', value: 1  },
-    11: { type: 'MONSTER', value: 1  },
+    11: { type: 'UNDEAD',  value: 1  }, // Vendredi
     12: { type: 'MONSTER', value: 1  },
     13: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
     14: { type: 'MONSTER', value: 1  },
     15: { type: 'MONSTER', value: 1  },
-    16: { type: 'MONSTER', value: 1  },
+    16: { type: 'UNDEAD',  value: 1  }, // Mercredi
     17: { type: 'MONSTER', value: 1  },
     18: { type: 'MONSTER', value: 1  },
-    19: { type: 'MONSTER', value: 1  },
+    19: { type: 'UNDEAD',  value: 1  }, // Samedi
     20: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
-    21: { type: 'MONSTER', value: 1  },
+    21: { type: 'UNDEAD',  value: 1  }, // Lundi
     22: { type: 'MONSTER', value: 1  },
     23: { type: 'MONSTER', value: 1  },
-    24: { type: 'MONSTER', value: 1  },
+    24: { type: 'UNDEAD',  value: 1  }, // Jeudi
     25: { type: 'MONSTER', value: 1  },
-    26: { type: 'MONSTER', value: 1  },
+    26: { type: 'NECROMANCER', value: 1  }, // Samedi
     27: { type: 'BOSS',    value: 17 }, // Dimanche — TODO
     28: { type: 'MONSTER', value: 1  },
-    29: { type: 'MONSTER', value: 1  },
+    29: { type: 'UNDEAD',  value: 1  }, // Mardi
     30: { type: 'MONSTER', value: 1  },
-    31: { type: 'MONSTER', value: 1  },
+    31: { type: 'BOSS', value: 2048, isFinalBoss: true }, // Jeudi — Boss Final
   },
 };
