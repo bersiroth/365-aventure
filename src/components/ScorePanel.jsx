@@ -1,4 +1,4 @@
-import { Trophy, Skull, Crown, Swords, Eye, AlertTriangle, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost, Star } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, AlertTriangle, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost, Star } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -15,7 +15,7 @@ function CrossedBonesIcon({ size = 24, className }) {
 /**
  * Panneau d'affichage du score
  */
-export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite, showDouble, showInvisible, showNecromancer, showInfluenced, showShaman, showFinalBoss }) {
+export function ScorePanel({ score, showUndead, showMana, showElite, showDouble, showInvisible, showNecromancer, showInfluenced, showShaman, showFinalBoss }) {
   if (!score) return null;
 
   const optCount = (showUndead ? 1 : 0) + (showMana ? 1 : 0) + (showElite ? 1 : 0) + (showDouble ? 1 : 0) + (showInvisible ? 1 : 0) + (showNecromancer ? 1 : 0) + (showInfluenced ? 1 : 0) + (showShaman ? 1 : 0) + (showFinalBoss ? 1 : 0);
@@ -25,32 +25,13 @@ export function ScorePanel({ score, isReadOnly, showUndead, showMana, showElite,
     : 'grid-cols-4';
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-6">
-      {/* Alerte Mode Lecture Seule */}
-      {isReadOnly && (
-        <div className="mb-6 bg-dungeon-blue/20 border-2 border-dungeon-blue rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <Eye className="text-blue-400" size={24} />
-            <div>
-              <h3 className="font-medieval font-bold text-blue-400">Mode Lecture Seule</h3>
-              <p className="text-sm text-gray-300">
-                Vous consultez la progression d'un autre joueur. Pour jouer, retournez à la page d'accueil.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+    <div >
 
       {/* Panneau de Score */}
-      <div className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-dungeon-gold/50 shadow-2xl overflow-hidden">
+      <div className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border border-dungeon-gold/30 overflow-hidden">
         {/* Header */}
-        <div className="bg-dungeon-gold/10 border-b-2 border-dungeon-gold/30 px-4 py-2 md:px-6 md:py-4">
-          <div className="flex items-center gap-2 md:gap-3">
-            <Trophy className="text-dungeon-gold" size={20} />
-            <h2 className="text-base md:text-2xl font-medieval font-bold text-dungeon-gold">
-              Progression
-            </h2>
-          </div>
+        <div className="px-4 py-3 border-b border-dungeon-gold/20">
+          <h3 className="font-medieval font-semibold text-dungeon-gold text-sm uppercase tracking-wide">Progression</h3>
         </div>
 
         {/* Stats — mobile: grille / desktop: cartes */}

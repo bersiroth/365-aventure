@@ -6,7 +6,7 @@ import {
   CartesianGrid, Tooltip, Legend,
   Area, AreaChart,
 } from 'recharts';
-import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, TrendingDown, Zap, Layers2, EyeOff, Axe, FlaskConical, Ghost, Star } from 'lucide-react';
+import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, Zap, Layers2, EyeOff, Axe, FlaskConical, Ghost, Star } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -76,25 +76,6 @@ function buildMonthlyData(yearData) {
   });
 }
 
-function calcLongestStreak(yearData) {
-  let maxStreak = 0;
-  let currentStreak = 0;
-
-  const allDays = yearData
-    .flatMap(month => month.weeks.flatMap(week => week.days))
-    .sort((a, b) => a.globalIndex - b.globalIndex);
-
-  for (const day of allDays) {
-    if (day.completed) {
-      currentStreak++;
-      if (currentStreak > maxStreak) maxStreak = currentStreak;
-    } else {
-      currentStreak = 0;
-    }
-  }
-
-  return maxStreak;
-}
 
 const tooltipStyle = {
   backgroundColor: '#2d2318',
@@ -165,31 +146,6 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   // Boss Final vaincu (décembre uniquement)
   const finalBossDefeatedTotal = data[FINAL_BOSS_RULE_START]?.finalBoss ?? 0;
 
-  const longestStreak = calcLongestStreak(yearData);
-
-  const bestMonthIdx = data.reduce((bestIdx, m, i) => m.score > data[bestIdx].score ? i : bestIdx, 0);
-  const bestMonth = data[bestMonthIdx]?.score > 0
-    ? { score: data[bestMonthIdx].score, name: yearData[bestMonthIdx].name }
-    : null;
-
-  const allCompletedDays = yearData.flatMap(m => m.weeks.flatMap(w => w.days)).filter(d => d.completed);
-  const monsterValueCounts = allCompletedDays
-    .filter(d => d.type === 'MONSTER')
-    .reduce((counts, d) => { counts[d.value] = (counts[d.value] || 0) + 1; return counts; }, {});
-  const mostCommonMonster = Object.entries(monsterValueCounts).length > 0
-    ? Object.entries(monsterValueCounts).reduce((best, [val, count]) =>
-        count > best.count ? { value: Number(val), count } : best, { value: 0, count: 0 })
-    : null;
-  const bestBossValue = allCompletedDays.filter(d => d.type === 'BOSS').reduce((max, d) => Math.max(max, d.value), 0);
-
-  const worstMonth = (() => {
-    const pastMonths = yearData
-      .map((month, i) => i < maxMonth ? { name: month.name, score: data[i].score, index: i } : null)
-      .filter(Boolean)
-      .filter(m => m.index !== bestMonthIdx);
-    return pastMonths.length > 0 ? pastMonths.reduce((w, m) => m.score < w.score ? m : w) : null;
-  })();
-
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-8">
 
@@ -198,55 +154,6 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
         <BarChart2 className="text-dungeon-gold" size={32} />
         <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Statistiques</h2>
       </div>
-
-      {/* Exploits */}
-      <Section title="Exploits">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3">
-            <Flame size={28} className="text-orange-500 shrink-0" />
-            <div>
-              <div className="text-3xl font-bold text-orange-500 leading-none">{longestStreak}</div>
-              <div className="text-xs text-gray-400 mt-1">cases consécutives validées</div>
-            </div>
-          </div>
-          {bestMonth && (
-            <div className="flex items-center gap-3">
-              <Trophy size={28} className="text-dungeon-gold shrink-0" />
-              <div>
-                <div className="text-3xl font-bold text-dungeon-gold leading-none">{bestMonth.name}</div>
-                <div className="text-xs text-gray-400 mt-1">meilleur mois — {bestMonth.score} pts</div>
-              </div>
-            </div>
-          )}
-          {mostCommonMonster && (
-            <div className="flex items-center gap-3">
-              <Skull size={28} className="text-gray-400 shrink-0" />
-              <div>
-                <div className="text-3xl font-bold text-gray-300 leading-none">{mostCommonMonster.value}</div>
-                <div className="text-xs text-gray-400 mt-1">valeur de monstre la plus vaincue ({mostCommonMonster.count}x)</div>
-              </div>
-            </div>
-          )}
-          {bestBossValue > 0 && (
-            <div className="flex items-center gap-3">
-              <Crown size={28} className="text-orange-400 shrink-0" />
-              <div>
-                <div className="text-3xl font-bold text-orange-400 leading-none">{bestBossValue}</div>
-                <div className="text-xs text-gray-400 mt-1">meilleur valeur de boss vaincu</div>
-              </div>
-            </div>
-          )}
-          {worstMonth && (
-            <div className="flex items-center gap-3">
-              <TrendingDown size={28} className="text-red-400 shrink-0" />
-              <div>
-                <div className="text-3xl font-bold text-red-400 leading-none">{worstMonth.name}</div>
-                <div className="text-xs text-gray-400 mt-1">pire mois passé — {worstMonth.score} pts</div>
-              </div>
-            </div>
-          )}
-        </div>
-      </Section>
 
       {/* Moyennes par mois */}
       <Section title="Moyenne mensuelle">
@@ -339,19 +246,6 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
         </ResponsiveContainer>
       </Section>
 
-      {/* Ailes complètes */}
-      <Section title="Ailes conquises par mois">
-        <ResponsiveContainer width="100%" height={160}>
-          <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-            <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis allowDecimals={false} tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={tooltipStyle} />
-            <Bar dataKey="wings" name="Ailes" fill={COLORS.wings} radius={[3, 3, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </Section>
-
       {/* Tableau récapitulatif */}
       <Section title="Récapitulatif mensuel">
         <div className="overflow-x-auto">
@@ -377,7 +271,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             </thead>
             <tbody>
               {data.map((row, i) => (
-                <tr key={row.month} className={`border-b border-gray-800 ${i % 2 === 0 ? 'bg-dungeon-dark/30' : ''}`}>
+                <tr key={i} className={`border-b border-gray-800 ${i % 2 === 0 ? 'bg-dungeon-dark/30' : ''}`}>
                   <td className="py-2 font-medieval text-gray-300">{yearData[i].name}</td>
                   <td className="py-2 text-right px-1 font-bold text-dungeon-gold">{row.score}</td>
                   <td className="py-2 text-right px-1 text-sky-400">{row.monsters}</td>

@@ -2,7 +2,6 @@ import { useState, lazy, Suspense, useRef } from 'react';
 import { useGameEngine } from './hooks/useGameEngine';
 import { useAuth } from './contexts/AuthContext';
 import { DungeonGrid } from './components/DungeonGrid';
-import { ScorePanel } from './components/ScorePanel';
 import { MonthSelector } from './components/MonthSelector';
 import { LoginPage } from './components/LoginPage';
 import { PlayerList } from './components/PlayerList';
@@ -10,8 +9,9 @@ import { PlayerDetail } from './components/PlayerDetail';
 import { downloadProgressImage } from './utils/shareCard';
 import { TrophyNotification } from './components/TrophyNotification';
 const StatsPage = lazy(() => import('./components/StatsPage').then(m => ({ default: m.StatsPage })));
-const TrophyPage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.TrophyPage })));
-import { Swords, LogOut, Users, BarChart2, Download, Upload, Award, Wrench } from 'lucide-react';
+const ProfilePage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.ProfilePage })));
+const TrophiesListPage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.TrophiesListPage })));
+import { Swords, LogOut, Users, BarChart2, Download, Upload, User, Award, Wrench } from 'lucide-react';
 import { DevPage } from './components/DevPage';
 
 /**
@@ -135,6 +135,18 @@ function App() {
           </Suspense>
         );
 
+      case 'profile':
+        return (
+          <Suspense fallback={
+            <div className="text-center py-12">
+              <User className="text-dungeon-gold mx-auto mb-4 animate-pulse" size={48} />
+              <p className="text-dungeon-gold font-medieval">Chargement du profil...</p>
+            </div>
+          }>
+            <ProfilePage trophies={trophies} levelInfo={levelInfo} score={score} yearData={yearData} maxMonth={maxMonth} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} showShaman={maxMonth >= 10} showFinalBoss={maxMonth >= 11} />
+          </Suspense>
+        );
+
       case 'trophies':
         return (
           <Suspense fallback={
@@ -143,7 +155,7 @@ function App() {
               <p className="text-dungeon-gold font-medieval">Chargement des trophées...</p>
             </div>
           }>
-            <TrophyPage trophies={trophies} levelInfo={levelInfo} />
+            <TrophiesListPage trophies={trophies} />
           </Suspense>
         );
 
@@ -166,6 +178,7 @@ function App() {
           <PlayerDetail
             playerId={selectedPlayerId}
             onBack={() => setCurrentView('players')}
+            maxMonth={maxMonth}
           />
         );
 
@@ -181,7 +194,6 @@ function App() {
         }
         return (
           <>
-            <ScorePanel score={score} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} showShaman={maxMonth >= 10} showFinalBoss={maxMonth >= 11} />
             <MonthSelector
               months={yearData}
               selectedMonth={Math.min(selectedMonth, maxMonth)}
@@ -278,8 +290,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-dungeon-dark via-dungeon-stone to-dungeon-dark text-white">
-      {/* Header */}
-      <header className="bg-dungeon-dark/80 border-b-2 border-dungeon-gold/50 backdrop-blur-sm top-0 z-40">
+      {/* Header — masqué sur la vue d'un autre joueur */}
+      <header className={`bg-dungeon-dark/80 border-b-2 border-dungeon-gold/50 backdrop-blur-sm top-0 z-40 ${currentView === 'player-detail' ? 'hidden' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 py-3 md:py-6">
           <div className="flex items-center justify-center gap-3">
             <Swords className="text-dungeon-gold shrink-0" size={28} />
@@ -297,6 +309,7 @@ function App() {
           {/* Navigation */}
           <nav className="flex items-center justify-center gap-2 mt-3">
             <NavButton active={currentView === 'game'} onClick={() => navigateTo('game')} icon={<Swords size={14} />} label="Donjon" />
+            <NavButton active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={14} />} label="Profil" />
             <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={14} />} label="Stats" />
             <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={14} />} label="Trophées" />
             <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={14} />} label="Classement" />

@@ -198,6 +198,10 @@ function ManaHeader({ allDays, manaUsed, monthIndex, isReadOnly, onManaToggle, h
   const doubleUse = monthIndex >= 9; // À partir d'octobre : 2 utilisations par mois
   const numSlots = doubleUse ? 2 : 1;
 
+  if (monthIndex < 1) {
+    return <div className="bg-blue-950/30 border-b border-blue-400/20 min-h-[34px] sm:min-h-[40px]" />;
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 px-3 sm:px-4 py-2 bg-blue-950/30 border-b border-blue-400/20 min-h-[34px] sm:min-h-[40px]">
 

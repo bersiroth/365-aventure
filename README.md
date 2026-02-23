@@ -31,13 +31,29 @@ Application web auto-hébergée pour suivre votre progression dans le jeu "365 A
 
 ### Comptes & Multijoueur
 - **Inscription / Connexion** avec mot de passe haché (bcrypt)
-- **Classement** des aventuriers trié par score
-- **Consultation** de la progression de chaque joueur (mode lecture seule)
+- **Classement** des aventuriers trié par score, avec niveau et titre
+- **Consultation** de la progression de chaque joueur — menu principal masqué, navigation via "Retour au classement"
+
+### Navigation (ordre des pages)
+| Page | Contenu |
+|---|---|
+| **Donjon** | Calendrier mensuel uniquement |
+| **Profil** | Niveau + barre XP · Progression (score, compteurs) · Exploits |
+| **Statistiques** | Graphiques · Moyennes mensuelles · Tableau récapitulatif |
+| **Trophées** | Liste complète des trophées débloqués/verrouillés |
+| **Classement** | Tableau de tous les aventuriers |
+
+Vue d'un autre joueur : onglets **Profil → Statistiques → Trophées → Donjon** (mode lecture seule affiché uniquement sur l'onglet Donjon).
+
+### Profil joueur
+- **Niveau & titre** avec barre d'XP (Vagabond → Conquérant du Donjon)
+- **Panneau Progression** : score total et tous les compteurs par type de combat
+- **Exploits** : meilleur mois, plus longue série de jours consécutifs, monstre le plus vaincu, pire mois
 
 ### Trophées (style PSN)
 - **30 trophées** à débloquer (15 Bronze · 10 Argent · 5 Or)
 - **Système XP** : Bronze = 25 XP · Argent = 50 XP · Or = 100 XP
-- **Niveaux 1–20** avec titres médiévaux (Vagabond → Conquérant du Donjon)
+- **Niveaux 1–20** avec titres médiévaux
 - **Notifications popup** slide-in à chaque nouveau trophée débloqué
 - **Trophées rétroactifs** : calculés au chargement sans flood de notifications
 
@@ -48,11 +64,10 @@ Application web auto-hébergée pour suivre votre progression dans le jeu "365 A
 - **Import JSON** avec confirmation modale et vérification du pseudo
 
 ### Statistiques
-- Score cumulé, score par mois (graphiques)
+- Score cumulé et score par mois (graphiques)
 - Combats par mois (barres empilées par type, dont Boss Final)
-- Moyennes mensuelles par catégorie
-- Tableau récapitulatif mensuel complet (dont Boss Final)
-- Exploits : meilleur mois, plus longue série, monstre le plus vaincu, pire mois
+- Moyennes mensuelles par catégorie (8 valeurs/ligne sur desktop)
+- Tableau récapitulatif mensuel complet avec totaux
 
 ---
 

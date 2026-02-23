@@ -47,18 +47,14 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-dungeon-gold/50 shadow-2xl overflow-hidden">
-        <div className="bg-dungeon-gold/10 border-b-2 border-dungeon-gold/30 px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Users className="text-dungeon-gold" size={32} />
-            <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">
-              Classement des Aventuriers
-            </h2>
-          </div>
-        </div>
+    <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
+      {/* Titre de page */}
+      <div className="flex items-center gap-3">
+        <Users className="text-dungeon-gold" size={32} />
+        <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Classement des Aventuriers</h2>
+      </div>
 
+      <div className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-dungeon-gold/50 shadow-2xl overflow-hidden">
         {players.length === 0 ? (
           <div className="p-8 text-center text-gray-400">
             <p className="font-medieval text-lg">Aucun aventurier pour le moment...</p>
@@ -73,7 +69,8 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
               const optMiddleCols = optMiddleCount > 0 ? Array(optMiddleCount).fill('4rem').join(' ') + ' ' : '';
               // Inline style pour éviter les problèmes de Tailwind JIT avec les colonnes dynamiques
               // 4rem pour colonnes optionnelles (évite que 1fr = 0 quand beaucoup de colonnes)
-              const gridTemplateColumns = `3rem 1fr 5rem 5rem ${optMiddleCols}5rem 5rem 5rem${showMana ? ' 4rem' : ''}`;
+              const gridTemplateColumns = `2rem 1fr 4rem 4rem ${optMiddleCols}4rem 4rem 4rem${showMana ? ' 4rem' : ''}`;
+              // 2rem 1fr 4rem 4rem 4rem 4rem 4rem 3rem 4rem 4rem 4rem 4rem 4rem 4rem 4rem 4rem
               return (
                 <>
                   <div className="hidden md:grid gap-2 px-6 py-3 text-xs text-gray-500 uppercase tracking-wide font-medieval" style={{ gridTemplateColumns }}>
