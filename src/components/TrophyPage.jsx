@@ -152,7 +152,7 @@ export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 1
   );
 }
 
-export function TrophiesListPage({ trophies }) {
+export function TrophiesListPage({ trophies, maxMonth = 11 }) {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-8">
 
@@ -166,7 +166,9 @@ export function TrophiesListPage({ trophies }) {
       {TIER_ORDER.map(tierKey => {
         const defs = TROPHY_DEFINITIONS.filter(t => t.tier === tierKey);
         const tierInfo = TROPHY_TIERS[tierKey];
-        const unlockedInTier = defs.filter(d => trophies?.[d.id]).length;
+        const visibleDefs = defs.filter(d => maxMonth >= (d.minMonth ?? 0));
+        const unlockedInTier = visibleDefs.filter(d => trophies?.[d.id]).length;
+        const secretCount = defs.length - visibleDefs.length;
         return (
           <div key={tierKey} className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border border-dungeon-gold/30 overflow-hidden">
             <div className="px-4 py-3 border-b border-dungeon-gold/20 flex items-center justify-between">
@@ -176,8 +178,11 @@ export function TrophiesListPage({ trophies }) {
               <span className="text-xs text-gray-500">{unlockedInTier}/{defs.length}</span>
             </div>
             <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {defs.map(def => (
+              {visibleDefs.map(def => (
                 <TrophyCard key={def.id} definition={def} unlockedDate={trophies?.[def.id]} />
+              ))}
+              {secretCount > 0 && Array.from({ length: secretCount }, (_, i) => (
+                <SecretTrophyCard key={`secret-${tierKey}-${i}`} tier={tierInfo} />
               ))}
             </div>
           </div>
@@ -253,6 +258,21 @@ function TrophyCard({ definition, unlockedDate }) {
           <div className="text-[9px] font-bold" style={{ color: tier.color }}>+{tier.xp} XP</div>
         </div>
       )}
+    </div>
+  );
+}
+
+function SecretTrophyCard({ tier }) {
+  return (
+    <div className="rounded-lg border border-gray-700/30 bg-dungeon-dark/20 p-3 text-center">
+      <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center mb-2">
+        <span className="text-xl font-bold text-gray-600">?</span>
+      </div>
+      <div className="font-medieval font-bold text-xs leading-tight text-gray-600">???</div>
+      <div className="text-[10px] text-gray-700 mt-1 leading-tight">Règle à venir</div>
+      <div className="mt-1.5">
+        <div className="text-[9px] font-bold text-gray-700">+{tier.xp} XP</div>
+      </div>
     </div>
   );
 }

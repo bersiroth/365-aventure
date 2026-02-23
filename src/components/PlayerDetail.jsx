@@ -160,7 +160,7 @@ export function PlayerDetail({ playerId, onBack, maxMonth = 11 }) {
             <p className="text-dungeon-gold font-medieval">Chargement des trophées...</p>
           </div>
         }>
-          <TrophiesListPage trophies={playerTrophies} />
+          <TrophiesListPage trophies={playerTrophies} maxMonth={maxMonth} />
         </Suspense>
       )}
 
