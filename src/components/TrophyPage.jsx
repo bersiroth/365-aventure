@@ -6,6 +6,13 @@ import {
 import { TROPHY_DEFINITIONS, TROPHY_TIERS } from '../data/trophyData';
 import { ScorePanel } from './ScorePanel';
 import { calculateScore } from '../data/gameData';
+import { getTrophyProb, DEV_COMPLETION_RATE, DEV_COMPLETION_RATE_BRONZE, DEV_COMPLETION_RATE_GOLD } from '../utils/trophyProbability';
+
+const TIER_RATE = {
+  BRONZE: DEV_COMPLETION_RATE_BRONZE,
+  ARGENT: DEV_COMPLETION_RATE,
+  OR:     DEV_COMPLETION_RATE_GOLD,
+};
 
 const ICON_MAP = {
   Swords, Skull, AlertTriangle, Crown, FlaskConical,
@@ -13,6 +20,71 @@ const ICON_MAP = {
 };
 
 const TIER_ORDER = ['OR', 'ARGENT', 'BRONZE'];
+
+const TROPHY_THRESHOLDS = {
+  premier_sang: 171, piegeur: 26, premier_boss: 20, chasseur_20: 82,
+  premiere_aile: 1, alchimiste: 14, serie_7: 7, score_50: 248, score_100: 254,
+  revenant: 18, elite_abattu: 11, double_vaincu: 8, invisible_vaincu: 4,
+  influence_brisee: 1, shaman_vaincu: 1,
+  massacreur: 112, briseur_boss: 29, piegeur_expert: 37, score_200: 353,
+  score_300: 356, chasseur_morts: 26, elite_10: 17, double_10: 13,
+  conquerant: 8, legende: 467, massacreur_120: 140, boss_final_vaincu: 1,
+  trois_necros: 3, boss_influences_3: 4, invisible_5: 9,
+};
+
+function getTrophyCurrentValue(trophyId, score, metrics) {
+  if (!score || !metrics) return 0;
+  const map = {
+    premier_sang:      metrics.totalDaysCompleted,
+    piegeur:           score.trapsDefeated,
+    premier_boss:      score.bossesDefeated,
+    chasseur_20:       score.monstersDefeated,
+    premiere_aile:     score.completeWings,
+    alchimiste:        score.manaPotionsEarned,
+    serie_7:           metrics.longestStreak,
+    score_50:          score.totalScore,
+    score_100:         score.totalScore,
+    revenant:          score.undeadDefeated,
+    elite_abattu:      score.eliteDefeated,
+    double_vaincu:     score.doublesDefeated,
+    invisible_vaincu:  score.invisiblesDefeated,
+    influence_brisee:  score.influencedBossesDefeated,
+    shaman_vaincu:     score.shamansDefeated,
+    massacreur:        score.monstersDefeated,
+    briseur_boss:      score.bossesDefeated,
+    piegeur_expert:    score.trapsDefeated,
+    score_200:         score.totalScore,
+    score_300:         score.totalScore,
+    chasseur_morts:    score.undeadDefeated,
+    invisible_5:       score.invisiblesDefeated,
+    elite_10:          score.eliteDefeated,
+    double_10:         score.doublesDefeated,
+    conquerant:        score.completeWings,
+    legende:           score.totalScore,
+    massacreur_120:    score.monstersDefeated,
+    boss_final_vaincu: score.finalBossDefeated,
+    trois_necros:      score.necromancersDefeated,
+    boss_influences_3: score.influencedBossesDefeated,
+  };
+  return map[trophyId] ?? 0;
+}
+
+function computeMetrics(yearData) {
+  const allDays = yearData
+    .flatMap(m => m.weeks.flatMap(w => w.days))
+    .sort((a, b) => a.globalIndex - b.globalIndex);
+  let totalDaysCompleted = 0, longestStreak = 0, currentStreak = 0;
+  for (const day of allDays) {
+    if (day.completed) {
+      totalDaysCompleted++;
+      currentStreak++;
+      if (currentStreak > longestStreak) longestStreak = currentStreak;
+    } else {
+      currentStreak = 0;
+    }
+  }
+  return { totalDaysCompleted, longestStreak };
+}
 
 function buildMonthlyScores(yearData) {
   if (!yearData) return [];
@@ -152,7 +224,9 @@ export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 1
   );
 }
 
-export function TrophiesListPage({ trophies, maxMonth = 11 }) {
+export function TrophiesListPage({ trophies, maxMonth = 11, score, yearData }) {
+  const metrics = yearData ? computeMetrics(yearData) : null;
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-8">
 
@@ -178,9 +252,19 @@ export function TrophiesListPage({ trophies, maxMonth = 11 }) {
               <span className="text-xs text-gray-500">{unlockedInTier}/{defs.length}</span>
             </div>
             <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {visibleDefs.map(def => (
-                <TrophyCard key={def.id} definition={def} unlockedDate={trophies?.[def.id]} />
-              ))}
+              {visibleDefs.map(def => {
+                const total = TROPHY_THRESHOLDS[def.id];
+                const current = getTrophyCurrentValue(def.id, score, metrics);
+                return (
+                  <TrophyCard
+                    key={def.id}
+                    definition={def}
+                    unlockedDate={trophies?.[def.id]}
+                    devProb={import.meta.env.DEV ? getTrophyProb(def.id) : null}
+                    progress={total !== undefined ? { current, total } : null}
+                  />
+                );
+              })}
               {secretCount > 0 && Array.from({ length: secretCount }, (_, i) => (
                 <SecretTrophyCard key={`secret-${tierKey}-${i}`} tier={tierInfo} />
               ))}
@@ -234,10 +318,14 @@ function LevelBanner({ levelInfo, unlockedCount, totalCount }) {
   );
 }
 
-function TrophyCard({ definition, unlockedDate }) {
+function TrophyCard({ definition, unlockedDate, devProb, progress }) {
   const isUnlocked = !!unlockedDate;
   const tier = TROPHY_TIERS[definition.tier];
   const Icon = ICON_MAP[definition.icon] || Trophy;
+
+  const probColor = typeof devProb === 'number'
+    ? (devProb >= 70 ? '#22c55e' : devProb >= 30 ? '#f59e0b' : '#ef4444')
+    : '#6b7280';
 
   return (
     <div className={`rounded-lg border p-3 text-center transition-all ${
@@ -246,16 +334,37 @@ function TrophyCard({ definition, unlockedDate }) {
       <div className={`w-12 h-12 mx-auto rounded-full bg-gradient-to-br ${
         isUnlocked ? tier.bg : 'from-gray-700 to-gray-600'
       } flex items-center justify-center mb-2`}>
-        {isUnlocked ? <Icon size={24} className="text-dungeon-dark" /> : <Lock size={20} className="text-gray-500" />}
+        {isUnlocked ? <Icon size={24} className="text-dungeon-dark" /> : <Lock size={20} className="text-gray-400" />}
       </div>
-      <div className="font-medieval font-bold text-xs leading-tight" style={{ color: isUnlocked ? tier.color : '#6b7280' }}>
+      <div className="font-medieval font-bold text-s leading-tight" style={{ color: isUnlocked ? tier.color : '#6b7280' }}>
         {definition.name}
       </div>
-      <div className="text-[10px] text-gray-500 mt-1 leading-tight">{definition.description}</div>
+      <div className="text-[13px] text-gray-400 mt-1 leading-tight">{definition.description}</div>
       {isUnlocked && (
         <div className="mt-1.5 space-y-0.5">
-          <div className="text-[9px] text-gray-600">{new Date(unlockedDate).toLocaleDateString('fr-FR')}</div>
-          <div className="text-[9px] font-bold" style={{ color: tier.color }}>+{tier.xp} XP</div>
+          <div className="text-[11px] text-gray-400">{new Date(unlockedDate).toLocaleDateString('fr-FR')}</div>
+          <div className="text-[11px] font-bold" style={{ color: tier.color }}>+{tier.xp} XP</div>
+        </div>
+      )}
+      {!isUnlocked && progress && (
+        <div className="mt-2">
+          <div className="w-full h-1 bg-dungeon-dark/60 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${Math.min(100, (progress.current / progress.total) * 100)}%`,
+                backgroundColor: tier.color,
+              }}
+            />
+          </div>
+          <div className="text-[11px] text-gray-400 mt-0.5 text-right">
+            {progress.current}<span className="opacity-50">/{progress.total}</span>
+          </div>
+        </div>
+      )}
+      {import.meta.env.DEV && devProb !== null && (
+        <div className="mt-1 text-[13px] font-semibold" style={{ color: probColor }}>
+          {devProb}% <span className="opacity-60 font-normal">p={TIER_RATE[definition.tier] * 100}%</span>
         </div>
       )}
     </div>
@@ -269,9 +378,9 @@ function SecretTrophyCard({ tier }) {
         <span className="text-xl font-bold text-gray-600">?</span>
       </div>
       <div className="font-medieval font-bold text-xs leading-tight text-gray-600">???</div>
-      <div className="text-[10px] text-gray-700 mt-1 leading-tight">Règle à venir</div>
+      <div className="text-[13px] text-gray-700 mt-1 leading-tight">Règle à venir</div>
       <div className="mt-1.5">
-        <div className="text-[9px] font-bold text-gray-700">+{tier.xp} XP</div>
+        <div className="text-[10px] font-bold text-gray-700">+{tier.xp} XP</div>
       </div>
     </div>
   );

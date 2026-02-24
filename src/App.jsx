@@ -159,7 +159,7 @@ function App() {
               <p className="text-dungeon-gold font-medieval">Chargement des trophées...</p>
             </div>
           }>
-            <TrophiesListPage trophies={trophies} maxMonth={maxMonth} />
+            <TrophiesListPage trophies={trophies} maxMonth={maxMonth} score={score} yearData={yearData} />
           </Suspense>
         );
 
