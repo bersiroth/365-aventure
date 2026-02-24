@@ -2,7 +2,7 @@ import { Router } from 'express';
 import db from '../db.js';
 import { requireAuth } from '../middleware/auth.js';
 import { decodeSave, computeScoreFromSave } from '../gameLogic.js';
-import { computeTrophyXP, computeLevel } from '../trophyLogic.js';
+import {calculateTrophyXP, getLevel} from "../../src/data/trophyData.js";
 
 const router = Router();
 
@@ -30,8 +30,8 @@ router.put('/', requireAuth, (req, res) => {
   let level = 1;
   if (trophies && typeof trophies === 'object') {
     trophiesJson = JSON.stringify(trophies);
-    trophyXp = computeTrophyXP(trophies);
-    level = computeLevel(trophyXp);
+    trophyXp = calculateTrophyXP(trophies);
+    level = getLevel(trophyXp);
   }
 
   db.prepare(`

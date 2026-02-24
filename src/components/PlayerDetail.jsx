@@ -61,7 +61,7 @@ export function PlayerDetail({ playerId, onBack, maxMonth = 11 }) {
     try { return typeof player.trophies === 'string' ? JSON.parse(player.trophies) : (player.trophies || {}); }
     catch { return {}; }
   })();
-  const playerLevelInfo = getLevelInfo(calculateTrophyXP(playerTrophies));
+  const playerLevelInfo = getLevelInfo(calculateTrophyXP(playerTrophies) + (score?.totalScore ?? 0) * 4.5);
 
 
   return (

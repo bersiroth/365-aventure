@@ -46,17 +46,19 @@ export const TROPHY_DEFINITIONS = [
 ];
 
 // === Titres de niveau (20 niveaux) ===
+export const LEVEL_MAX = 20;
+
 export const LEVEL_TITLES = [
   'Vagabond', 'Novice', 'Apprenti', 'Aventurier', 'Écuyer', 'Mercenaire', 'Brave', 'Combattant', 'Guerrier', 'Vétéran',
   'Chevalier', 'Maître d\'Armes', 'Champion', 'Paladin', 'Héros', 'Commandeur', 'Seigneur', 'Maître de Guerre', 'Légende Vivante', 'Conquérant du Donjon'
 ];
 
-// === Seuils XP cumulés (base 25, ×1.2 par niveau) ===
+// === Seuils XP cumulés (base 50, ×1.125 par niveau) ===
 export const LEVEL_THRESHOLDS = (() => {
   const thresholds = [];
   let cumulative = 0;
-  for (let i = 0; i < 20; i++) {
-    cumulative += Math.ceil(25 * Math.pow(1.144, i));
+  for (let i = 0; i < LEVEL_MAX; i++) {
+    cumulative += Math.ceil(65 * Math.pow(1.13, i));
     thresholds.push(cumulative);
   }
   return thresholds;
@@ -79,7 +81,7 @@ export function getLevel(xp) {
   for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
     if (xp < LEVEL_THRESHOLDS[i]) return i + 1;
   }
-  return 20;
+  return LEVEL_MAX;
 }
 
 /** Retourne les infos détaillées de niveau */
@@ -93,6 +95,6 @@ export function getLevelInfo(xp) {
     totalXP: xp,
     xpIntoLevel: xp - prevThreshold,
     xpForLevel: nextThreshold - prevThreshold,
-    isMaxLevel: level === 20 && xp >= LEVEL_THRESHOLDS[19],
+    isMaxLevel: level === LEVEL_MAX,
   };
 }

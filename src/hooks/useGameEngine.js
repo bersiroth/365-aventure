@@ -137,7 +137,7 @@ export function useGameEngine(player) {
     setNewTrophies(prev => prev.slice(1));
   }, []);
 
-  const levelInfo = getLevelInfo(calculateTrophyXP(trophies));
+  const levelInfo = getLevelInfo(calculateTrophyXP(trophies) + (score?.totalScore ?? 0) * 4.5);
 
   /**
    * Marque un jour comme complété (ou annule)
