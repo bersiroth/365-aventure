@@ -94,7 +94,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
 
                   {players.map((player, index) => {
                     const isCurrentPlayer = player.id === currentPlayerId;
-                    const levelInfo = getLevelInfo(player.trophy_xp ?? 0);
+                    const levelInfo = getLevelInfo((player.trophy_xp ?? 0) + ((player.total_score ?? 0) * 4.5));
                     return (
                       <button
                         key={player.id}

@@ -175,13 +175,15 @@ export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 1
           <User className="text-dungeon-gold" size={32} />
           <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Profil</h2>
         </div>
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-gradient-to-r from-dungeon-gold/20 to-amber-700/20 border border-dungeon-gold/50 text-dungeon-gold hover:from-dungeon-gold/30 hover:to-amber-700/30 hover:border-dungeon-gold transition-colors"
-        >
-          <Share2 size={16} />
-          Partager
-        </button>
+        {pseudo && (
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-gradient-to-r from-dungeon-gold/20 to-amber-700/20 border border-dungeon-gold/50 text-dungeon-gold hover:from-dungeon-gold/30 hover:to-amber-700/30 hover:border-dungeon-gold transition-colors"
+          >
+            <Share2 size={16} />
+            Partager
+          </button>
+        )}
       </div>
 
       {/* Bannière niveau */}
