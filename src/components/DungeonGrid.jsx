@@ -436,8 +436,8 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
       disabled={isReadOnly}
       title={
         isFinalBoss
-          ? `${day.dayOfWeek} ${day.day} — Boss Final (valeur : ${finalBossCurrentValue} pts, +30 pts bonus)${finalBossPreviousValue !== null ? ` — précédente : ${finalBossPreviousValue}` : ''}`
-          : `${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +3 pts` : isNecromancer ? 'Nécromancien' : isShaman ? "Shaman de l'Ombre" : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value > 0 ? '+' : ''}${day.value} pt${Math.abs(day.value) > 1 ? 's' : ''})`
+          ? `${day.dayOfWeek} ${day.day} — Boss Final (valeur : ${finalBossCurrentValue}, +30 pts bonus)${finalBossPreviousValue !== null ? ` — précédente : ${finalBossPreviousValue}` : ''}`
+          : `${day.dayOfWeek} ${day.day} — ${isBoss ? 'Boss' : isTrap ? 'Piège' : isUndead ? 'Mort-Vivant Enchaîné' : isDouble ? `Monstres Doubles (${day.value} & ${day.value2}) +3 pts` : isNecromancer ? 'Nécromancien' : isShaman ? "Shaman de l'Ombre" : isInvisible ? 'Monstre Invisible' : isElite ? 'Monstre Élite' : 'Monstre'} (${day.value})`
       }
       className={`
         relative aspect-square overflow-hidden transition-all duration-150
