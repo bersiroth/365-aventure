@@ -34,6 +34,11 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
     week.days.map((day, dayIndex) => ({ ...day, weekIndex, dayIndex }))
   );
 
+  // ── Jour courant (pour highlight) ──
+  const todayMonthIndex = new Date().getMonth();   // 0-11
+  const todayDayNumber  = new Date().getDate();    // 1-31
+  const todayYear       = new Date().getFullYear();
+
   // ── Décalage lundi-premier ──
   // dayOfWeekIndex : 0=Dimanche, 1=Lundi, …, 6=Samedi (Sun-first)
   // Formule Mon-first : (index - 1 + 7) % 7
@@ -174,6 +179,11 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
                         undeadNeedsNecro={monthHasNecromancer && !monthNecromancerDefeated}
                         finalBossData={cell.day.isFinalBoss ? finalBossData : null}
                         onValueTooHigh={() => setValueTooHighOpen(true)}
+                        isToday={
+                          todayYear === 2026 &&
+                          cell.day.monthIndex === todayMonthIndex &&
+                          cell.day.day === todayDayNumber
+                        }
                       />
                     )
                   )}
@@ -369,7 +379,7 @@ function WingCompleteBanner() {
  * BOSS    → couronne dorée + valeur
  * DOUBLE  → deux boucliers bleus côte à côte
  */
-function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWing, undeadNeedsNecro, finalBossData, onValueTooHigh }) {
+function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWing, undeadNeedsNecro, finalBossData, onValueTooHigh, isToday }) {
   const isBoss = day.type === 'BOSS';
   const isTrap = day.type === 'TRAP';
   const isUndead = day.type === 'UNDEAD';
@@ -435,6 +445,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         ${bgClass}
         ${!isReadOnly && !isCompleted ? 'hover:brightness-110' : ''}
         ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}
+        ${isToday ? 'ring-2 ring-white shadow-[0_0_10px_3px_rgba(255,255,255,0.5)]' : ''}
       `}
     >
       {/* Bordure colorée selon le type */}
@@ -457,8 +468,8 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
         <div className="absolute inset-0 ring-4 md:ring-8 ring-inset ring-purple-400 pointer-events-none z-10" />
       )}
 
-      {/* Numéro du jour — haut-gauche (toujours jaune) */}
-      <div className="absolute top-0.5 left-0.5 min-w-[14px] h-[14px] sm:min-w-[20px] sm:h-[20px] md:min-w-[26px] md:h-[26px] px-0.5 sm:px-1 rounded text-[9px] sm:text-xs md:text-sm font-bold flex items-center justify-center leading-none z-10 bg-dungeon-gold text-dungeon-dark">
+      {/* Numéro du jour — haut-gauche */}
+      <div className={`absolute top-0.5 left-0.5 min-w-[14px] h-[14px] sm:min-w-[20px] sm:h-[20px] md:min-w-[26px] md:h-[26px] px-0.5 sm:px-1 rounded text-[9px] sm:text-xs md:text-sm font-bold flex items-center justify-center leading-none z-10 ${isToday ? 'bg-white text-dungeon-dark ring-1 ring-white/60' : 'bg-dungeon-gold text-dungeon-dark'}`}>
         {day.day}
       </div>
 

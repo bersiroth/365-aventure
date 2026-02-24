@@ -259,7 +259,7 @@ function App() {
                 </div>
               </div>
             )}
-            <div className="flex flex-wrap justify-center gap-2 -mt-2 mb-2">
+            <div className="flex flex-wrap justify-center gap-2">
               <button
                 onClick={exportBackup}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone"
@@ -350,7 +350,7 @@ function App() {
       {renderView()}
 
       {/* Footer */}
-      <footer className="mt-12 py-8 border-t border-dungeon-gold/30 bg-dungeon-dark/50">
+      <footer className="mt-6 py-8 border-t border-dungeon-gold/30 bg-dungeon-dark/50">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-gray-400 text-sm">
             Inspiré du jeu "365 Aventures : Le Donjon" par Sorry We Are French

@@ -21,7 +21,12 @@ function parseTrophies(raw) {
  */
 export function useGameEngine(player) {
   const [yearData, setYearData] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    if (now.getFullYear() < 2026) return 0;
+    if (now.getFullYear() > 2026) return 11;
+    return now.getMonth();
+  });
   const [importLoading, setImportLoading] = useState(false);
   const [importError, setImportError] = useState(null);
   const [trophies, setTrophies] = useState({});

@@ -7,6 +7,11 @@ export function MonthSelector({ months, selectedMonth, onMonthChange, maxMonth =
   const canGoPrevious = selectedMonth > 0;
   const canGoNext = selectedMonth < Math.min(months.length - 1, maxMonth);
 
+  // Fenêtre de 4 mois sur mobile : [selected-1, selected, selected+1, selected+2]
+  // clampée pour rester dans les bornes du tableau
+  const mobileWindowStart = Math.max(0, Math.min(selectedMonth - 1, months.length - 4));
+  const mobileIndices = Array.from({ length: 4 }, (_, i) => mobileWindowStart + i);
+
   return (
     <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 py-3">
       <div className="flex items-center justify-between gap-1.5 sm:gap-4">
@@ -25,8 +30,35 @@ export function MonthSelector({ months, selectedMonth, onMonthChange, maxMonth =
           <ChevronLeft size={18} />
         </button>
 
-        {/* Grille des mois */}
-        <div className="flex-1 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-12 gap-1 sm:gap-2 min-w-0">
+        {/* Grille mobile : fenêtre de 4 mois */}
+        <div className="flex-1 grid grid-cols-4 gap-1 min-w-0 sm:hidden">
+          {mobileIndices.map((index) => {
+            const month = months[index];
+            const locked = index > maxMonth;
+            return (
+              <button
+                key={month.name}
+                onClick={() => !locked && onMonthChange(index)}
+                disabled={locked}
+                title={locked ? 'Mois pas encore commencé' : month.name}
+                className={`
+                  px-0 py-1.5 rounded-lg border-2 transition-all font-medieval font-semibold text-xs truncate
+                  ${locked
+                    ? 'bg-gray-800/50 border-gray-800 text-gray-600 cursor-not-allowed opacity-50'
+                    : index === selectedMonth
+                      ? 'bg-dungeon-gold text-dungeon-dark border-dungeon-gold shadow-lg scale-105'
+                      : 'bg-dungeon-stone border-gray-700 hover:border-dungeon-gold/50 text-gray-300 hover:text-dungeon-gold'
+                  }
+                `}
+              >
+                {month.name.substring(0, 3)}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Grille desktop : tous les mois */}
+        <div className="flex-1 hidden sm:grid sm:grid-cols-6 md:grid-cols-12 gap-2 min-w-0">
           {months.map((month, index) => {
             const locked = index > maxMonth;
             return (
@@ -36,7 +68,7 @@ export function MonthSelector({ months, selectedMonth, onMonthChange, maxMonth =
                 disabled={locked}
                 title={locked ? 'Mois pas encore commencé' : month.name}
                 className={`
-                  px-0 py-1.5 sm:px-2 sm:py-2 rounded-lg border-2 transition-all font-medieval font-semibold text-xs sm:text-sm truncate
+                  px-2 py-2 rounded-lg border-2 transition-all font-medieval font-semibold sm:text-sm truncate
                   ${locked
                     ? 'bg-gray-800/50 border-gray-800 text-gray-600 cursor-not-allowed opacity-50'
                     : index === selectedMonth
