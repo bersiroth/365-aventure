@@ -6,7 +6,6 @@ import { MonthSelector } from './components/MonthSelector';
 import { LoginPage } from './components/LoginPage';
 import { PlayerList } from './components/PlayerList';
 import { PlayerDetail } from './components/PlayerDetail';
-import { downloadProgressImage } from './utils/shareCard';
 import { TrophyNotification } from './components/TrophyNotification';
 const StatsPage = lazy(() => import('./components/StatsPage').then(m => ({ default: m.StatsPage })));
 const ProfilePage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.ProfilePage })));
@@ -147,7 +146,7 @@ function App() {
               <p className="text-dungeon-gold font-medieval">Chargement du profil...</p>
             </div>
           }>
-            <ProfilePage trophies={trophies} levelInfo={levelInfo} score={score} yearData={yearData} maxMonth={maxMonth} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} showShaman={maxMonth >= 10} showFinalBoss={maxMonth >= 11} />
+            <ProfilePage trophies={trophies} levelInfo={levelInfo} score={score} yearData={yearData} maxMonth={maxMonth} showUndead={maxMonth >= 2} showElite={maxMonth >= 4} showDouble={maxMonth >= 6} showMana={maxMonth >= 1} showInvisible={maxMonth >= 8} showNecromancer={maxMonth >= 8} showInfluenced={maxMonth >= 9} showShaman={maxMonth >= 10} showFinalBoss={maxMonth >= 11} pseudo={player.pseudo} />
           </Suspense>
         );
 
@@ -261,13 +260,6 @@ function App() {
               </div>
             )}
             <div className="flex flex-wrap justify-center gap-2 -mt-2 mb-2">
-              <button
-                onClick={() => downloadProgressImage({ score, pseudo: player.pseudo, showUndead: maxMonth >= 2, showMana: maxMonth >= 1 })}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone"
-              >
-                <Download size={13} />
-                Générer une image de ma progression
-              </button>
               <button
                 onClick={exportBackup}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone"

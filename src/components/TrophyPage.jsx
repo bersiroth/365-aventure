@@ -1,9 +1,10 @@
-import { Award, Lock, User, TrendingDown } from 'lucide-react';
+import { Award, Lock, User, TrendingDown, Share2 } from 'lucide-react';
 import {
   Swords, Skull, AlertTriangle, Crown, FlaskConical,
   Shield, Flame, Trophy, Zap, Layers2, EyeOff, Ghost,
 } from 'lucide-react';
 import { TROPHY_DEFINITIONS, TROPHY_TIERS } from '../data/trophyData';
+import { downloadProgressImage } from '../utils/shareCard';
 import { ScorePanel } from './ScorePanel';
 import { calculateScore } from '../data/gameData';
 import { getTrophyProb, DEV_COMPLETION_RATE, DEV_COMPLETION_RATE_BRONZE, DEV_COMPLETION_RATE_GOLD } from '../utils/trophyProbability';
@@ -106,9 +107,35 @@ function calcLongestStreak(yearData) {
   return maxStreak;
 }
 
-export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 11, showUndead, showMana, showElite, showDouble, showInvisible, showNecromancer, showInfluenced, showShaman, showFinalBoss }) {
+export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 11, showUndead, showMana, showElite, showDouble, showInvisible, showNecromancer, showInfluenced, showShaman, showFinalBoss, pseudo }) {
   const unlockedCount = Object.keys(trophies || {}).length;
   const totalCount = TROPHY_DEFINITIONS.length;
+
+  const completion = yearData ? (() => {
+    const days = yearData.slice(0, maxMonth + 1).flatMap(m => m.weeks.flatMap(w => w.days));
+    const total = days.length;
+    const done = days.filter(d => d.completed).length;
+    return { done, total, rate: total > 0 ? Math.round(done / total * 100) : 0 };
+  })() : { done: 0, total: 0, rate: 0 };
+  const completionRate = completion.rate;
+
+  const handleShare = () => downloadProgressImage({
+    score,
+    pseudo: pseudo || 'Aventurier',
+    levelInfo,
+    completionRate,
+    unlockedCount,
+    totalCount,
+    showUndead,
+    showMana,
+    showElite,
+    showDouble,
+    showInvisible,
+    showNecromancer,
+    showInfluenced,
+    showShaman,
+    showFinalBoss,
+  });
 
   const exploits = yearData ? (() => {
     const data = buildMonthlyScores(yearData);
@@ -143,13 +170,41 @@ export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 1
     <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-8">
 
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <User className="text-dungeon-gold" size={32} />
-        <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Profil</h2>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <User className="text-dungeon-gold" size={32} />
+          <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Profil</h2>
+        </div>
+        <button
+          onClick={handleShare}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-gradient-to-r from-dungeon-gold/20 to-amber-700/20 border border-dungeon-gold/50 text-dungeon-gold hover:from-dungeon-gold/30 hover:to-amber-700/30 hover:border-dungeon-gold transition-colors"
+        >
+          <Share2 size={16} />
+          Partager
+        </button>
       </div>
 
       {/* Bannière niveau */}
       <LevelBanner levelInfo={levelInfo} unlockedCount={unlockedCount} totalCount={totalCount} />
+
+      {/* Barre de complétion */}
+      {yearData && (
+        <div className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border border-dungeon-gold/30 px-5 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-medieval font-semibold text-sm uppercase tracking-wide text-gray-400">Complétion</span>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-green-400 leading-none">{completion.rate}%</span>
+              <span className="text-xs text-gray-500">{completion.done} / {completion.total} cases</span>
+            </div>
+          </div>
+          <div className="w-full h-3 bg-dungeon-dark/80 rounded-full overflow-hidden border border-gray-700">
+            <div
+              className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700"
+              style={{ width: `${completion.rate}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Progression */}
       {score && (
