@@ -5,6 +5,7 @@ import {
   XAxis, YAxis,
   CartesianGrid, Tooltip, Legend,
   Area, AreaChart,
+  ReferenceLine, Cell,
 } from 'recharts';
 import { Trophy, Skull, AlertTriangle, Crown, Swords, BarChart2, Flame, Zap, Layers2, EyeOff, Axe, FlaskConical, Ghost, Star } from 'lucide-react';
 
@@ -55,10 +56,17 @@ function buildMonthlyData(yearData) {
   return yearData.map((monthData) => {
     const s = calculateScore([monthData]);
     cumScore += s.totalScore;
+    const days = monthData.weeks.flatMap(w => w.days);
+    const totalDays = days.length;
+    const completedDays = days.filter(d => d.completed).length;
+    const completionRate = totalDays > 0 ? Math.round(completedDays / totalDays * 100) : 0;
     return {
       month: monthData.name.substring(0, 3),
       score: s.totalScore,
       cumScore,
+      completionRate,
+      completedDays,
+      totalDays,
       monsters: s.monstersDefeated,
       undead: s.undeadDefeated,
       elite: s.eliteDefeated,
@@ -214,6 +222,33 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={tooltipStyle} />
             <Bar dataKey="score" name="Score" fill={GOLD} radius={[3, 3, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </Section>
+
+      {/* Taux de complétion par mois */}
+      <Section title="Taux de complétion par mois">
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+            <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              labelStyle={{ color: '#9ca3af', fontSize: 11 }}
+              itemStyle={{ color: '#fff' }}
+              formatter={(value, name, props) => [`${value}% (${props.payload.completedDays}/${props.payload.totalDays} jours)`, 'Complétion']}
+            />
+            <ReferenceLine y={50} stroke="#cd7f32" strokeDasharray="4 3" label={{ value: 'Bronze 50%', fill: '#cd7f32', fontSize: 10, position: 'insideTopRight' }} />
+            <ReferenceLine y={65} stroke="#c0c0c0" strokeDasharray="4 3" label={{ value: 'Argent 65%', fill: '#c0c0c0', fontSize: 10, position: 'insideTopRight' }} />
+            <ReferenceLine y={80} stroke="#d4af37" strokeDasharray="4 3" label={{ value: 'Or 80%', fill: '#d4af37', fontSize: 10, position: 'insideTopRight' }} />
+            <Bar dataKey="completionRate" name="Taux" radius={[3, 3, 0, 0]}>
+              {data.map((entry, index) => {
+                const r = entry.completionRate;
+                const color = r >= 80 ? '#d4af37' : r >= 65 ? '#c0c0c0' : r >= 50 ? '#cd7f32' : '#6b7280';
+                return <Cell key={`cell-${index}`} fill={color} />;
+              })}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </Section>
