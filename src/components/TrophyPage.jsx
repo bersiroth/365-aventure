@@ -113,7 +113,7 @@ export function ProfilePage({ trophies, levelInfo, score, yearData, maxMonth = 1
 
   const completion = yearData ? (() => {
     const days = yearData.slice(0, maxMonth + 1).flatMap(m => m.weeks.flatMap(w => w.days));
-    const total = days.length;
+    const total = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
     const done = days.filter(d => d.completed).length;
     return { done, total, rate: total > 0 ? Math.round(done / total * 100) : 0 };
   })() : { done: 0, total: 0, rate: 0 };
