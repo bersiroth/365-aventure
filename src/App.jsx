@@ -11,8 +11,9 @@ import { TrophyNotification } from './components/TrophyNotification';
 const StatsPage = lazy(() => import('./components/StatsPage').then(m => ({ default: m.StatsPage })));
 const ProfilePage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.ProfilePage })));
 const TrophiesListPage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.TrophiesListPage })));
-import { Swords, LogOut, Users, BarChart2, Download, Upload, User, Award, Wrench } from 'lucide-react';
+import { Swords, LogOut, Users, BarChart2, Download, Upload, User, Award, Wrench, Dices } from 'lucide-react';
 import { DevPage } from './components/DevPage';
+import { DiceRoller } from './components/DiceRoller';
 
 /**
  * Application principale
@@ -24,6 +25,7 @@ function App() {
   const [currentView, setCurrentView] = useState('game');
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [pendingImportFile, setPendingImportFile] = useState(null);
+  const [diceOpen, setDiceOpen] = useState(false);
   const importInputRef = useRef(null);
 
   // Dev : mois actif overridable via slider (doit être avant tout return anticipé)
@@ -316,6 +318,7 @@ function App() {
             <NavButton active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={14} />} label="Profil" />
             <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={14} />} label="Stats" />
             <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={14} />} label="Trophées" />
+            <NavButton active={false} onClick={() => setDiceOpen(true)} icon={<Dices size={14} />} label="Dés" />
             <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={14} />} label="Classement" />
             {import.meta.env.DEV && (
               <button
@@ -347,6 +350,9 @@ function App() {
       {newTrophies.length > 0 && (
         <TrophyNotification trophy={newTrophies[0]} onDismiss={dismissTrophy} />
       )}
+
+      {/* Modal Lancer de Dés */}
+      {diceOpen && <DiceRoller onClose={() => setDiceOpen(false)} />}
 
       {/* Content */}
       {renderView()}
