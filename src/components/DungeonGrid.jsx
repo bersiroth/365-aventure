@@ -96,7 +96,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
         {monthRule && (
           <button
             onClick={() => setRulesOpen(true)}
-            className="absolute right-0 top-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-dungeon-gold/40 bg-dungeon-gold/10 text-dungeon-gold/80 hover:text-dungeon-gold hover:bg-dungeon-gold/20 hover:border-dungeon-gold/70 transition-colors font-medieval text-xs"
+            className="absolute sm:right-3 right-0 sm:top-2 top-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-dungeon-gold/40 bg-dungeon-gold/10 text-dungeon-gold/80 hover:text-dungeon-gold hover:bg-dungeon-gold/20 hover:border-dungeon-gold/70 transition-colors font-medieval text-xs"
             title="Nouvelle règle ce mois"
           >
             <ScrollText size={13} />

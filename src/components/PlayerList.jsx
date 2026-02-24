@@ -12,7 +12,7 @@ function CrossedBonesIcon({ size = 24, className }) {
   );
 }
 import { getPlayers } from '../api';
-import { LEVEL_TITLES } from '../data/trophyData';
+import { getLevelInfo } from '../data/trophyData';
 
 
 export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible, showNecromancer, showInfluenced, showShaman, showFinalBoss }) {
@@ -94,6 +94,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
 
                   {players.map((player, index) => {
                     const isCurrentPlayer = player.id === currentPlayerId;
+                    const levelInfo = getLevelInfo(player.trophy_xp ?? 0);
                     return (
                       <button
                         key={player.id}
@@ -106,7 +107,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                           <div className={`font-bold text-lg ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</div>
                           <div className="min-w-0">
                             <div className={`font-medieval font-bold truncate ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</div>
-                            {player.level != null && <div className="text-xs text-gray-500 truncate">Niv.{player.level} — {LEVEL_TITLES[(player.level || 1) - 1]}</div>}
+                            <div className="text-xs text-gray-500 truncate">Niv.{levelInfo.level} — {levelInfo.title}</div>
                           </div>
                           <div className="text-center font-bold text-dungeon-gold">{player.total_score}</div>
                           <div className="text-center text-sky-400">{player.monsters_defeated}</div>
@@ -131,7 +132,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                               <span className={`font-bold text-lg w-8 ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</span>
                               <span>
                                 <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
-                                {player.level != null && <span className="ml-1.5 text-[10px] text-gray-500">Niv.{player.level}— {LEVEL_TITLES[(player.level || 1) - 1]}</span>}
+                                <span className="ml-1.5 text-[10px] text-gray-500">Niv.{levelInfo.level} — {levelInfo.title}</span>
                               </span>
                             </div>
                             <div className="flex items-center gap-1 text-dungeon-gold font-bold">
