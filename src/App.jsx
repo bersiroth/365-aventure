@@ -24,6 +24,7 @@ function App() {
   const [currentView, setCurrentView] = useState('game');
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [pendingImportFile, setPendingImportFile] = useState(null);
+  const [pendingDayClick, setPendingDayClick] = useState(null);
   const [diceOpen, setDiceOpen] = useState(false);
   const importInputRef = useRef(null);
 
@@ -61,6 +62,38 @@ function App() {
     importLoading,
     importError,
   } = useGameEngine(player);
+
+  const handleDayClick = (monthIndex, weekIndex, dayIndex) => {
+    if (!yearData) return;
+
+    const now = new Date();
+    if (now.getFullYear() !== 2026) {
+      toggleDayCompletion(monthIndex, weekIndex, dayIndex);
+      return;
+    }
+
+    // Calcul du lundi et dimanche de la semaine courante
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dow = today.getDay(); // 0=Dim, 1=Lun, …, 6=Sam
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const dayData = yearData[monthIndex]?.weeks[weekIndex]?.days[dayIndex];
+    if (!dayData) {
+      toggleDayCompletion(monthIndex, weekIndex, dayIndex);
+      return;
+    }
+
+    const clickedDate = new Date(2026, monthIndex, dayData.day);
+    if (clickedDate < monday || clickedDate > sunday) {
+      setPendingDayClick({ monthIndex, weekIndex, dayIndex, dayData, monthName: yearData[monthIndex].name });
+      return;
+    }
+
+    toggleDayCompletion(monthIndex, weekIndex, dayIndex);
+  };
 
   // Chargement de l'auth
   if (authLoading) {
@@ -207,7 +240,7 @@ function App() {
             />
             <DungeonGrid
               monthData={yearData[selectedMonth]}
-              onDayClick={toggleDayCompletion}
+              onDayClick={handleDayClick}
               onManaToggle={toggleManaUsed}
               onStaffToggle={toggleStaffUsed}
               onCapeToggle={toggleCapeUsed}
@@ -259,6 +292,40 @@ function App() {
                 </div>
               </div>
             )}
+            {/* Modale de confirmation hors semaine */}
+            {pendingDayClick && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+                <div className="w-full max-w-sm bg-dungeon-stone border-2 border-dungeon-gold/50 rounded-xl shadow-2xl p-6">
+                  <h3 className="text-dungeon-gold font-medieval font-bold text-lg mb-3 text-center">
+                    Modification hors semaine
+                  </h3>
+                  <p className="text-gray-300 text-sm text-center mb-2">
+                    Le <span className="text-dungeon-gold font-semibold">{pendingDayClick.dayData.day} {pendingDayClick.monthName}</span> ne fait pas partie de la semaine en cours.
+                  </p>
+                  <p className="text-gray-500 text-xs text-center mb-6">
+                    Confirme si c'est intentionnel, sinon annule pour éviter une erreur de manipulation.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setPendingDayClick(null)}
+                      className="flex-1 px-4 py-2 rounded-lg font-medieval font-semibold text-sm border border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-colors bg-dungeon-dark"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={() => {
+                        toggleDayCompletion(pendingDayClick.monthIndex, pendingDayClick.weekIndex, pendingDayClick.dayIndex);
+                        setPendingDayClick(null);
+                      }}
+                      className="flex-1 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-dungeon-gold text-dungeon-dark hover:bg-yellow-400 transition-colors font-bold"
+                    >
+                      Confirmer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-wrap justify-center gap-2">
               <button
                 onClick={exportBackup}
