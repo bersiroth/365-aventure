@@ -26,7 +26,10 @@ function App() {
   const [pendingImportFile, setPendingImportFile] = useState(null);
   const [pendingDayClick, setPendingDayClick] = useState(null);
   const [diceOpen, setDiceOpen] = useState(false);
+  const [unlockedMonths, setUnlockedMonths] = useState(new Set());
   const importInputRef = useRef(null);
+  const touchStartXRef = useRef(null);
+  const touchStartYRef = useRef(null);
 
   // Dev : mois actif overridable via slider (doit être avant tout return anticipé)
   const [devMaxMonth, setDevMaxMonthState] = useState(() => {
@@ -66,6 +69,12 @@ function App() {
   const handleDayClick = (monthIndex, weekIndex, dayIndex) => {
     if (!yearData) return;
 
+    // Mois futur : toujours bloqué
+    if (monthIndex > maxMonth) return;
+
+    // Mois passé verrouillé : bloqué silencieusement (isReadOnly gère le visuel)
+    if (monthIndex < maxMonth && !unlockedMonths.has(monthIndex)) return;
+
     const now = new Date();
     if (now.getFullYear() !== 2026) {
       toggleDayCompletion(monthIndex, weekIndex, dayIndex);
@@ -93,6 +102,36 @@ function App() {
     }
 
     toggleDayCompletion(monthIndex, weekIndex, dayIndex);
+  };
+
+  const toggleMonthLock = () => {
+    setUnlockedMonths(prev => {
+      const next = new Set(prev);
+      if (next.has(selectedMonth)) {
+        next.delete(selectedMonth);
+      } else {
+        next.add(selectedMonth);
+      }
+      return next;
+    });
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartXRef.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartXRef.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartYRef.current);
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < dy) return;
+    const newMonth = dx < 0
+      ? Math.min(selectedMonth + 1, maxMonth)
+      : Math.max(selectedMonth - 1, 0);
+    if (newMonth !== selectedMonth) setSelectedMonth(newMonth);
   };
 
   // Chargement de l'auth
@@ -230,17 +269,22 @@ function App() {
             </div>
           );
         }
+        const isSelectedMonthLocked = selectedMonth < maxMonth && !unlockedMonths.has(selectedMonth);
         return (
-          <>
+          <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <MonthSelector
               months={yearData}
               selectedMonth={Math.min(selectedMonth, maxMonth)}
               onMonthChange={setSelectedMonth}
               maxMonth={maxMonth}
             />
+
             <DungeonGrid
               monthData={yearData[selectedMonth]}
               onDayClick={handleDayClick}
+              isReadOnly={isSelectedMonthLocked}
+              isPastMonth={selectedMonth < maxMonth}
+              onToggleLock={toggleMonthLock}
               onManaToggle={toggleManaUsed}
               onStaffToggle={toggleStaffUsed}
               onCapeToggle={toggleCapeUsed}
@@ -348,7 +392,7 @@ function App() {
                 {importError}
               </p>
             )}
-          </>
+          </div>
         );
     }
   };

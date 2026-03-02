@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Lock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame, Ghost } from 'lucide-react';
+import { Shield, CheckCircle2, Lock, Unlock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame, Ghost } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
 
@@ -22,9 +22,10 @@ const DAY_HEADERS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'
  * - TRAP    : triangle rouge avec valeur négative au centre
  * - BOSS    : couronne dorée avec valeur
  */
-export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, onStaffToggle, onCapeToggle, onRingToggle }) {
+export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, onToggleLock, onManaToggle, onStaffToggle, onCapeToggle, onRingToggle }) {
   const [rulesOpen, setRulesOpen] = useState(false);
   const [valueTooHighOpen, setValueTooHighOpen] = useState(false);
+  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState(false);
   if (!monthData) return null;
 
   const monthRule = MONTH_RULES[monthData.index];
@@ -93,6 +94,24 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
           {monthData.name} 2026
         </h2>
         <div className="h-px w-32 sm:w-48 mx-auto mt-2 sm:mt-3 bg-gradient-to-r from-transparent via-dungeon-gold to-transparent" />
+
+        {/* Bouton cadenas — mois passés uniquement, à gauche */}
+        {isPastMonth && onToggleLock && (
+          <button
+            onClick={() => isReadOnly ? setUnlockConfirmOpen(true) : onToggleLock()}
+            className="absolute sm:left-3 left-0 sm:top-2 top-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors font-medieval text-xs"
+            style={isReadOnly
+              ? { borderColor: 'rgba(180,120,20,0.4)', background: 'rgba(180,120,20,0.08)', color: 'rgba(212,175,55,0.7)' }
+              : { borderColor: 'rgba(45,212,191,0.35)', background: 'rgba(45,212,191,0.07)', color: 'rgba(45,212,191,0.7)' }
+            }
+            title={isReadOnly ? 'Mois verrouillé — cliquer pour déverrouiller' : 'Mois déverrouillé — cliquer pour reverrouiller'}
+          >
+            {isReadOnly ? <Lock size={13} /> : <Unlock size={13} />}
+            <span className="hidden sm:inline">{isReadOnly ? 'Verrouillé' : 'Déverrouillé'}</span>
+          </button>
+        )}
+
+        {/* Bouton nouvelle règle — à droite */}
         {monthRule && (
           <button
             onClick={() => setRulesOpen(true)}
@@ -113,6 +132,15 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, onManaToggle, o
       {/* Modal valeur trop haute */}
       {valueTooHighOpen && (
         <ValueTooHighModal onClose={() => setValueTooHighOpen(false)} />
+      )}
+
+      {/* Modal confirmation déverrouillage */}
+      {unlockConfirmOpen && (
+        <UnlockConfirmModal
+          monthName={monthData.name}
+          onConfirm={() => { setUnlockConfirmOpen(false); onToggleLock(); }}
+          onClose={() => setUnlockConfirmOpen(false)}
+        />
       )}
 
       {/* Grille calendrier */}
@@ -808,6 +836,47 @@ function RulesModal({ rule, onClose }) {
         >
           Compris !
         </button>
+      </div>
+    </div>
+  );
+}
+
+function UnlockConfirmModal({ monthName, onConfirm, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-sm bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-amber-600/50 shadow-[0_0_40px_rgba(180,120,20,0.2)] p-6"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
+            <Unlock className="text-amber-400" size={20} />
+          </div>
+          <h3 className="text-lg font-medieval font-bold text-amber-400 leading-tight">Déverrouiller {monthName} ?</h3>
+        </div>
+        <div className="h-px bg-gradient-to-r from-transparent via-amber-600/40 to-transparent mb-4" />
+        <p className="text-sm text-gray-300 leading-relaxed mb-6">
+          Ce mois est terminé. Veux-tu vraiment le déverrouiller pour le modifier ?
+          <br />
+          <span className="text-gray-500 text-xs mt-1 block">Il se reverrouillera automatiquement au prochain chargement de la page.</span>
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 rounded-lg font-medieval font-semibold text-sm border border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-colors bg-dungeon-dark"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-amber-700 hover:bg-amber-600 text-white transition-colors"
+          >
+            Déverrouiller
+          </button>
+        </div>
       </div>
     </div>
   );
