@@ -87,7 +87,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
   });
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 py-4 sm:py-6">
+    <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 pt-2 pb-4 sm:py-6">
       {/* Titre du mois */}
       <div className="mb-3 sm:mb-6 text-center relative">
         <h2 className="text-2xl sm:text-4xl md:text-5xl font-medieval font-bold text-dungeon-gold drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">

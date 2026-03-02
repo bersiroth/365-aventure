@@ -154,7 +154,7 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 py-3 md:py-6 text-center">
             <div className="flex items-center justify-center gap-3">
               <Swords className="text-dungeon-gold shrink-0" size={28} />
-              <h1 className="text-2xl sm:text-3xl md:text-5xl font-medieval font-bold text-dungeon-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.6)] leading-tight">
+              <h1 className="text-xl sm:text-3xl md:text-5xl font-medieval font-bold text-dungeon-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.6)] leading-tight whitespace-nowrap">
                 365 Aventures : Le Donjon
               </h1>
             </div>
@@ -376,7 +376,7 @@ function App() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone"
               >
                 <Download size={13} />
-                Exporter ma sauvegarde
+                Exporter
               </button>
               <button
                 onClick={() => importInputRef.current?.click()}
@@ -384,7 +384,7 @@ function App() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval text-xs text-gray-400 border border-gray-700 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors bg-dungeon-stone disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Upload size={13} />
-                {importLoading ? 'Import...' : 'Importer une sauvegarde'}
+                {importLoading ? 'Import...' : 'Importer'}
               </button>
             </div>
             {importError && (
@@ -406,7 +406,7 @@ function App() {
             <Swords className="text-dungeon-gold shrink-0" size={28} />
             <h1
               onClick={() => navigateTo('game')}
-              className="text-2xl sm:text-3xl md:text-5xl font-medieval font-bold text-dungeon-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.6)] cursor-pointer leading-tight text-center"
+              className="text-xl sm:text-3xl md:text-5xl font-medieval font-bold text-dungeon-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.6)] cursor-pointer leading-tight text-center whitespace-nowrap"
             >
               365 Aventures : Le Donjon
             </h1>
