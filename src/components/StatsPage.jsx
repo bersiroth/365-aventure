@@ -154,6 +154,8 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
   // Boss Final vaincu (décembre uniquement)
   const finalBossDefeatedTotal = data[FINAL_BOSS_RULE_START]?.finalBoss ?? 0;
 
+  const tableData = data.slice(0, maxMonth + 1);
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-8">
 
@@ -197,7 +199,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Score cumulé */}
       <Section title="Évolution du score cumulé">
         <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+          <AreaChart data={tableData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="gradScore" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%"  stopColor={GOLD} stopOpacity={0.4} />
@@ -216,7 +218,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Score par mois */}
       <Section title="Score par mois">
         <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+          <BarChart data={tableData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -229,7 +231,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Taux de complétion par mois */}
       <Section title="Taux de complétion par mois">
         <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+          <BarChart data={tableData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -243,7 +245,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             <ReferenceLine y={65} stroke="#c0c0c0" strokeDasharray="4 3" label={{ value: 'Argent 65%', fill: '#c0c0c0', fontSize: 10, position: 'insideTopRight' }} />
             <ReferenceLine y={80} stroke="#d4af37" strokeDasharray="4 3" label={{ value: 'Or 80%', fill: '#d4af37', fontSize: 10, position: 'insideTopRight' }} />
             <Bar dataKey="completionRate" name="Taux" radius={[3, 3, 0, 0]}>
-              {data.map((entry, index) => {
+              {tableData.map((entry, index) => {
                 const r = entry.completionRate;
                 const color = r >= 80 ? '#d4af37' : r >= 65 ? '#c0c0c0' : r >= 50 ? '#cd7f32' : '#6b7280';
                 return <Cell key={`cell-${index}`} fill={color} />;
@@ -256,7 +258,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       {/* Combats par mois */}
       <Section title="Combats par mois">
         <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+          <BarChart data={tableData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -305,7 +307,7 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
               </tr>
             </thead>
             <tbody>
-              {data.map((row, i) => (
+              {tableData.map((row, i) => (
                 <tr key={i} className={`border-b border-gray-800 ${i % 2 === 0 ? 'bg-dungeon-dark/30' : ''}`}>
                   <td className="py-2 font-medieval text-gray-300">{yearData[i].name}</td>
                   <td className="py-2 text-right px-1 font-bold text-dungeon-gold">{row.score}</td>
@@ -328,20 +330,20 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             <tfoot>
               <tr className="border-t-2 border-dungeon-gold/30 font-bold">
                 <td className="py-2 font-medieval text-dungeon-gold">Total</td>
-                <td className="py-2 text-right px-1 text-dungeon-gold">{data.reduce((s, m) => s + m.score, 0)}</td>
-                <td className="py-2 text-right px-1 text-sky-400">{data.reduce((s, m) => s + m.monsters, 0)}</td>
-                {hasUndead && <td className="py-2 text-right px-1 text-yellow-300">{data.reduce((s, m) => s + m.undead, 0)}</td>}
-                {hasElite  && <td className="py-2 text-right px-1 text-red-400">{data.reduce((s, m) => s + m.elite, 0)}</td>}
-                {hasDouble && <td className="py-2 text-right px-1 text-indigo-400">{data.reduce((s, m) => s + m.doubles, 0)}</td>}
-                {hasInvisible && <td className="py-2 text-right px-1 text-gray-300">{data.reduce((s, m) => s + m.invisibles, 0)}</td>}
-                {hasNecromancer && <td className="py-2 text-right px-1 text-green-500">{necromancerDefeatedTotal}</td>}
-                {hasInfluenced && <td className="py-2 text-right px-1 text-orange-400">{influencedDefeatedTotal}</td>}
-                {hasShaman && <td className="py-2 text-right px-1 text-purple-400">{shamanDefeatedTotal}</td>}
-                {hasFinalBoss && <td className="py-2 text-right px-1 text-rose-400">{finalBossDefeatedTotal}</td>}
-                <td className="py-2 text-right px-1 text-violet-400">{data.reduce((s, m) => s + m.traps, 0)}</td>
-                <td className="py-2 text-right px-1 text-orange-400">{data.reduce((s, m) => s + m.bosses, 0)}</td>
-                <td className="py-2 text-right px-1 text-green-400">{data.reduce((s, m) => s + m.wings, 0)}</td>
-                {hasMana && <td className="py-2 text-right px-1 text-blue-400">{data.reduce((s, m) => s + m.mana, 0)}</td>}
+                <td className="py-2 text-right px-1 text-dungeon-gold">{tableData.reduce((s, m) => s + m.score, 0)}</td>
+                <td className="py-2 text-right px-1 text-sky-400">{tableData.reduce((s, m) => s + m.monsters, 0)}</td>
+                {hasUndead && <td className="py-2 text-right px-1 text-yellow-300">{tableData.reduce((s, m) => s + m.undead, 0)}</td>}
+                {hasElite  && <td className="py-2 text-right px-1 text-red-400">{tableData.reduce((s, m) => s + m.elite, 0)}</td>}
+                {hasDouble && <td className="py-2 text-right px-1 text-indigo-400">{tableData.reduce((s, m) => s + m.doubles, 0)}</td>}
+                {hasInvisible && <td className="py-2 text-right px-1 text-gray-300">{tableData.reduce((s, m) => s + m.invisibles, 0)}</td>}
+                {hasNecromancer && <td className="py-2 text-right px-1 text-green-500">{tableData.reduce((s, m) => s + m.necromancer, 0)}</td>}
+                {hasInfluenced && <td className="py-2 text-right px-1 text-orange-400">{tableData.reduce((s, m) => s + m.influenced, 0)}</td>}
+                {hasShaman && <td className="py-2 text-right px-1 text-purple-400">{tableData.reduce((s, m) => s + m.shaman, 0)}</td>}
+                {hasFinalBoss && <td className="py-2 text-right px-1 text-rose-400">{tableData[FINAL_BOSS_RULE_START]?.finalBoss ?? 0}</td>}
+                <td className="py-2 text-right px-1 text-violet-400">{tableData.reduce((s, m) => s + m.traps, 0)}</td>
+                <td className="py-2 text-right px-1 text-orange-400">{tableData.reduce((s, m) => s + m.bosses, 0)}</td>
+                <td className="py-2 text-right px-1 text-green-400">{tableData.reduce((s, m) => s + m.wings, 0)}</td>
+                {hasMana && <td className="py-2 text-right px-1 text-blue-400">{tableData.reduce((s, m) => s + m.mana, 0)}</td>}
               </tr>
             </tfoot>
           </table>
