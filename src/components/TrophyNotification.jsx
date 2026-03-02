@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TROPHY_TIERS } from '../data/trophyData';
 import {
   Swords, Skull, AlertTriangle, Crown, FlaskConical,
@@ -14,23 +14,33 @@ const AUTO_DISMISS_MS = 4000;
 
 export function TrophyNotification({ trophy, onDismiss }) {
   const [leaving, setLeaving] = useState(false);
+  const dismissTimerRef = useRef(null);
 
   useEffect(() => {
     setLeaving(false);
     const timer = setTimeout(() => {
       setLeaving(true);
-      setTimeout(onDismiss, 300);
+      dismissTimerRef.current = setTimeout(onDismiss, 300);
     }, AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(dismissTimerRef.current);
+    };
   }, [trophy.id]);
 
   const tier = TROPHY_TIERS[trophy.tier];
   const Icon = ICON_MAP[trophy.icon] || Trophy;
 
+  const handleClick = () => {
+    clearTimeout(dismissTimerRef.current);
+    setLeaving(true);
+    dismissTimerRef.current = setTimeout(onDismiss, 300);
+  };
+
   return (
     <div
       className={`fixed top-4 right-4 z-[100] cursor-pointer ${leaving ? 'animate-slide-out-right' : 'animate-slide-in-right'}`}
-      onClick={() => { setLeaving(true); setTimeout(onDismiss, 300); }}
+      onClick={handleClick}
     >
       <div className="flex overflow-hidden rounded-lg shadow-2xl border border-dungeon-gold/30">
         {/* Barre couleur tier */}

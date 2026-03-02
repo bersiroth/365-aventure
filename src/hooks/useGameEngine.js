@@ -151,20 +151,26 @@ export function useGameEngine(player) {
     if (!yearData) return;
 
     const newYearData = [...yearData];
-    const day = newYearData[monthIndex].weeks[weekIndex].days[dayIndex];
-    day.completed = !day.completed;
+    const month = { ...newYearData[monthIndex] };
+    const week = { ...month.weeks[weekIndex] };
+    const day = { ...week.days[dayIndex], completed: !week.days[dayIndex].completed };
+
+    const newDays = [...week.days];
+    newDays[dayIndex] = day;
+    week.days = newDays;
+    week.completed = newDays.filter(d => d.completed).length === 7;
+
+    const newWeeks = [...month.weeks];
+    newWeeks[weekIndex] = week;
+    month.weeks = newWeeks;
 
     // Si on dé-valide une case avec potion de mana → reset son slot
     if (!day.completed && day.hasMana && day.manaSlot !== null) {
-      const month = newYearData[monthIndex];
       month.manaUsed = [...month.manaUsed];
       month.manaUsed[day.manaSlot] = false;
     }
 
-    // Vérifier si la semaine est complète
-    const week = newYearData[monthIndex].weeks[weekIndex];
-    week.completed = week.days.filter(d => d.completed).length === 7;
-
+    newYearData[monthIndex] = month;
     setYearData(newYearData);
 
     const encoded = serializeSave(newYearData);
@@ -182,9 +188,10 @@ export function useGameEngine(player) {
     if (!yearData) return;
 
     const newYearData = [...yearData];
-    const month = newYearData[monthIndex];
+    const month = { ...newYearData[monthIndex] };
     month.manaUsed = [...month.manaUsed];
     month.manaUsed[slotIndex] = !month.manaUsed[slotIndex];
+    newYearData[monthIndex] = month;
 
     setYearData(newYearData);
 
