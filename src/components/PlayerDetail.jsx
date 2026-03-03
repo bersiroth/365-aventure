@@ -98,59 +98,57 @@ export function PlayerDetail({ playerId, onBack, maxMonth = 11 }) {
         </div>
 
         {/* Onglets */}
-        <div className="flex justify-center gap-2 mb-2">
+        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-2">
           <button
             onClick={() => setTab('profile')}
             title="Profil"
-            className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm transition-colors ${
+            className={`flex items-center justify-center gap-1 px-2 sm:gap-1.5 sm:px-3 py-1.5 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
               tab === 'profile'
                 ? 'bg-dungeon-gold text-dungeon-dark'
                 : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
             }`}
           >
-            <User size={14} />
-            <span className="hidden sm:inline">Profil</span>
+            <User size={12} />
+            <span>Profil</span>
           </button>
           {yearData && (
-            <>
-              <button
-                onClick={() => setTab('stats')}
-                title="Statistiques"
-                className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm transition-colors ${
-                  tab === 'stats'
-                    ? 'bg-dungeon-gold text-dungeon-dark'
-                    : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
-                }`}
-              >
-                <BarChart2 size={14} />
-                <span className="hidden sm:inline">Statistiques</span>
-              </button>
-            </>
+            <button
+              onClick={() => setTab('stats')}
+              title="Statistiques"
+              className={`flex items-center justify-center gap-1 px-2 sm:gap-1.5 sm:px-3 py-1.5 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
+                tab === 'stats'
+                  ? 'bg-dungeon-gold text-dungeon-dark'
+                  : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
+              }`}
+            >
+              <BarChart2 size={12} />
+              <span>Statistiques</span>
+            </button>
           )}
           <button
             onClick={() => setTab('trophies')}
             title="Trophées"
-            className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm transition-colors ${
+            className={`flex items-center justify-center gap-1 px-2 sm:gap-1.5 sm:px-3 py-1.5 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
               tab === 'trophies'
                 ? 'bg-dungeon-gold text-dungeon-dark'
                 : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
             }`}
           >
-            <Award size={14} />
-            <span className="hidden sm:inline">Trophées</span>
+            <Award size={12} />
+            <span>Trophées</span>
           </button>
           {yearData && (
             <button
               onClick={() => setTab('calendar')}
               title="Donjon"
-              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm transition-colors ${
+              className={`flex items-center justify-center gap-1 px-2 sm:gap-1.5 sm:px-3 py-1.5 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
                 tab === 'calendar'
                   ? 'bg-dungeon-gold text-dungeon-dark'
                   : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
               }`}
             >
-              <Swords size={14} />
-              <span className="hidden sm:inline">Donjon</span>
+              <Swords size={12} />
+              <span>Donjon</span>
             </button>
           )}
         </div>
