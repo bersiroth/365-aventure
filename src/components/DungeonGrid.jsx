@@ -99,7 +99,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
         {isPastMonth && onToggleLock && (
           <button
             onClick={() => isReadOnly ? setUnlockConfirmOpen(true) : onToggleLock()}
-            className="absolute sm:left-3 left-0 sm:top-2 top-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors font-medieval text-xs"
+            className="absolute sm:left-3 left-0 sm:top-2 top-0 flex flex-col items-center gap-0.5 px-2 sm:flex-row sm:gap-1.5 sm:px-2.5 py-1.5 rounded-lg border transition-colors font-medieval"
             style={isReadOnly
               ? { borderColor: 'rgba(180,120,20,0.4)', background: 'rgba(180,120,20,0.08)', color: 'rgba(212,175,55,0.7)' }
               : { borderColor: 'rgba(45,212,191,0.35)', background: 'rgba(45,212,191,0.07)', color: 'rgba(45,212,191,0.7)' }
@@ -107,7 +107,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
             title={isReadOnly ? 'Mois verrouillé — cliquer pour déverrouiller' : 'Mois déverrouillé — cliquer pour reverrouiller'}
           >
             {isReadOnly ? <Lock size={13} /> : <Unlock size={13} />}
-            <span className="hidden sm:inline">{isReadOnly ? 'Verrouillé' : 'Déverrouillé'}</span>
+            <span className="text-[8px] sm:text-xs leading-none">{isReadOnly ? 'Verrou.' : 'Déverr.'}</span>
           </button>
         )}
 
@@ -115,11 +115,12 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
         {monthRule && (
           <button
             onClick={() => setRulesOpen(true)}
-            className="absolute sm:right-3 right-0 sm:top-2 top-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-dungeon-gold/40 bg-dungeon-gold/10 text-dungeon-gold/80 hover:text-dungeon-gold hover:bg-dungeon-gold/20 hover:border-dungeon-gold/70 transition-colors font-medieval text-xs"
+            className="absolute sm:right-3 right-0 sm:top-2 top-0 flex flex-col items-center gap-0.5 px-2 sm:flex-row sm:gap-1.5 sm:px-2.5 py-1.5 rounded-lg border border-dungeon-gold/40 bg-dungeon-gold/10 text-dungeon-gold/80 hover:text-dungeon-gold hover:bg-dungeon-gold/20 hover:border-dungeon-gold/70 transition-colors font-medieval"
             title="Nouvelle règle ce mois"
           >
             <ScrollText size={13} />
-            <span className="hidden sm:inline">Nouvelle règle</span>
+            <span className="text-[8px] sm:text-xs leading-none sm:hidden">Règle</span>
+            <span className="hidden sm:inline text-xs">Nouvelle règle</span>
           </button>
         )}
       </div>
