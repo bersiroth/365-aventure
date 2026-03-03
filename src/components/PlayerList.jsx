@@ -14,6 +14,15 @@ function CrossedBonesIcon({ size = 24, className }) {
 import { getPlayers } from '../api';
 import { getLevelInfo } from '../data/trophyData';
 
+function MobileStat({ icon, value, label, color }) {
+  return (
+    <span className={`flex flex-col items-center gap-0 ${color}`}>
+      <span className="flex items-center gap-0.5">{icon} {value}</span>
+      <span className="text-[8px] text-gray-500 leading-none">{label}</span>
+    </span>
+  );
+}
+
 
 export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showElite, showDouble, showMana, showInvisible, showNecromancer, showInfluenced, showShaman, showFinalBoss }) {
   const [players, setPlayers] = useState([]);
@@ -147,20 +156,20 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                               </div>
                             </div>
                           </div>
-                          <div className="flex flex-wrap gap-3 mt-1 ml-11 text-xs text-gray-400">
-                            <span className="text-sky-400"><Axe size={12} className="inline text-sky-600" /> {player.monsters_defeated}</span>
-                            {showUndead && <span className="text-yellow-300"><CrossedBonesIcon size={12} className="inline text-yellow-400" /> {player.undead_defeated ?? 0}</span>}
-                            {showElite && <span className="text-red-400"><Zap size={12} className="inline" /> {player.elite_defeated ?? 0}</span>}
-                            {showDouble && <span className="text-indigo-400"><Layers2 size={12} className="inline" /> {player.doubles_defeated ?? 0}</span>}
-                            {showInvisible && <span className="text-gray-300"><EyeOff size={12} className="inline text-gray-400" /> {player.invisibles_defeated ?? 0}</span>}
-                            {showNecromancer && <span className="text-green-500"><Skull size={12} className="inline text-green-600" /> {player.necromancer_defeated ?? 0}</span>}
-                            {showInfluenced && <span className="text-orange-400"><Flame size={12} className="inline" /> {player.influenced_bosses_defeated ?? 0}</span>}
-                            {showShaman && <span className="text-purple-400"><Ghost size={12} className="inline" /> {player.shamans_defeated ?? 0}</span>}
-                            {showFinalBoss && <span className="text-rose-400"><Star size={12} className="inline" /> {player.final_boss_defeated ?? 0}</span>}
-                            <span className="text-violet-400"><AlertTriangle size={12} className="inline" /> {player.traps_defeated}</span>
-                            <span><Crown size={12} className="inline text-orange-400" /> {player.bosses_defeated}</span>
-                            <span><Swords size={12} className="inline text-green-400" /> {player.complete_wings}</span>
-                            {showMana && <span className="text-blue-400"><FlaskConical size={12} className="inline text-blue-400" /> {player.mana_potions_earned ?? 0}</span>}
+                          <div className="flex flex-wrap gap-2 mt-1 ml-11 text-xs text-gray-400">
+                            <MobileStat icon={<Axe size={12} className="text-sky-600" />} value={player.monsters_defeated} label="mons." color="text-sky-400" />
+                            {showUndead && <MobileStat icon={<CrossedBonesIcon size={12} className="text-yellow-400" />} value={player.undead_defeated ?? 0} label="morts" color="text-yellow-300" />}
+                            {showElite && <MobileStat icon={<Zap size={12} className="text-red-400" />} value={player.elite_defeated ?? 0} label="élites" color="text-red-400" />}
+                            {showDouble && <MobileStat icon={<Layers2 size={12} className="text-indigo-400" />} value={player.doubles_defeated ?? 0} label="dubl." color="text-indigo-400" />}
+                            {showInvisible && <MobileStat icon={<EyeOff size={12} className="text-gray-400" />} value={player.invisibles_defeated ?? 0} label="invis." color="text-gray-300" />}
+                            {showNecromancer && <MobileStat icon={<Skull size={12} className="text-green-600" />} value={player.necromancer_defeated ?? 0} label="nécro." color="text-green-500" />}
+                            {showInfluenced && <MobileStat icon={<Flame size={12} className="text-orange-400" />} value={player.influenced_bosses_defeated ?? 0} label="infl." color="text-orange-400" />}
+                            {showShaman && <MobileStat icon={<Ghost size={12} className="text-purple-400" />} value={player.shamans_defeated ?? 0} label="sham." color="text-purple-400" />}
+                            {showFinalBoss && <MobileStat icon={<Star size={12} className="text-rose-400" />} value={player.final_boss_defeated ?? 0} label="boss f." color="text-rose-400" />}
+                            <MobileStat icon={<AlertTriangle size={12} className="text-violet-400" />} value={player.traps_defeated} label="pièges" color="text-violet-400" />
+                            <MobileStat icon={<Crown size={12} className="text-orange-400" />} value={player.bosses_defeated} label="boss" color="text-orange-400" />
+                            <MobileStat icon={<Swords size={12} className="text-green-400" />} value={player.complete_wings} label="ailes" color="text-green-400" />
+                            {showMana && <MobileStat icon={<FlaskConical size={12} className="text-blue-400" />} value={player.mana_potions_earned ?? 0} label="pot." color="text-blue-400" />}
                           </div>
                         </div>
                       </button>

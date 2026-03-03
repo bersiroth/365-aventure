@@ -290,20 +290,20 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
             <thead>
               <tr className="border-b border-gray-700">
                 <th className="text-left py-2 font-medium text-xs uppercase text-gray-500">Mois</th>
-                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-dungeon-gold font-medium text-xs">Score</span><Trophy size={13} className="text-dungeon-gold sm:hidden inline" /></th>
-                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-sky-400 font-medium text-xs">Monstres</span><Axe size={13} className="text-sky-600 sm:hidden inline" /></th>
-                {hasUndead && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-yellow-300 font-medium text-xs">Morts</span><CrossedBonesIcon size={13} className="text-yellow-400 sm:hidden inline" /></th>}
-                {hasElite  && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-red-400 font-medium text-xs">Élites</span><Zap size={13} className="text-red-400 sm:hidden inline" /></th>}
-                {hasDouble && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-indigo-400 font-medium text-xs">Doubles</span><Layers2 size={13} className="text-indigo-400 sm:hidden inline" /></th>}
-                {hasInvisible && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-gray-300 font-medium text-xs">Invisibles</span><EyeOff size={13} className="text-gray-400 sm:hidden inline" /></th>}
-                {hasNecromancer && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-green-500 font-medium text-xs">Nécro</span><Skull size={13} className="text-green-600 sm:hidden inline" /></th>}
-                {hasInfluenced && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-orange-400 font-medium text-xs">Influencés</span><Flame size={13} className="text-orange-400 sm:hidden inline" /></th>}
-                {hasShaman && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-purple-400 font-medium text-xs">Shamans</span><Ghost size={13} className="text-purple-400 sm:hidden inline" /></th>}
-                {hasFinalBoss && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-rose-400 font-medium text-xs">Boss Final</span><Star size={13} className="text-rose-400 sm:hidden inline" /></th>}
-                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-violet-400 font-medium text-xs">Pièges</span><AlertTriangle size={13} className="text-violet-400 sm:hidden inline" /></th>
-                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-orange-400 font-medium text-xs">Boss</span><Crown size={13} className="text-orange-400 sm:hidden inline" /></th>
-                <th className="py-1 text-right px-1"><span className="hidden sm:inline text-green-400 font-medium text-xs">Ailes</span><Swords size={13} className="text-green-400 sm:hidden inline" /></th>
-                {hasMana && <th className="py-1 text-right px-1"><span className="hidden sm:inline text-blue-400 font-medium text-xs">Potions</span><FlaskConical size={13} className="text-blue-400 sm:hidden inline" /></th>}
+                <th className="py-1 text-right px-1"><ColHeader icon={<Trophy size={13} className="text-dungeon-gold" />} label="score" /></th>
+                <th className="py-1 text-right px-1"><ColHeader icon={<Axe size={13} className="text-sky-600" />} label="mons." /></th>
+                {hasUndead && <th className="py-1 text-right px-1"><ColHeader icon={<CrossedBonesIcon size={13} className="text-yellow-400" />} label="morts" /></th>}
+                {hasElite  && <th className="py-1 text-right px-1"><ColHeader icon={<Zap size={13} className="text-red-400" />} label="élites" /></th>}
+                {hasDouble && <th className="py-1 text-right px-1"><ColHeader icon={<Layers2 size={13} className="text-indigo-400" />} label="dubl." /></th>}
+                {hasInvisible && <th className="py-1 text-right px-1"><ColHeader icon={<EyeOff size={13} className="text-gray-400" />} label="invis." /></th>}
+                {hasNecromancer && <th className="py-1 text-right px-1"><ColHeader icon={<Skull size={13} className="text-green-600" />} label="nécro." /></th>}
+                {hasInfluenced && <th className="py-1 text-right px-1"><ColHeader icon={<Flame size={13} className="text-orange-400" />} label="infl." /></th>}
+                {hasShaman && <th className="py-1 text-right px-1"><ColHeader icon={<Ghost size={13} className="text-purple-400" />} label="sham." /></th>}
+                {hasFinalBoss && <th className="py-1 text-right px-1"><ColHeader icon={<Star size={13} className="text-rose-400" />} label="final" /></th>}
+                <th className="py-1 text-right px-1"><ColHeader icon={<AlertTriangle size={13} className="text-violet-400" />} label="pièg." /></th>
+                <th className="py-1 text-right px-1"><ColHeader icon={<Crown size={13} className="text-orange-400" />} label="boss" /></th>
+                <th className="py-1 text-right px-1"><ColHeader icon={<Swords size={13} className="text-green-400" />} label="ailes" /></th>
+                {hasMana && <th className="py-1 text-right px-1"><ColHeader icon={<FlaskConical size={13} className="text-blue-400" />} label="pot." /></th>}
               </tr>
             </thead>
             <tbody>
@@ -351,6 +351,15 @@ export function StatsPage({ yearData, maxMonth = 11 }) {
       </Section>
 
     </div>
+  );
+}
+
+function ColHeader({ icon, label }) {
+  return (
+    <span className="flex flex-col items-center gap-0.5">
+      {icon}
+      <span className="text-[8px] text-gray-500 leading-none font-normal">{label}</span>
+    </span>
   );
 }
 
