@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost, Star } from 'lucide-react';
+import { Trophy, Skull, Crown, Swords, AlertTriangle, Users, Zap, Layers2, EyeOff, Axe, FlaskConical, Flame, Ghost, Star, ChevronRight } from 'lucide-react';
 
 function CrossedBonesIcon({ size = 24, className }) {
   return (
@@ -49,9 +49,14 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
       {/* Titre de page */}
-      <div className="flex items-center gap-3">
-        <Users className="text-dungeon-gold" size={32} />
-        <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Classement des Aventuriers</h2>
+      <div>
+        <div className="flex items-center gap-3">
+          <Users className="text-dungeon-gold" size={32} />
+          <div>
+            <h2 className="text-2xl font-medieval font-bold text-dungeon-gold">Classement</h2>
+          </div>
+        </div>
+        <p className="text-gray-500 text-xs mt-0.5 pt-0.5">Appuie sur un aventurier pour voir son profile</p>
       </div>
 
       <div className="bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-dungeon-gold/50 shadow-2xl overflow-hidden">
@@ -100,7 +105,7 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                         key={player.id}
                         onClick={() => !isCurrentPlayer && onSelectPlayer(player.id)}
                         disabled={isCurrentPlayer}
-                        className={`w-full text-left transition-colors ${isCurrentPlayer ? 'bg-dungeon-gold/10 cursor-default' : 'hover:bg-dungeon-gold/5'}`}
+                        className={`w-full text-left transition-colors ${isCurrentPlayer ? 'bg-dungeon-gold/10 cursor-default' : 'hover:bg-dungeon-gold/5 cursor-pointer'}`}
                       >
                         {/* Desktop */}
                         <div className="hidden md:grid gap-2 px-6 py-4 items-center" style={{ gridTemplateColumns }}>
@@ -131,13 +136,15 @@ export function PlayerList({ onSelectPlayer, currentPlayerId, showUndead, showEl
                             <div className="flex items-center gap-3">
                               <span className={`font-bold text-lg w-8 ${index < 3 ? 'text-dungeon-gold' : 'text-gray-500'}`}>{index + 1}</span>
                               <span>
-                                <span className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</span>
-                                <span className="ml-1.5 text-[10px] text-gray-500">Niv.{levelInfo.level} — {levelInfo.title}</span>
+                                <div className={`font-medieval font-bold ${isCurrentPlayer ? 'text-dungeon-gold' : 'text-white'}`}>{player.pseudo}</div>
+                                <div className="text-[10px] text-gray-500">Niv.{levelInfo.level} — {levelInfo.title}</div>
                               </span>
                             </div>
-                            <div className="flex items-center gap-1 text-dungeon-gold font-bold">
-                              <Trophy size={16} />
-                              {player.total_score}
+                            <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1 text-dungeon-gold font-bold">
+                                <Trophy size={16} />
+                                {player.total_score}
+                              </div>
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-3 mt-1 ml-11 text-xs text-gray-400">

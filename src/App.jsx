@@ -470,7 +470,7 @@ function App() {
           </p>
           <button
             onClick={() => setVersionOpen(true)}
-            className="absolute bottom--2 right-0 text-gray-400 hover:text-gray-400 text-xs font-medieval transition-colors"
+            className="absolute bottom--2 right-5 text-gray-400 hover:text-gray-400 text-xs font-medieval transition-colors"
           >
             v1.0.0
           </button>
