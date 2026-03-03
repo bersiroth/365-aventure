@@ -193,6 +193,73 @@ En mode dev (`import.meta.env.DEV`), un bouton "Dev" apparaît dans la navigatio
 
 ---
 
+## 📋 Changelog
+
+### v1.1.0 — UX Mobile & Confort (2026)
+
+#### Navigation & Lisibilité
+- **Labels toujours visibles** sur tous les boutons de navigation (plus d'icônes seules sur mobile)
+- **Menu du donjon d'un autre joueur** : onglets identiques à la navigation principale sur mobile
+- **Boutons cadenas et nouvelle règle** : mini label texte sous l'icône sur mobile
+- **Icônes de stats** : label abrégé sous chaque icône dans la liste des joueurs (mobile) et les en-têtes du tableau récapitulatif
+
+#### Classement
+- **Indication de navigation** : sous-titre "Appuie sur un aventurier pour voir son profil" + chevron `›` sur les lignes cliquables
+
+#### Calendrier
+- **Verrouillage automatique des mois passés** : les mois terminés sont en lecture seule par défaut ; bouton cadenas pour déverrouiller temporairement (réinitialisation au rechargement)
+- **Popup de confirmation** avant de déverrouiller un mois passé
+- **Popup de confirmation** lors de la modification d'une case en dehors de la semaine courante (protection contre les erreurs de manipulation)
+- **Swipe horizontal** pour naviguer entre les mois, aussi bien sur son propre donjon que lors de la consultation d'un autre joueur
+
+#### Statistiques
+- Graphiques et tableau récapitulatif **limités aux mois passés + mois courant** (plus de mois vides à venir)
+
+#### Général
+- **Numéro de version** en pied de page (clic pour afficher les release notes)
+- **Popup de confirmation** avant la déconnexion
+
+---
+
+### v1.0.0 — Version initiale (2026)
+
+#### Calendrier & Jeu
+- 365 jours de combats pour l'année 2026
+- Validation des cases en un clic avec sauvegarde automatique
+- Ailes conquises : bannière visuelle quand les 7 jours d'une semaine sont validés
+- Blocage de validation si la valeur dépasse 30 (max 5 dés × 6), popup explicative
+- Highlight du jour courant dans le calendrier
+
+#### Système de scoring & Règles mensuelles
+- 12 règles progressives débloquées de janvier à décembre (Potions de Mana, Morts-Vivants, Bâton du Sage, Élites, Cape des Illusions, Doubles, Anneau Ancien, Invisibles & Nécromancien, Boss Influencé, Shaman, Boss Final)
+- Tous les types de cases : `MONSTER`, `BOSS`, `TRAP`, `UNDEAD`, `DOUBLE`, `NECROMANCER`, `SHAMAN` + Boss Final (31 décembre)
+- Flags combinables : `isElite`, `isInvisible`, `isInfluenced`, `isFinalBoss`, `hasMana`
+
+#### Comptes & Multijoueur
+- Inscription / Connexion avec mot de passe haché (bcrypt + JWT cookie httpOnly)
+- Classement des aventuriers trié par score avec niveau et titre
+- Consultation de la progression de n'importe quel joueur (mode lecture seule)
+
+#### Profil & Trophées
+- Niveau & titre avec barre d'XP (Vagabond → Conquérant du Donjon, 20 niveaux)
+- 30 trophées à débloquer (15 Bronze · 10 Argent · 5 Or)
+- Notifications popup slide-in à chaque nouveau trophée, trophées rétroactifs sans flood
+- Exploits : meilleur mois, plus longue série, monstre le plus vaincu
+
+#### Statistiques
+- Graphiques : score cumulé, score par mois, taux de complétion, combats par type
+- Moyennes mensuelles par catégorie, tableau récapitulatif complet avec totaux
+
+#### Sauvegarde
+- Sync serveur automatique (debounce 500 ms) quand connecté
+- localStorage pour les joueurs non connectés
+- Export / Import JSON (v2 : progression + trophées) avec vérification du pseudo
+
+#### Dés
+- Lanceur de dés intégré (dés rouge et bleus)
+
+---
+
 ## 📝 Licence
 
 Application non officielle inspirée du jeu "365 Aventures : Le Donjon" par Sorry We Are French.
