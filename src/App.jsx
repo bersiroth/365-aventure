@@ -417,34 +417,32 @@ function App() {
           </p>
 
           {/* Navigation */}
-          <nav className="flex items-center justify-center gap-2 mt-3">
-            <NavButton active={currentView === 'game'} onClick={() => navigateTo('game')} icon={<Swords size={14} />} label="Donjon" />
-            <NavButton active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={14} />} label="Profil" />
-            <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={14} />} label="Stats" />
-            <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={14} />} label="Trophées" />
-            <NavButton active={false} onClick={() => setDiceOpen(true)} icon={<Dices size={14} />} label="Dés" />
-            <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={14} />} label="Classement" />
+          <nav className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-3">
+            <NavButton active={currentView === 'game'} onClick={() => navigateTo('game')} icon={<Swords size={12} />} label="Donjon" />
+            <NavButton active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={12} />} label="Profil" />
+            <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={12} />} label="Stats" />
+            <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={12} />} label="Trophées" />
+            <NavButton active={false} onClick={() => setDiceOpen(true)} icon={<Dices size={12} />} label="Dés" />
+            <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={12} />} label="Classement" />
             {import.meta.env.DEV && (
               <button
                 onClick={() => navigateTo('dev')}
-                title="Dev"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm transition-colors ${
+                className={`flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
                   currentView === 'dev'
                     ? 'bg-amber-500 text-dungeon-dark'
                     : 'bg-dungeon-stone border border-amber-700/50 text-amber-400 hover:border-amber-500 hover:text-amber-300'
                 }`}
               >
-                <Wrench size={14} />
-                <span className="hidden sm:inline">Dev</span>
+                <Wrench size={12} />
+                Dev
               </button>
             )}
             <button
               onClick={logout}
               title={player.pseudo}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-red-500/50 hover:text-red-400 transition-colors"
+              className="flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-red-500/50 hover:text-red-400 transition-colors"
             >
-              <LogOut size={14} />
-              <span className="hidden sm:inline max-w-[80px] truncate">{player.pseudo}</span>
+              <LogOut size={12} />
             </button>
           </nav>
         </div>
@@ -575,15 +573,14 @@ function NavButton({ active, onClick, icon, label }) {
   return (
     <button
       onClick={onClick}
-      title={label}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-xs sm:text-sm transition-colors ${
+      className={`flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
         active
           ? 'bg-dungeon-gold text-dungeon-dark'
           : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
       }`}
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
+      {label}
     </button>
   );
 }
