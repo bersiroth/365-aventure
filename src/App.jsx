@@ -27,6 +27,7 @@ function App() {
   const [pendingDayClick, setPendingDayClick] = useState(null);
   const [diceOpen, setDiceOpen] = useState(false);
   const [unlockedMonths, setUnlockedMonths] = useState(new Set());
+  const [versionOpen, setVersionOpen] = useState(false);
   const importInputRef = useRef(null);
   const touchStartXRef = useRef(null);
   const touchStartYRef = useRef(null);
@@ -462,16 +463,111 @@ function App() {
 
       {/* Footer */}
       <footer className="mt-6 py-8 border-t border-dungeon-gold/30 bg-dungeon-dark/50">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+        <div className="max-w-7xl mx-auto px-4 text-center relative">
           <p className="text-gray-400 text-sm">
             Inspiré du jeu "365 Aventures : Le Donjon" par Sorry We Are French
           </p>
           <p className="text-gray-500 text-xs mt-2">
             Application web non officielle - Auto-hébergée avec ❤️ par Bersiroth
           </p>
+          <button
+            onClick={() => setVersionOpen(true)}
+            className="absolute bottom--2 right-0 text-gray-400 hover:text-gray-400 text-xs font-medieval transition-colors"
+          >
+            v1.0.0
+          </button>
         </div>
       </footer>
+
+      {/* Modale release notes */}
+      {versionOpen && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm"
+          onClick={() => setVersionOpen(false)}
+        >
+          <div className="flex min-h-full items-center justify-center p-4">
+          <div
+            className="relative w-full max-w-md bg-gradient-to-br from-dungeon-stone to-dungeon-dark rounded-xl border-2 border-dungeon-gold/50 shadow-[0_0_40px_rgba(212,175,55,0.15)] p-6"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-dungeon-gold font-medieval font-bold text-lg">Notes de version</h3>
+              <span className="text-dungeon-gold/60 font-medieval text-sm border border-dungeon-gold/30 rounded px-2 py-0.5">v1.0.0</span>
+            </div>
+            <div className="h-px bg-gradient-to-r from-transparent via-dungeon-gold/40 to-transparent mb-4" />
+
+            <div className="space-y-4 text-sm">
+              <ReleaseSection title="Donjon & Calendrier">
+                <ReleaseItem>Grille calendrier mensuelle couvrant les 12 mois 2026</ReleaseItem>
+                <ReleaseItem>Mise en évidence du jour courant</ReleaseItem>
+                <ReleaseItem>Sélecteur de mois avec navigation</ReleaseItem>
+              </ReleaseSection>
+
+              <ReleaseSection title="Monstres & Règles">
+                <ReleaseItem>Monstres classiques, pièges et boss</ReleaseItem>
+                {maxMonth >= 1 && <ReleaseItem>Potions de mana</ReleaseItem>}
+                {maxMonth >= 2 && <ReleaseItem>Morts-Vivants Enchaînés</ReleaseItem>}
+                {maxMonth >= 3 && <ReleaseItem>Bâton du Sage</ReleaseItem>}
+                {maxMonth >= 4 && <ReleaseItem>Monstres Élites</ReleaseItem>}
+                {maxMonth >= 5 && <ReleaseItem>Cape des Illusions</ReleaseItem>}
+                {maxMonth >= 6 && <ReleaseItem>Monstres Doubles</ReleaseItem>}
+                {maxMonth >= 7 && <ReleaseItem>Anneau Ancien</ReleaseItem>}
+                {maxMonth >= 8 && <ReleaseItem>Monstres Invisibles & Nécromancien</ReleaseItem>}
+                {maxMonth >= 9 && <ReleaseItem>Boss Influencés & objets magiques utilisables deux fois</ReleaseItem>}
+                {maxMonth >= 10 && <ReleaseItem>Shaman de l'Ombre</ReleaseItem>}
+                {maxMonth >= 11 && <ReleaseItem>Boss Final — valeur dynamique selon les morts-vivants vaincus</ReleaseItem>}
+                {maxMonth < 11 && <ReleaseItem muted>Nouvelles créatures et règles à découvrir...</ReleaseItem>}
+              </ReleaseSection>
+
+              <ReleaseSection title="Progression">
+                <ReleaseItem>Système de score avec ailes conquises (+3 pts)</ReleaseItem>
+                <ReleaseItem>30 trophées (Bronze, Argent, Or) avec XP et 20 niveaux</ReleaseItem>
+                <ReleaseItem>Page profil avec titre, niveau et progression</ReleaseItem>
+                <ReleaseItem>Notifications trophées en temps réel</ReleaseItem>
+                <ReleaseItem>Page statistiques avec graphiques et tableau récapitulatif</ReleaseItem>
+              </ReleaseSection>
+
+              <ReleaseSection title="Multijoueur & Sauvegarde">
+                <ReleaseItem>Inscription / connexion sécurisée</ReleaseItem>
+                <ReleaseItem>Classement avec vue du donjon des autres joueurs</ReleaseItem>
+                <ReleaseItem>Synchronisation serveur automatique</ReleaseItem>
+                <ReleaseItem>Export et import de sauvegarde (JSON)</ReleaseItem>
+              </ReleaseSection>
+
+              <ReleaseSection title="Confort d'utilisation">
+                <ReleaseItem>Lancer de dés intégré</ReleaseItem>
+              </ReleaseSection>
+            </div>
+
+            <button
+              onClick={() => setVersionOpen(false)}
+              className="mt-6 w-full py-2 rounded-lg bg-dungeon-gold/10 border border-dungeon-gold/30 text-dungeon-gold font-medieval text-sm hover:bg-dungeon-gold/20 transition-colors"
+            >
+              Fermer
+            </button>
+          </div>
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+function ReleaseSection({ title, children }) {
+  return (
+    <div>
+      <h4 className="text-dungeon-gold font-medieval font-semibold text-xs uppercase tracking-wide mb-1.5">{title}</h4>
+      <ul className="space-y-1 pl-1">{children}</ul>
+    </div>
+  );
+}
+
+function ReleaseItem({ children, muted }) {
+  return (
+    <li className={`flex items-start gap-2 ${muted ? 'text-gray-600 italic' : 'text-gray-300'}`}>
+      <span className="text-dungeon-gold/50 mt-0.5 shrink-0">·</span>
+      <span>{children}</span>
+    </li>
   );
 }
 

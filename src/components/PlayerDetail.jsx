@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Swords, ArrowLeft, BarChart2, User, Award, Eye } from 'lucide-react';
 import { getPlayer } from '../api';
 import { deserializeSave, calculateScore } from '../data/gameData';
@@ -17,6 +17,26 @@ export function PlayerDetail({ playerId, onBack, maxMonth = 11 }) {
   const [tab, setTab] = useState('profile'); // 'profile' | 'stats' | 'trophies' | 'calendar'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const touchStartXRef = useRef(null);
+  const touchStartYRef = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartXRef.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartXRef.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartYRef.current);
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < dy) return;
+    const newMonth = dx < 0
+      ? Math.min(selectedMonth + 1, maxMonth)
+      : Math.max(selectedMonth - 1, 0);
+    if (newMonth !== selectedMonth) setSelectedMonth(newMonth);
+  };
 
   useEffect(() => {
     getPlayer(playerId)
@@ -176,7 +196,7 @@ export function PlayerDetail({ playerId, onBack, maxMonth = 11 }) {
       )}
 
       {yearData && tab === 'calendar' && (
-        <>
+        <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           <div className="flex items-center justify-center gap-1.5 text-blue-400/70 text-xs font-medieval py-2">
             <Eye size={12} />
             <span>Mode lecture seule</span>
@@ -192,7 +212,7 @@ export function PlayerDetail({ playerId, onBack, maxMonth = 11 }) {
             onDayClick={() => {}}
             isReadOnly={true}
           />
-        </>
+        </div>
       )}
     </div>
   );
