@@ -28,6 +28,7 @@ function App() {
   const [diceOpen, setDiceOpen] = useState(false);
   const [unlockedMonths, setUnlockedMonths] = useState(new Set());
   const [versionOpen, setVersionOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const importInputRef = useRef(null);
   const touchStartXRef = useRef(null);
   const touchStartYRef = useRef(null);
@@ -438,7 +439,7 @@ function App() {
               </button>
             )}
             <button
-              onClick={logout}
+              onClick={() => setLogoutConfirmOpen(true)}
               title={player.pseudo}
               className="flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-red-500/50 hover:text-red-400 transition-colors"
             >
@@ -476,6 +477,35 @@ function App() {
           </button>
         </div>
       </footer>
+
+      {/* Modale confirmation déconnexion */}
+      {logoutConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setLogoutConfirmOpen(false)}>
+          <div className="bg-dungeon-stone border border-red-500/40 rounded-xl p-6 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-3">
+              <LogOut className="text-red-400 shrink-0" size={22} />
+              <h3 className="font-medieval font-bold text-white text-lg">Se déconnecter ?</h3>
+            </div>
+            <p className="text-gray-400 text-sm mb-5">
+              Ta progression est sauvegardée sur le serveur. Tu pourras te reconnecter avec ton pseudo et mot de passe.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setLogoutConfirmOpen(false)}
+                className="px-4 py-2 rounded-lg font-medieval text-sm bg-dungeon-dark border border-gray-700 text-gray-300 hover:border-gray-500 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => { setLogoutConfirmOpen(false); logout(); }}
+                className="px-4 py-2 rounded-lg font-medieval text-sm bg-red-900/50 border border-red-500/60 text-red-300 hover:bg-red-900/80 hover:text-red-200 transition-colors"
+              >
+                Se déconnecter
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modale release notes */}
       {versionOpen && (
