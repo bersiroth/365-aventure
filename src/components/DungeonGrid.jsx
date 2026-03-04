@@ -438,6 +438,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
       onValueTooHigh();
       return;
     }
+    navigator.vibrate?.(!isCompleted ? 40 : 15);
     onClick(day.monthIndex, day.weekIndex, day.dayIndex);
   };
 
