@@ -1,24 +1,16 @@
 /**
- * Utilitaire son — Web Audio API.
- * Préférence persistée en localStorage (activé par défaut).
+ * Utilitaire son — Web Audio API + fichier .wav.
+ * La préférence est lue depuis settings.js.
  */
 
-const STORAGE_KEY = 'donjon_sound';
+import { getSetting } from './settings';
 
 const _slashAudio = new Audio('/slashkut.wav');
 _slashAudio.preload = 'auto';
 
-export function isSoundEnabled() {
-  return localStorage.getItem(STORAGE_KEY) !== 'false';
-}
-
-export function setSoundEnabled(enabled) {
-  localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
-}
-
 /** Validation d'une case — son d'épée */
 export function playValidate() {
-  if (!isSoundEnabled()) return;
+  if (!getSetting('sound')) return;
   try {
     _slashAudio.currentTime = 0;
     _slashAudio.play();
@@ -27,7 +19,7 @@ export function playValidate() {
 
 /** Dé-validation d'une case — bruit sourd synthétique */
 export function playDevalidate() {
-  if (!isSoundEnabled()) return;
+  if (!getSetting('sound')) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const t = ctx.currentTime;

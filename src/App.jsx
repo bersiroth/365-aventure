@@ -10,10 +10,11 @@ import { TrophyNotification } from './components/TrophyNotification';
 const StatsPage = lazy(() => import('./components/StatsPage').then(m => ({ default: m.StatsPage })));
 const ProfilePage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.ProfilePage })));
 const TrophiesListPage = lazy(() => import('./components/TrophyPage').then(m => ({ default: m.TrophiesListPage })));
-import { Swords, LogOut, Users, BarChart2, Download, Upload, User, Award, Wrench, Dices, Volume2, VolumeX } from 'lucide-react';
+import { Swords, LogOut, Users, BarChart2, Download, Upload, User, Award, Wrench, Dices, Settings } from 'lucide-react';
 import { DevPage } from './components/DevPage';
 import { DiceRoller } from './components/DiceRoller';
-import { isSoundEnabled, setSoundEnabled, playValidate, playDevalidate } from './utils/sound';
+import { SettingsModal } from './components/SettingsModal';
+import { playValidate, playDevalidate } from './utils/sound';
 
 /**
  * Application principale
@@ -31,7 +32,7 @@ function App() {
   const [versionOpen, setVersionOpen] = useState(false);
   const [showPrevRelease, setShowPrevRelease] = useState(false);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
-  const [soundOn, setSoundOn] = useState(isSoundEnabled);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const importInputRef = useRef(null);
   const touchStartXRef = useRef(null);
   const touchStartYRef = useRef(null);
@@ -456,11 +457,12 @@ function App() {
               </button>
             )}
             <button
-              onClick={() => { const next = !soundOn; setSoundOn(next); setSoundEnabled(next); }}
-              title={soundOn ? 'Son activé — cliquer pour désactiver' : 'Son désactivé — cliquer pour activer'}
+              onClick={() => setSettingsOpen(true)}
+              title="Paramètres"
               className="flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors"
             >
-              {soundOn ? <Volume2 size={12} /> : <VolumeX size={12} className="text-gray-600" />}
+              <Settings size={12} />
+              Paramètres
             </button>
             <button
               onClick={() => setLogoutConfirmOpen(true)}
@@ -477,6 +479,9 @@ function App() {
       {newTrophies.length > 0 && (
         <TrophyNotification trophy={newTrophies[0]} onDismiss={dismissTrophy} />
       )}
+
+      {/* Modal Paramètres */}
+      {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
 
       {/* Modal Lancer de Dés */}
       {diceOpen && <DiceRoller onClose={() => setDiceOpen(false)} />}

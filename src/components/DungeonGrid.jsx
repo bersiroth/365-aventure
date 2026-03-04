@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { playValidate, playDevalidate } from '../utils/sound';
+import { getSetting } from '../utils/settings';
 import { Shield, CheckCircle2, Lock, Unlock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame, Ghost } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
@@ -101,14 +102,16 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
     }
     const isNewWing = [...currentSet].some(i => !prevWingRef.current.completeSet.has(i));
     if (isNewWing) {
-      confetti({
-        particleCount: 90,
-        spread: 75,
-        origin: { y: 0.45 },
-        colors: ['#D4AF37', '#F59E0B', '#F97316', '#EF4444', '#FFFFFF'],
-        disableForReducedMotion: true,
-      });
-      navigator.vibrate?.([50, 30, 80]);
+      if (getSetting('animations')) {
+        confetti({
+          particleCount: 90,
+          spread: 75,
+          origin: { y: 0.45 },
+          colors: ['#D4AF37', '#F59E0B', '#F97316', '#EF4444', '#FFFFFF'],
+          disableForReducedMotion: true,
+        });
+      }
+      if (getSetting('vibration')) navigator.vibrate?.([50, 30, 80]);
     }
     prevWingRef.current = { monthIndex, completeSet: currentSet };
   }, [displayRows, monthData.index]);
@@ -465,7 +468,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
       onValueTooHigh();
       return;
     }
-    navigator.vibrate?.(!isCompleted ? 40 : 15);
+    if (getSetting('vibration')) navigator.vibrate?.(!isCompleted ? 40 : 15);
     onClick(day.monthIndex, day.weekIndex, day.dayIndex);
   };
 
