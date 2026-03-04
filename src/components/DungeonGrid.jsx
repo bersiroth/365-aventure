@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
+import { playValidate, playDevalidate } from '../utils/sound';
 import { Shield, CheckCircle2, Lock, Unlock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame, Ghost } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
