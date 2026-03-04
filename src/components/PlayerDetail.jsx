@@ -122,7 +122,7 @@ export function PlayerDetail({ playerId, onBack, maxMonth = 11 }) {
               }`}
             >
               <BarChart2 size={12} />
-              <span>Statistiques</span>
+              <span>stats</span>
             </button>
           )}
           <button

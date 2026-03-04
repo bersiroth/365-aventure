@@ -580,6 +580,31 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
             </span>
           </div>
 
+        ) : isDouble ? (
+          /* DOUBLE — deux boucliers (ou cercles si invisible) côte à côte */
+          <div className="relative flex items-center justify-center gap-[3%] w-full h-full px-[3%]">
+            <div className={`relative flex items-center justify-center w-[47%] h-[78%] ${isInvisible ? 'opacity-75' : ''}`}>
+              {isInvisible ? (
+                <Circle className="absolute inset-0 w-full h-full text-blue-300/80 fill-gray-200/90" strokeWidth={1.5} />
+              ) : (
+                <Shield className="absolute inset-0 w-full h-full text-black fill-gray-300" strokeWidth={1.8} />
+              )}
+              <span className={`relative z-10 font-bold text-[10px] sm:text-[15px] md:text-[22px] leading-none ${isInvisible ? 'text-black/70' : 'text-black'}`}>
+                {day.value}
+              </span>
+            </div>
+            <div className={`relative flex items-center justify-center w-[47%] h-[78%] ${isInvisible ? 'opacity-75' : ''}`}>
+              {isInvisible ? (
+                <Circle className="absolute inset-0 w-full h-full text-blue-300/80 fill-gray-200/90" strokeWidth={1.5} />
+              ) : (
+                <Shield className="absolute inset-0 w-full h-full text-black fill-gray-300" strokeWidth={1.8} />
+              )}
+              <span className={`relative z-10 font-bold text-[10px] sm:text-[15px] md:text-[22px] leading-none ${isInvisible ? 'text-black/70' : 'text-black'}`}>
+                {day.value2}
+              </span>
+            </div>
+          </div>
+
         ) : isInvisible ? (
           /* INVISIBLE — bouclier rond (cercle) + translucide */
           <div className="relative flex items-center justify-center w-[82%] h-[82%] opacity-75">
@@ -590,23 +615,6 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
             <span className="relative z-10 font-bold text-[13px] sm:text-[20px] md:text-[29px] leading-none text-black/70">
               {day.value}
             </span>
-          </div>
-
-        ) : isDouble ? (
-          /* DOUBLE — deux boucliers côte à côte */
-          <div className="relative flex items-center justify-center gap-[3%] w-full h-full px-[3%]">
-            <div className="relative flex items-center justify-center w-[47%] h-[78%]">
-              <Shield className="absolute inset-0 w-full h-full text-black fill-gray-300" strokeWidth={1.8} />
-              <span className="relative z-10 font-bold text-[10px] sm:text-[15px] md:text-[22px] leading-none text-black">
-                {day.value}
-              </span>
-            </div>
-            <div className="relative flex items-center justify-center w-[47%] h-[78%]">
-              <Shield className="absolute inset-0 w-full h-full text-black fill-gray-300" strokeWidth={1.8} />
-              <span className="relative z-10 font-bold text-[10px] sm:text-[15px] md:text-[22px] leading-none text-black">
-                {day.value2}
-              </span>
-            </div>
           </div>
 
         ) : (

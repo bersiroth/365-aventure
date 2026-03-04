@@ -289,9 +289,9 @@ export const MONTH_CONFIGS = {
      2: { type: 'TRAP', value: -1  },
      3: { type: 'MONSTER', value: 2  },
      4: { type: 'TRAP', value: -3  },
-     5: { type: 'UNDEAD',  value: 3  }, // Jeudi
+     5: { type: 'MONSTER',  value: 3  }, // Jeudi
      6: { type: 'MONSTER', value: 4  },
-     7: { type: 'MONSTER', value: 5  },
+     7: { type: 'UNDEAD', value: 5  },
      8: { type: 'BOSS',    value: 21, hasMana: true }, // Dimanche — TODO
      9: { type: 'MONSTER', value: 2  },
     10: { type: 'MONSTER', value: 3  },
@@ -458,7 +458,7 @@ export const MONTH_CONFIGS = {
     25: { type: 'MONSTER', value: 5  },
     26: { type: 'BOSS',    value: 24, isElite: true }, // Dimanche — TODO
     27: { type: 'MONSTER', value: 2  },
-    28: { type: 'DOUBLE', value: 3, value2: 4, hasMana: true  },
+    28: { type: 'DOUBLE', value: 3, value2: 4  },
     29: { type: 'TRAP', value: -4  },
     30: { type: 'MONSTER', value: 5  },
     31: { type: 'MONSTER', value: 6  },
