@@ -403,7 +403,7 @@ function App() {
             {/* FAB Dés */}
             <button
               onClick={() => setDiceOpen(true)}
-              className="fixed bottom-10 right-4 z-40 w-14 h-14 rounded-full bg-dungeon-gold text-dungeon-dark shadow-[0_0_20px_rgba(212,175,55,0.5)] flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
+              className="fixed bottom-20 md:bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-dungeon-gold text-dungeon-dark shadow-[0_0_20px_rgba(212,175,55,0.5)] flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
               title="Lancer les dés"
             >
               <Dices size={26} />
@@ -421,59 +421,86 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-dungeon-dark via-dungeon-stone to-dungeon-dark text-white">
       {/* Header — masqué sur la vue d'un autre joueur */}
-      <header className={`bg-dungeon-dark/80 border-b-2 border-dungeon-gold/50 backdrop-blur-sm top-0 z-40 ${currentView === 'player-detail' ? 'hidden' : ''}`}>
+      <header className={`bg-dungeon-dark/80 border-b-2 border-dungeon-gold/50 backdrop-blur-sm sticky top-0 z-40 ${currentView === 'player-detail' ? 'hidden' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 py-3 md:py-6">
-          <div className="flex items-center justify-center gap-3">
-            <Swords className="text-dungeon-gold shrink-0" size={28} />
-            <h1
-              onClick={() => navigateTo('game')}
-              className="text-xl sm:text-3xl md:text-5xl font-medieval font-bold text-dungeon-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.6)] cursor-pointer leading-tight text-center whitespace-nowrap"
-            >
-              365 Aventures : Le Donjon
-            </h1>
+
+          {/* Titre */}
+          <div className="flex items-center justify-between md:justify-center gap-3">
+            {/* Mobile gauche : bouton Dev si DEV */}
+            {import.meta.env.DEV && (
+              <div className="md:hidden flex items-center w-16">
+                  <button onClick={() => navigateTo('dev')} title="Dev"
+                    className={`p-1.5 rounded-lg transition-colors ${currentView === 'dev' ? 'text-amber-400' : 'text-amber-700 hover:text-amber-400'}`}>
+                    <Wrench size={15} />
+                  </button>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 min-w-0">
+              <Swords className="text-dungeon-gold shrink-0" size={24} />
+              <h1 onClick={() => navigateTo('game')}
+                className="text-base sm:text-3xl md:text-5xl font-medieval font-bold text-dungeon-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.6)] cursor-pointer leading-tight text-center md:whitespace-nowrap">
+                365 Aventures : Le Donjon
+              </h1>
+            </div>
+
+            {/* Mobile droite : Settings + Logout */}
+            <div className="md:hidden flex items-center gap-1 w-16 justify-end">
+              <button onClick={() => setSettingsOpen(true)} title="Paramètres"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-dungeon-gold transition-colors">
+                <Settings size={17} />
+              </button>
+              <button onClick={() => setLogoutConfirmOpen(true)} title={`Se déconnecter (${player.pseudo})`}
+                className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 transition-colors">
+                <LogOut size={17} />
+              </button>
+            </div>
           </div>
+
           <p className="text-center text-gray-400 mt-1 text-xs md:text-sm hidden sm:block">
             Guidez Mira à travers les dédales du donjon, vainquez les monstres et terrassez les boss !
           </p>
 
-          {/* Navigation */}
-          <nav className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-3">
-            <NavButton active={currentView === 'game'} onClick={() => navigateTo('game')} icon={<Swords size={12} />} label="Donjon" />
-            <NavButton active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={12} />} label="Profil" />
-            <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={12} />} label="Stats" />
-            <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={12} />} label="Trophées" />
+          {/* Nav desktop uniquement */}
+          <nav className="hidden md:flex flex-wrap items-center justify-center gap-2 mt-3">
+            <NavButton active={currentView === 'game'}    onClick={() => navigateTo('game')}    icon={<Swords size={12} />}    label="Donjon" />
+            <NavButton active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={12} />}      label="Profil" />
+            <NavButton active={currentView === 'stats'}   onClick={() => navigateTo('stats')}   icon={<BarChart2 size={12} />} label="Stats" />
+            <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={12} />}  label="Trophées" />
             <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={12} />} label="Classement" />
             {import.meta.env.DEV && (
-              <button
-                onClick={() => navigateTo('dev')}
-                className={`flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
-                  currentView === 'dev'
-                    ? 'bg-amber-500 text-dungeon-dark'
-                    : 'bg-dungeon-stone border border-amber-700/50 text-amber-400 hover:border-amber-500 hover:text-amber-300'
-                }`}
-              >
-                <Wrench size={12} />
-                Dev
+              <button onClick={() => navigateTo('dev')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-sm transition-colors ${
+                  currentView === 'dev' ? 'bg-amber-500 text-dungeon-dark' : 'bg-dungeon-stone border border-amber-700/50 text-amber-400 hover:border-amber-500 hover:text-amber-300'
+                }`}>
+                <Wrench size={12} />Dev
               </button>
             )}
-            <button
-              onClick={() => setSettingsOpen(true)}
-              title="Paramètres"
-              className="flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors"
-            >
-              <Settings size={12} />
-              Paramètres
+            <button onClick={() => setSettingsOpen(true)} title="Paramètres"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold transition-colors">
+              <Settings size={12} />Paramètres
             </button>
-            <button
-              onClick={() => setLogoutConfirmOpen(true)}
-              title={player.pseudo}
-              className="flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-red-500/50 hover:text-red-400 transition-colors"
-            >
+            <button onClick={() => setLogoutConfirmOpen(true)} title={player.pseudo}
+              className="flex items-center gap-1 px-2 py-1.5 rounded-lg font-medieval font-semibold text-sm bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-red-500/50 hover:text-red-400 transition-colors">
               <LogOut size={12} />
             </button>
           </nav>
         </div>
       </header>
+
+      {/* Bottom navigation — mobile uniquement */}
+      {currentView !== 'player-detail' && (
+        <nav
+          className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-dungeon-dark border-t-2 border-dungeon-gold/30 flex items-stretch"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        >
+          <BottomNavItem active={currentView === 'game'}    onClick={() => navigateTo('game')}    icon={<Swords size={18} />}    label="Donjon" />
+          <BottomNavItem active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={18} />}      label="Profil" />
+          <BottomNavItem active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={18} />}  label="Trophées" />
+          <BottomNavItem active={currentView === 'stats'}   onClick={() => navigateTo('stats')}   icon={<BarChart2 size={18} />} label="Stats" />
+          <BottomNavItem active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={18} />} label="Classe." />
+        </nav>
+      )}
 
       {/* Notification trophée (PSN-style) */}
       {newTrophies.length > 0 && (
@@ -487,10 +514,12 @@ function App() {
       {diceOpen && <DiceRoller onClose={() => setDiceOpen(false)} />}
 
       {/* Content */}
-      {renderView()}
+      {/*<div className={currentView !== 'player-detail' ? 'pb-0 md:pb-0' : ''}>*/}
+        {renderView()}
+      {/*</div>*/}
 
       {/* Footer */}
-      <footer className="mt-6 py-8 border-t border-dungeon-gold/30 bg-dungeon-dark/50">
+      <footer className="mt-6 py-8 sm:pb-8 pb-20 border-t border-dungeon-gold/30 bg-dungeon-dark/50">
         <div className="max-w-7xl mx-auto px-4 text-center relative">
           <p className="text-gray-400 text-sm">
             Inspiré du jeu "365 Aventures : Le Donjon" par Sorry We Are French
@@ -677,16 +706,29 @@ function ReleaseItem({ children, muted }) {
 
 function NavButton({ active, onClick, icon, label }) {
   return (
+    <button onClick={onClick}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medieval font-semibold text-sm transition-colors ${
+        active ? 'bg-dungeon-gold text-dungeon-dark' : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
+      }`}
+    >
+      {icon}{label}
+    </button>
+  );
+}
+
+function BottomNavItem({ active, onClick, icon, label }) {
+  return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1 px-2 py-1.5 sm:gap-1.5 sm:px-3 rounded-lg font-medieval font-semibold text-[10px] sm:text-sm transition-colors ${
-        active
-          ? 'bg-dungeon-gold text-dungeon-dark'
-          : 'bg-dungeon-stone border border-gray-700 text-gray-300 hover:border-dungeon-gold/50 hover:text-dungeon-gold'
+      className={`relative flex-1 flex flex-col items-center justify-center gap-0.5 py-2 transition-colors ${
+        active ? 'text-dungeon-gold' : 'text-gray-500 hover:text-gray-300'
       }`}
     >
       {icon}
-      {label}
+      <span className="text-[9px] font-medieval font-semibold leading-none uppercase">
+        {label}
+      </span>
+      {active && <span className="absolute bottom-0 w-8 h-0.5 bg-dungeon-gold rounded-t-full" />}
     </button>
   );
 }
