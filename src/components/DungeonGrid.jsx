@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 import { Shield, CheckCircle2, Lock, Unlock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame, Ghost } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
 
@@ -26,6 +27,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
   const [rulesOpen, setRulesOpen] = useState(false);
   const [valueTooHighOpen, setValueTooHighOpen] = useState(false);
   const [unlockConfirmOpen, setUnlockConfirmOpen] = useState(false);
+  const prevWingRef = useRef({ monthIndex: -1, completeSet: new Set() });
   if (!monthData) return null;
 
   const monthRule = MONTH_RULES[monthData.index];
@@ -85,6 +87,30 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
     const undeadDefeatedInWing = realDays.some(d => d.type === 'UNDEAD' && d.completed);
     return { cells, isWingComplete, undeadDefeatedInWing };
   });
+
+  // ── Confetti + vibration quand une aile est nouvellement conquise ──
+  useEffect(() => {
+    const monthIndex = monthData.index;
+    const currentSet = new Set(
+      displayRows.map((r, i) => r.isWingComplete ? i : null).filter(i => i !== null)
+    );
+    if (prevWingRef.current.monthIndex !== monthIndex) {
+      prevWingRef.current = { monthIndex, completeSet: currentSet };
+      return;
+    }
+    const isNewWing = [...currentSet].some(i => !prevWingRef.current.completeSet.has(i));
+    if (isNewWing) {
+      confetti({
+        particleCount: 90,
+        spread: 75,
+        origin: { y: 0.45 },
+        colors: ['#D4AF37', '#F59E0B', '#F97316', '#EF4444', '#FFFFFF'],
+        disableForReducedMotion: true,
+      });
+      navigator.vibrate?.([50, 30, 80]);
+    }
+    prevWingRef.current = { monthIndex, completeSet: currentSet };
+  }, [displayRows, monthData.index]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 pt-2 pb-4 sm:py-6">
