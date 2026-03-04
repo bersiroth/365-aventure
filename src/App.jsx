@@ -398,6 +398,15 @@ function App() {
                 {importLoading ? 'Import...' : 'Importer'}
               </button>
             </div>
+
+            {/* FAB Dés */}
+            <button
+              onClick={() => setDiceOpen(true)}
+              className="fixed bottom-10 right-4 z-40 w-14 h-14 rounded-full bg-dungeon-gold text-dungeon-dark shadow-[0_0_20px_rgba(212,175,55,0.5)] flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
+              title="Lancer les dés"
+            >
+              <Dices size={26} />
+            </button>
             {importError && (
               <p className="text-center text-red-400 text-xs font-medieval -mt-1 mb-2 px-4">
                 {importError}
@@ -432,7 +441,6 @@ function App() {
             <NavButton active={currentView === 'profile'} onClick={() => navigateTo('profile')} icon={<User size={12} />} label="Profil" />
             <NavButton active={currentView === 'stats'} onClick={() => navigateTo('stats')} icon={<BarChart2 size={12} />} label="Stats" />
             <NavButton active={currentView === 'trophies'} onClick={() => navigateTo('trophies')} icon={<Award size={12} />} label="Trophées" />
-            <NavButton active={false} onClick={() => setDiceOpen(true)} icon={<Dices size={12} />} label="Dés" />
             <NavButton active={currentView === 'players' || currentView === 'player-detail'} onClick={() => navigateTo('players')} icon={<Users size={12} />} label="Classement" />
             {import.meta.env.DEV && (
               <button
