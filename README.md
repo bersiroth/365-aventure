@@ -195,6 +195,27 @@ En mode dev (`import.meta.env.DEV`), un bouton "Dev" apparaît dans la navigatio
 
 ## 📋 Changelog
 
+### v1.2.0 — Navigation Mobile & Immersion (2026)
+
+#### Navigation mobile
+- **Barre de navigation fixe en bas de l'écran** avec 5 onglets : Donjon, Profil, Trophées, Stats, Classement (mobile uniquement)
+- **Bouton flottant (FAB)** pour le lanceur de dés — retiré de la barre de navigation principale
+- **Header simplifié sur mobile** : titre + icônes Paramètres et Déconnexion
+
+#### Sons & Retour sensoriel
+- **Son d'épée** à la validation d'une case (fichier `.wav`)
+- **Bruit sourd synthétique** (Web Audio API) à la dévalidation
+- **Vibration haptique** sur chaque interaction (validation 40 ms, dévalidation 15 ms)
+- **Confetti** (canvas-confetti) à la conquête d'une aile complète
+
+#### Paramètres
+- **Modal de paramètres** accessible depuis le header mobile : activation/désactivation indépendante des sons, vibrations et animations (persisté en localStorage)
+
+#### Correctifs
+- Affichage correct des cases **Double + Invisible** (e.g. octobre) : les deux valeurs sont désormais visibles
+
+---
+
 ### v1.1.0 — UX Mobile & Confort (2026)
 
 #### Navigation & Lisibilité
