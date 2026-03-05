@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import confetti from 'canvas-confetti';
-import { playValidate, playDevalidate } from '../utils/sound';
+import { useState } from 'react';
 import { getSetting } from '../utils/settings';
 import { Shield, CheckCircle2, Lock, Unlock, Swords, Wand2, ScrollText, X, Zap, Sparkles, Gem, Circle, Skull, FlaskConical, Flame, Ghost } from 'lucide-react';
 import { MONTH_RULES } from '../data/monthConfigs';
@@ -29,7 +27,6 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
   const [rulesOpen, setRulesOpen] = useState(false);
   const [valueTooHighOpen, setValueTooHighOpen] = useState(false);
   const [unlockConfirmOpen, setUnlockConfirmOpen] = useState(false);
-  const prevWingRef = useRef({ monthIndex: -1, completeSet: new Set() });
   if (!monthData) return null;
 
   const monthRule = MONTH_RULES[monthData.index];
@@ -87,34 +84,17 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
     const wingUndeadBlocked = wingHasUndead && monthHasNecromancer && !monthNecromancerDefeated;
     const isWingComplete = realDays.length === 7 && realDays.every(d => d.completed) && !wingUndeadBlocked;
     const undeadDefeatedInWing = realDays.some(d => d.type === 'UNDEAD' && d.completed);
-    return { cells, isWingComplete, undeadDefeatedInWing };
+    // willCompleteWing par cellule : vrai si valider cette case complèterait l'aile
+    const canCompleteWing = realDays.length === 7 && !wingUndeadBlocked;
+    const cellsWithInfo = cells.map(cell => {
+      if (cell.isEmpty) return cell;
+      const willCompleteWing = canCompleteWing && !cell.day.completed &&
+        realDays.every(d => d === cell.day || d.completed);
+      return { ...cell, willCompleteWing };
+    });
+    return { cells: cellsWithInfo, isWingComplete, undeadDefeatedInWing };
   });
 
-  // ── Confetti + vibration quand une aile est nouvellement conquise ──
-  useEffect(() => {
-    const monthIndex = monthData.index;
-    const currentSet = new Set(
-      displayRows.map((r, i) => r.isWingComplete ? i : null).filter(i => i !== null)
-    );
-    if (prevWingRef.current.monthIndex !== monthIndex) {
-      prevWingRef.current = { monthIndex, completeSet: currentSet };
-      return;
-    }
-    const isNewWing = [...currentSet].some(i => !prevWingRef.current.completeSet.has(i));
-    if (isNewWing) {
-      if (getSetting('animations')) {
-        confetti({
-          particleCount: 90,
-          spread: 75,
-          origin: { y: 0.45 },
-          colors: ['#D4AF37', '#F59E0B', '#F97316', '#EF4444', '#FFFFFF'],
-          disableForReducedMotion: true,
-        });
-      }
-      if (getSetting('vibration')) navigator.vibrate?.([50, 30, 80]);
-    }
-    prevWingRef.current = { monthIndex, completeSet: currentSet };
-  }, [displayRows, monthData.index]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 pt-2 pb-4 sm:py-6">
@@ -238,6 +218,7 @@ export function DungeonGrid({ monthData, onDayClick, isReadOnly, isPastMonth, on
                         undeadNeedsNecro={monthHasNecromancer && !monthNecromancerDefeated}
                         finalBossData={cell.day.isFinalBoss ? finalBossData : null}
                         onValueTooHigh={() => setValueTooHighOpen(true)}
+                        willCompleteWing={cell.willCompleteWing ?? false}
                         isToday={
                           todayYear === 2026 &&
                           cell.day.monthIndex === todayMonthIndex &&
@@ -438,7 +419,7 @@ function WingCompleteBanner() {
  * BOSS    → couronne dorée + valeur
  * DOUBLE  → deux boucliers bleus côte à côte
  */
-function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWing, undeadNeedsNecro, finalBossData, onValueTooHigh, isToday }) {
+function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWing, undeadNeedsNecro, finalBossData, onValueTooHigh, willCompleteWing, isToday }) {
   const isBoss = day.type === 'BOSS';
   const isTrap = day.type === 'TRAP';
   const isUndead = day.type === 'UNDEAD';
@@ -469,7 +450,7 @@ function DayCard({ day, onClick, isReadOnly, isWingComplete, undeadDefeatedInWin
       return;
     }
     if (getSetting('vibration')) navigator.vibrate?.(!isCompleted ? 40 : 15);
-    onClick(day.monthIndex, day.weekIndex, day.dayIndex);
+    onClick(day.monthIndex, day.weekIndex, day.dayIndex, !isCompleted && !!willCompleteWing);
   };
 
   // Couleur de fond selon le type — calquée sur le calendrier physique

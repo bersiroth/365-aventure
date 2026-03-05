@@ -15,6 +15,21 @@ import { DevPage } from './components/DevPage';
 import { DiceRoller } from './components/DiceRoller';
 import { SettingsModal } from './components/SettingsModal';
 import { playValidate, playDevalidate } from './utils/sound';
+import { getSetting } from './utils/settings';
+import confetti from 'canvas-confetti';
+
+function fireWingComplete() {
+  if (getSetting('animations')) {
+    confetti({
+      particleCount: 90,
+      spread: 75,
+      origin: { y: 0.45 },
+      colors: ['#D4AF37', '#F59E0B', '#F97316', '#EF4444', '#FFFFFF'],
+      disableForReducedMotion: true,
+    });
+  }
+  if (getSetting('vibration')) navigator.vibrate?.([50, 30, 80]);
+}
 
 /**
  * Application principale
@@ -72,7 +87,7 @@ function App() {
     importError,
   } = useGameEngine(player);
 
-  const handleDayClick = (monthIndex, weekIndex, dayIndex) => {
+  const handleDayClick = (monthIndex, weekIndex, dayIndex, willCompleteWing = false) => {
     if (!yearData) return;
 
     // Mois futur : toujours bloqué
@@ -86,6 +101,7 @@ function App() {
       const d = yearData[monthIndex]?.weeks[weekIndex]?.days[dayIndex];
       if (d?.completed) playDevalidate(); else playValidate();
       toggleDayCompletion(monthIndex, weekIndex, dayIndex);
+      if (willCompleteWing) fireWingComplete();
       return;
     }
 
@@ -101,17 +117,19 @@ function App() {
     if (!dayData) {
       if (dayData?.completed) playDevalidate(); else playValidate();
       toggleDayCompletion(monthIndex, weekIndex, dayIndex);
+      if (willCompleteWing) fireWingComplete();
       return;
     }
 
     const clickedDate = new Date(2026, monthIndex, dayData.day);
     if (clickedDate < monday || clickedDate > sunday) {
-      setPendingDayClick({ monthIndex, weekIndex, dayIndex, dayData, monthName: yearData[monthIndex].name });
+      setPendingDayClick({ monthIndex, weekIndex, dayIndex, dayData, monthName: yearData[monthIndex].name, willCompleteWing });
       return;
     }
 
     if (dayData.completed) playDevalidate(); else playValidate();
     toggleDayCompletion(monthIndex, weekIndex, dayIndex);
+    if (willCompleteWing) fireWingComplete();
   };
 
   const toggleMonthLock = () => {
@@ -371,6 +389,7 @@ function App() {
                         const d = yearData[pendingDayClick.monthIndex]?.weeks[pendingDayClick.weekIndex]?.days[pendingDayClick.dayIndex];
                         if (d?.completed) playDevalidate(); else playValidate();
                         toggleDayCompletion(pendingDayClick.monthIndex, pendingDayClick.weekIndex, pendingDayClick.dayIndex);
+                        if (pendingDayClick.willCompleteWing) fireWingComplete();
                         setPendingDayClick(null);
                       }}
                       className="flex-1 px-4 py-2 rounded-lg font-medieval font-semibold text-sm bg-dungeon-gold text-dungeon-dark hover:bg-yellow-400 transition-colors font-bold"
@@ -421,7 +440,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-dungeon-dark via-dungeon-stone to-dungeon-dark text-white">
       {/* Header — masqué sur la vue d'un autre joueur */}
-      <header className={`bg-dungeon-dark/80 border-b-2 border-dungeon-gold/50 backdrop-blur-sm sticky top-0 z-40 ${currentView === 'player-detail' ? 'hidden' : ''}`}>
+      <header className={`bg-dungeon-dark/80 border-b-2 border-dungeon-gold/50 ${currentView === 'player-detail' ? 'hidden' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 py-3 md:py-6">
 
           {/* Titre */}
