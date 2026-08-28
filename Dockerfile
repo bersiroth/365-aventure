@@ -1,43 +1,53 @@
+# syntax=docker/dockerfile:1
+
 # ===========================
-# STAGE 1: Build React App
+# STAGE 1: Build du frontend (Vite)
 # ===========================
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS frontend
 
 WORKDIR /app
 
-# Copier les fichiers de dépendances frontend
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Installer les dépendances frontend
-RUN npm ci --ignore-scripts
+COPY index.html vite.config.js postcss.config.js tailwind.config.js ./
+COPY src/ ./src/
+COPY public/ ./public/
 
-# Copier le code source frontend
-COPY . .
-
-# Build de production
 RUN npm run build
 
 # ===========================
-# STAGE 2: Node.js Production
+# STAGE 2: Dépendances serveur (production)
+# ===========================
+FROM node:20-alpine AS server-deps
+
+WORKDIR /app/server
+
+COPY server/package.json server/package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# ===========================
+# STAGE 3: Image finale
 # ===========================
 FROM node:20-alpine
 
+# NODE_ENV=production désactive les routes /api/dev, dont /api/dev/reset qui vide la base
+ENV NODE_ENV=production \
+    PORT=3636 \
+    DB_PATH=/app/data/donjon.db
+
 WORKDIR /app
 
-# Copier les fichiers de dépendances serveur
-COPY server/package.json server/package-lock.json* ./server/
+COPY --from=server-deps --chown=node:node /app/server/node_modules ./server/node_modules
+COPY --chown=node:node server/ ./server/
+# gameLogic.js et routes/save.js importent depuis src/data/
+COPY --chown=node:node src/data/ ./src/data/
+COPY --from=frontend --chown=node:node /app/dist ./dist
 
-# Installer les dépendances serveur (production only)
-RUN cd server && npm ci --omit=dev
+# Dossier de la base, monté en volume ; le mode WAL y écrit aussi donjon.db-wal et -shm
+RUN mkdir -p /app/data && chown node:node /app/data
 
-# Copier le code serveur
-COPY server/ ./server/
-
-# Copier les fichiers data partagés (monthConfigs)
-COPY src/data/ ./src/data/
-
-# Copier le build frontend depuis le stage précédent
-COPY --from=builder /app/dist ./dist
+USER node
 
 EXPOSE 3636
 

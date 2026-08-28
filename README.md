@@ -124,38 +124,62 @@ Chaque mois débloque une nouvelle règle affichée dans le calendrier via le bo
 
 ## 🚀 Déploiement Docker
 
-### Prérequis
-- Docker
-- Docker Compose
+L'application tourne dans un conteneur unique : le serveur Express sert l'API
+`/api/*` **et** le build statique du frontend. Pas de nginx, pas de service
+externe.
 
-### Installation
+L'image est construite par GitHub Actions à chaque push sur `main` et publiée
+sur `ghcr.io/bersiroth/365-aventure` (tags `latest` et SHA court du commit).
+Le serveur ne construit rien : il tire l'image publiée.
+
+### Architecture
+
+| Élément | Emplacement |
+|---|---|
+| Dockerfile | ce dépôt |
+| Workflow de publication | `.github/workflows/docker-publish.yml` |
+| Base SQLite | `/app/data` dans le conteneur, à monter en volume |
+
+### Mise à jour
+
+Un push sur `main` publie une nouvelle image. Sur le serveur :
 
 ```bash
-git clone <votre-repo>
-cd 365-aventure
-
-docker-compose up -d
-# Application disponible sur http://localhost:8080
+docker compose pull
+docker compose up -d
+docker image prune -f   # optionnel : nettoie les images remplacées
 ```
 
-### Configuration du port
-
-```yaml
-# docker-compose.yml
-ports:
-  - "VOTRE_PORT:80"
-```
+Pour revenir à une version précédente, remplacer le tag `latest` par le SHA
+court du commit voulu dans le compose, puis relancer les deux commandes.
 
 ### Commandes utiles
 
 ```bash
-docker-compose down          # Arrêter
-docker-compose up -d --build # Rebuild après modifications
-docker-compose logs -f       # Voir les logs
-docker-compose restart       # Redémarrer
+docker compose logs -f       # Suivre les logs
+docker compose restart       # Redémarrer
+docker compose down          # Arrêter (le volume est conservé)
+docker compose ps            # État et healthcheck
 ```
 
----
+### Test local de l'image
+
+`docker-compose.yml` à la racine construit l'image localement, sans Traefik :
+
+```bash
+docker compose up -d --build
+# Application disponible sur http://localhost:8080
+```
+
+### Variables d'environnement
+
+| Variable | Défaut dans l'image | Rôle |
+|---|---|---|
+| `JWT_SECRET` | — | Signature des tokens. Obligatoire, démarrage refusé sans lui. |
+| `PORT` | `3636` | Port d'écoute du conteneur, à cibler depuis le reverse proxy. |
+| `DB_PATH` | `/app/data/donjon.db` | Fichier SQLite, dans le dossier monté en volume. |
+| `NODE_ENV` | `production` | Toute autre valeur expose `/api/dev/reset`, qui vide la base. |
+
 
 ## 🛠️ Développement local
 

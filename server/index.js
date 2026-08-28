@@ -13,6 +13,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3636;
 
+// Derrière Traefik : sans cela, express-rate-limit voit l'IP du proxy
+// et les joueurs partagent un unique quota de tentatives de connexion.
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(express.json());
 
 // Rate limiting — auth endpoints uniquement

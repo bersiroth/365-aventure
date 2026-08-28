@@ -1,4 +1,6 @@
-version: '3.8'
+# Compose de développement / test local uniquement.
+# Le déploiement serveur utilise deploy/docker-compose.yaml, qui tire
+# l'image publiée sur ghcr.io au lieu de la construire.
 
 services:
   donjon-app:
@@ -6,14 +8,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: 365-aventures-donjon:latest
+    image: 365-aventures-donjon:local
+    init: true
     ports:
       - "8080:3636"
     restart: unless-stopped
     environment:
-      - JWT_SECRET=${JWT_SECRET:-change-me-to-a-random-string}
-      - PORT=3636
-      - DB_PATH=/app/data/donjon.db
+      JWT_SECRET: ${JWT_SECRET:-local-dev-secret-do-not-use-in-production}
     volumes:
       - donjon-data:/app/data
     healthcheck:
@@ -22,26 +23,6 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
-    networks:
-      - proxy
-    labels:
-      - traefik.enable=true
-      # DNS redirection
-      - traefik.http.routers.aventure.rule=Host(`aventure.bersiroth.fr`)
-      - traefik.http.services.aventure.loadbalancer.server.port=3636
-      # HTTP
-      - traefik.http.routers.aventure-http.entrypoints=http
-      - traefik.http.routers.aventure-http.rule=Host(`aventure.bersiroth.fr`)
-      # HTTPS
-      - traefik.http.routers.aventure.tls=true
-      - traefik.http.routers.aventure.tls.certresolver=letsencrypt-resolver
-      - traefik.http.routers.aventure.entrypoints=https
-      # Redirect
-      - traefik.http.routers.aventure-http.middlewares=https-redirect@docker
 
 volumes:
   donjon-data:
-
-networks:
-  proxy:
-    external: true

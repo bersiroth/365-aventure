@@ -1,5 +1,9 @@
 import jwt from 'jsonwebtoken';
 
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET est obligatoire en production : sans lui, le secret de repli public permettrait de forger un token pour n\'importe quel joueur.');
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
 const JWT_EXPIRES_IN = '30d';
 
